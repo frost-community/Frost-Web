@@ -1,0 +1,6 @@
+{
+    "require": {
+        "slim/slim": "~2.0",
+        "jlndk/slim-jade": "^0.0.1"
+    }
+}

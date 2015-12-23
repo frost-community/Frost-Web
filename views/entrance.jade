@@ -13,9 +13,9 @@ html
 				.login-section
 					h1 ログイン
 
-					form
-						input.text-input.screen-name-box(type="text", placeholder="ユーザー名")
-						input.text-input.password-box(type="password", placeholder="パスワード")
+					form(method="post", action="./login")
+						input.text-input.screen-name-box(type="text", name="screen_name", placeholder="ユーザー名")
+						input.text-input.password-box(type="password", name="password", placeholder="パスワード")
 						button.button-input ログイン
 
 		footer.entrance-footer

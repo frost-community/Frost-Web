@@ -19,9 +19,14 @@ function LoadStaticFile ($res, $filePath) {
 	if ($contentType !== null)
 		$res->headers->set('Content-Type', $contentType);
 
-	if (file_exists($filePath) && !!($temp = file_get_contents($filePath)))
-		$content = $temp;
-	else
+	if (file_exists($filePath) && !!($temp = file_get_contents($filePath))) {
+		if ($extension === "css") {
+			$autoprefixer = new Autoprefixer();
+			$content = $autoprefixer->compile($temp);
+		} else {
+			$content = $temp;
+		}
+	} else
 		$app->notFound();
 
 	$res->setBody($content);

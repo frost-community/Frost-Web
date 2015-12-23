@@ -1,6 +1,65 @@
-html {
-	background-color: rgb(224, 236, 239);
+* {
+	padding: 0;
+	margin: 0;
+	box-sizing: border-box;
 }
+
+html {
+	background-color: rgb(43, 43, 43);
+}
+
 body {
+	background-color: rgb(224, 236, 239);
+	color: rgb(43, 43, 43);
 	font-family: "メイリオ", Arial, Helvetica, sans-serif;
+}
+
+input, button {
+	border: 1px solid rgb(43, 43, 43);
+	padding: 5px;
+	border-radius: 5px;
+	margin: 5px;
+}
+
+.text-input {
+	height: 35px;
+	background: transparent;
+}
+
+.button-input {
+	height: 40px;
+	background: rgb(43, 43, 43);
+	color: rgb(224, 236, 239);
+}
+
+/* detail */
+
+.sub-section {
+}
+
+.login-section {
+	width: 300px;
+}
+
+.entrance-container {
+	display: flex;
+	padding: 200px 0px;
+	justify-content: space-around;
+	align-items: center;
+}
+
+.entrance-container > div {
+	margin: 20px;
+}
+
+.login-section > form {
+	display: flex;
+	flex-direction: column;
+}
+
+.entrance-footer {
+	text-align: center;
+	background-color: rgb(43, 43, 43);
+	color: rgb(224, 236, 239);
+	padding: 10px;
 }

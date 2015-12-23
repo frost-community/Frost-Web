@@ -7,7 +7,8 @@ $app->get('/static/:fileName', function ($fileName) use ($app) {
 });
 
 $app->get('/', function () use ($app) {
-	$app->render('home.jade');
+	//$app->render('home.jade');
+	$app->render('entrance.jade');
 });
 
 $app->get('/:screenName', function ($screenName) use ($app) {

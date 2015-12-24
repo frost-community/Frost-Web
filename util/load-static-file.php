@@ -3,7 +3,7 @@
 function LoadStaticFile ($res, $filePath) {
 	global $app;
 
-	require_once('content-types.php');
+	require_once(dirname(__FILE__).'/content-types.php');
 
 	$content = null;
 	$extension = pathinfo($filePath)['extension'];

@@ -7,8 +7,10 @@ $app->get('/static/:fileName', function ($fileName) use ($app) {
 });
 
 $app->get('/', function () use ($app) {
-	//$app->render('home.jade');
-	$app->render('entrance.jade');
+	if ($_SESSION['is-login'])
+		$app->render('home.jade');
+	else
+		$app->render('entrance.jade');
 });
 
 $app->post('/login', function () use ($app) {
@@ -17,7 +19,10 @@ $app->post('/login', function () use ($app) {
 	if ($screenName !== null && $password !== null)
 		$app->response->write("good request");
 	else
+	{
+		$app->response->setStatus(400);
 		$app->response->write("bad request");
+	}
 });
 
 $app->get('/:screenName', function ($screenName) use ($app) {

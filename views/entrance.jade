@@ -4,7 +4,12 @@ html
 		meta(charset="utf-8")
 		title Frost
 		link(href="./static/core.css", rel="stylesheet")
+		link(href="./static/entrance.css", rel="stylesheet")
+		script(src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js")
+		script(src="./static/main.js")
 	body
+		header
+			.message-container
 		main
 			.entrance-container
 				.sub-section
@@ -13,7 +18,7 @@ html
 				.login-section
 					h1 ログイン
 
-					form(method="post", action="./login")
+					form
 						input.text-input.screen-name-box(type="text", name="screen_name", placeholder="ユーザー名")
 						input.text-input.password-box(type="password", name="password", placeholder="パスワード")
 						button.button-input ログイン

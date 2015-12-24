@@ -1,0 +1,44 @@
+.sub-section {
+}
+
+.login-section {
+	width: 300px;
+}
+
+.entrance-container {
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: -ms-flexbox;
+	display: flex;
+	padding: 200px 0px;
+	-webkit-justify-content: space-around;
+	    -ms-flex-pack: distribute;
+	        justify-content: space-around;
+	-webkit-box-align: center;
+	-webkit-align-items: center;
+	    -ms-flex-align: center;
+	        align-items: center;
+}
+
+.entrance-container > div {
+	margin: 20px;
+}
+
+.login-section > form {
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-orient: vertical;
+	-webkit-box-direction: normal;
+	-webkit-flex-direction: column;
+	    -ms-flex-direction: column;
+	        flex-direction: column;
+}
+
+.entrance-footer {
+	text-align: center;
+	background-color: rgb(43, 43, 43);
+	color: rgb(224, 236, 239);
+	padding: 10px;
+}

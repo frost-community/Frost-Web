@@ -1,6 +1,7 @@
 {
     "require": {
         "slim/slim": "~2.0",
-        "jlndk/slim-jade": "^0.0.1"
+        "jlndk/slim-jade": "^0.0.1",
+        "j4mie/paris": "^1.5"
     }
 }

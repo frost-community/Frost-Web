@@ -3,6 +3,14 @@
 
 .login-section {
 	width: 300px;
+	background: rgba(255, 255, 255, .4);
+	padding: 25px;
+	border-radius: 5px;
+	box-sizing: content-box;
+}
+
+.login-section h2 {
+	margin-bottom: 10px;
 }
 
 .entrance-container {

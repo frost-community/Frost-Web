@@ -23,9 +23,7 @@ $app->add(new \Slim\Middleware\SessionCookie([
     'cipher_mode' => MCRYPT_MODE_CBC
 ]));
 
-if ($_SESSION['is-login'] !== true) {
-	$_SESSION['is-login'] = false;
-}
+$_SESSION['is-login'] = $_SESSION['is-login'] === true;
 
 $app->group('/api', function () use ($app) {
 	require "./api-router.php";

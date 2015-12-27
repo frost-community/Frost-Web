@@ -3,6 +3,8 @@
 require_once './config.php';
 require_once './vendor/autoload.php';
 
+require_once './model/account.php';
+
 use Jlndk\SlimJade\Jade;
 use \Slim\Slim;
 
@@ -23,12 +25,20 @@ $app->add(new \Slim\Middleware\SessionCookie([
     'cipher_mode' => MCRYPT_MODE_CBC
 ]));
 
-$_SESSION['is-login'] = $_SESSION['is-login'] === true;
+ORM::configure('mysql:host='.$config['db-hostname'].';dbname='.$config['db-dbname']);
+ORM::configure('username', $config['db-username']);
+ORM::configure('password', $config['db-password']);
+Model::$auto_prefix_models = '\\Frost\\';
 
-$app->group('/api', function () use ($app) {
-	require "./api-router.php";
-});
+if (!isset($_SESSION['is-login'])) {
+	$_SESSION['is-login'] = false;
+}
 
+if ($_SESSION['is-login']) {
+	//$_SESSION['me']
+}
+
+require "./api-router.php";
 require "./router.php";
 
 $app->run();

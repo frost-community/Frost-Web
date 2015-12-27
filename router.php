@@ -1,6 +1,7 @@
 <?php
 
-require_once('./util/load-static-file.php');
+require_once(dirname(__FILE__).'/util/load-static-file.php');
+require_once(dirname(__FILE__).'/util/api-utils.php');
 
 $app->get('/static/:fileName', function ($fileName) use ($app) {
 	LoadStaticFile($app->response, './assets/'.$fileName);
@@ -13,15 +14,24 @@ $app->get('/', function () use ($app) {
 		$app->render('entrance.jade');
 });
 
-$app->post('/login', function () use ($app) {
-	$screenName = $app->request->post('screen_name');
-	$password = $app->request->post('password');
-	if ($screenName !== null && $password !== null)
-		$app->response->write("good request");
-	else
-	{
-		$app->response->setStatus(400);
-		$app->response->write("bad request");
+$app->post('/signin', function () use ($app) {
+	if (validateReferer()) {
+		if (validateApiParameters(['screen_name', 'password'])) {
+			$screenName = $app->request->post('screen_name');
+			$password = $app->request->post('password');
+			
+			//$_SESSION['is-login'] = true;
+			//$_SESSION['me'] = null;
+			buildSuccessResponse("Success signin.");
+		}
+	}
+});
+
+$app->post('/signout', function () use ($app) {
+	if (validateReferer()) {
+		$_SESSION['is-login'] = null;
+		$_SESSION['me'] = null;
+		buildSuccessResponse("Success signout.");
 	}
 });
 

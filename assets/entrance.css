@@ -1,15 +1,15 @@
 .sub-section {
 }
 
-.login-section {
+.signin-section {
 	width: 300px;
-	background: rgba(255, 255, 255, .4);
+	background: rgba(255, 255, 255, .3);
 	padding: 25px;
 	border-radius: 5px;
 	box-sizing: content-box;
 }
 
-.login-section h2 {
+.signin-section h2 {
 	margin-bottom: 10px;
 }
 
@@ -32,7 +32,7 @@
 	margin: 20px;
 }
 
-.login-section > form {
+.signin-section > form {
 	display: -webkit-box;
 	display: -webkit-flex;
 	display: -ms-flexbox;

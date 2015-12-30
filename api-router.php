@@ -1,6 +1,7 @@
 <?php
 
 require_once(dirname(__FILE__).'/util/regex.php');
+require_once(dirname(__FILE__).'/util/validate-string-length.php');
 require_once(dirname(__FILE__).'/util/api-utils.php');
 
 $app->group('/api', function () use ($app) {
@@ -32,7 +33,7 @@ $app->group('/api', function () use ($app) {
 				$isOccurredError = false;
 				$errorTargets = [];
 
-				if (!(regex("/^[a-z0-9_]+$/i", $screenName)) || !(strlen($screenName) >= 4 && strlen($screenName) <= 15)) {
+				if (!(regex("/^[a-z0-9_]+$/i", $screenName)) || !(validateStringLength($screenName, 4, 15))) {
 					$isOccurredError = true;
 					$errorTargets[] = 'screen_name';
 				} else {
@@ -44,7 +45,7 @@ $app->group('/api', function () use ($app) {
 					}
 				}
 
-				if (!(regex("/^[a-z0-9_-]+$/i", $password)) || !(strlen($password) >= 6)) {
+				if (!(regex("/^[a-z0-9_-]+$/i", $password)) || !(validateStringLength($password, 6))) {
 					$isOccurredError = true;
 					$errorTargets[] = 'password';
 				}

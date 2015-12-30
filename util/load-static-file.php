@@ -1,6 +1,6 @@
 <?php
 
-function LoadStaticFile ($res, $filePath) {
+function loadStaticFile ($res, $filePath) {
 	global $app;
 
 	require_once(dirname(__FILE__).'/content-types.php');

@@ -4,7 +4,7 @@ require_once(dirname(__FILE__).'/util/load-static-file.php');
 require_once(dirname(__FILE__).'/util/api-utils.php');
 
 $app->get('/static/:fileName', function ($fileName) use ($app) {
-	LoadStaticFile($app->response, './assets/'.$fileName);
+	loadStaticFile($app->response, './assets/'.$fileName);
 });
 
 $app->get('/', function () use ($app) {

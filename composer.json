@@ -1,7 +1,8 @@
 {
     "require": {
-        "slim/slim": "~2.0",
-        "jlndk/slim-jade": "^0.0.1",
-        "j4mie/paris": "^1.5"
+        "vladkens/autoprefixer": "*",
+        "slim/slim": "^3.3",
+        "marihachi/slim3-jade": "dev-master",
+        "leafo/lessphp": "^0.5.0"
     }
 }

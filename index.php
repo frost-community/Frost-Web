@@ -1,35 +1,26 @@
 <?php
 
-require_once './config.php';
-require_once './vendor/autoload.php';
+use Slim\Views\JadeRenderer;
 
-require_once './model/account.php';
+require_once __DIR__.'/vendor/autoload.php';
+require_once __DIR__.'/config.php';
+require_once __DIR__.'/model/account.php';
 
-use Jlndk\SlimJade\Jade;
-use \Slim\Slim;
+session_cache_expire(60 * 24 * 7);
+session_name($config['session-name']);
+session_start();
 
-$app = new Slim([
-	"view" => new Jade(),
-	"templates.path" => dirname(__FILE__)."/views"
-]);
+$config = [
+    'settings' => [
+        'displayErrorDetails' => true
+    ]
+];
 
-$app->add(new \Slim\Middleware\SessionCookie([
-    'expires' => 0,
-    'path' => '/',
-    'domain' => null,
-    'secure' => false,
-    'httponly' => false,
-    'name' => $config['session-name'],
-    'secret' => $config['session-secret'],
-    'cipher' => MCRYPT_RIJNDAEL_256,
-    'cipher_mode' => MCRYPT_MODE_CBC
-]));
+$app = new Slim\App($config);
+$container = $app->getContainer();
+$container['renderer'] = new JadeRenderer();
 
-ORM::configure('mysql:host='.$config['db-hostname'].';dbname='.$config['db-dbname']);
-ORM::configure('username', $config['db-username']);
-ORM::configure('password', $config['db-password']);
-Model::$auto_prefix_models = '\\Frost\\';
-
+// init
 if (!isset($_SESSION['is-login'])) {
 	$_SESSION['is-login'] = false;
 }
@@ -38,7 +29,6 @@ if ($_SESSION['is-login']) {
 	//$_SESSION['me']
 }
 
-require "./api-router.php";
-require "./router.php";
+require_once './router.php';
 
 $app->run();

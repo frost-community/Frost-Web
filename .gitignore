@@ -1,4 +1,5 @@
 vendor/
 composer.lock
-src-*
 config.php
+node_modules/
+assets/

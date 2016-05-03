@@ -4,9 +4,5 @@
     "gulp": "^3.9.1",
     "gulp-autoprefixer": "^3.1.0",
     "gulp-stylus": "^2.3.1"
-  },
-  "scripts": {
-    "gulp": "gulp",
-    "start": "gulp"
   }
 }

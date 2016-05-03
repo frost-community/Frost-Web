@@ -4,5 +4,11 @@
         "slim/slim": "^3.3",
         "marihachi/slim3-jade": "dev-master",
         "leafo/lessphp": "^0.5.0"
+    },
+    "scripts": {
+        "update-all": [
+            "composer update",
+            "gulp"
+        ]
     }
 }

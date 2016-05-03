@@ -10,13 +10,13 @@ session_cache_expire(60 * 24 * 7);
 session_name($config['session-name']);
 session_start();
 
-$config = [
+$appConfig = [
     'settings' => [
         'displayErrorDetails' => true
     ]
 ];
 
-$app = new Slim\App($config);
+$app = new Slim\App($appConfig);
 $container = $app->getContainer();
 $container['renderer'] = new JadeRenderer();
 

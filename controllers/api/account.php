@@ -74,8 +74,15 @@ class Account
 					$passwordHash = hash('sha256', $params['password'].$createdAt);
 					$db->executeQuery('insert into frost_account (created_at, screen_name, name, password_hash) values(?, ?, ?, ?)', [$createdAt, $params['screen_name'], "froster", $passwordHash]);
 
+					$user = $db->executeQuery('select * from frost_account where screen_name = ? limit 1', [$params['screen_name']])->fetch();
+
 					$_SESSION['is-login'] = true;
-					$_SESSION['me'] = ['screen_name'=>$params['screen_name']];
+					$_SESSION['me'] = [
+						'screen_name'=>$user[0]['screen_name'],
+						'id'=>$user[0]['id'],
+						'name'=>$user[0]['name'],
+					];
+
 					$res = withSuccess($res);
 				}
 			}

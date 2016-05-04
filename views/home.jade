@@ -2,10 +2,47 @@ doctype html
 html
 	head
 		meta(charset='utf-8')
+		meta(name='viewport', content='width=device-width, initial-scale=1.0')
 		title Frost
 		link(href='./static/base.css', rel='stylesheet')
+		link(href='./static/home.css', rel='stylesheet')
+		script(src='//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js')
+		script(src='./static/main.js')
 	body
 		header
-			p header
+			.message-container
+			.column-container
+				.header-left
+					p Frost
+				.header-right
+					ul
+						li
+							form
+								button.signout-button サインアウト
 		main
-			p Home
+			.column-container
+				.side-column
+					article.profile
+						p ようこそ、#{$screenName}さん。
+					article.post-create-box
+						form
+							input(type='text', name='text', placeholder='ねえ今どんな気持ち？')
+							button.post-create-button Post
+
+				.main-column
+					article.timeline#main-timeline
+						ul
+							- $i = 5
+							while $i--
+								li
+									article.post
+										img.icon(src='/static/test.png')
+										.post-container
+											header
+												.name
+													a name
+												.screen-name
+													a screenName
+											p Content
+											footer
+												p actions menu

@@ -7,11 +7,26 @@ require_once __DIR__.'/database-manager.php';
 
 require_once __DIR__.'/controllers/api/account.php';
 
-$app->get('/', function ($req, $res, $args)
+$app->get('/', function ($req, $res, $args) use ($config)
 {
-	return $_SESSION['is-login']
-		? $this->renderer->render($res, 'home')
-		: $this->renderer->render($res, 'entrance');
+	if ($_SESSION['is-login'])
+	{
+		$id = $_SESSION['me']['id'];
+
+		$db = new DatabaseManager($config['db-hostname'], $config['db-username'], $config['db-password'], $config['db-dbname']);
+		$user = $db->executeQuery('select * from frost_account where id = ? limit 1', [$id])->fetch();
+
+		if (count($user) === 0)
+		{
+			$_SESSION['is-login'] = null;
+			$_SESSION['me'] = null;
+		}
+	}
+
+	if ($_SESSION['is-login'])
+		return $this->renderer->render($res, 'home', ['screenName'=>$_SESSION['me']['screen_name']]);
+	else
+		return $this->renderer->render($res, 'entrance');
 });
 
 $app->get('/static/{fileName}', function ($req, $res, $args)
@@ -44,7 +59,11 @@ $app->post('/signin', function ($req, $res, $args) use ($config)
 					throw new ApiException(2, ['invalid_parameter'=>'password']);
 
 				$_SESSION['is-login'] = true;
-				$_SESSION['me'] = ['screen_name'=>$user[0]['screen_name']];
+				$_SESSION['me'] = [
+					'screen_name'=>$user[0]['screen_name'],
+					'id'=>$user[0]['id'],
+					'name'=>$user[0]['name'],
+				];
 
 				return withSuccess($res, 'Success signin.');
 			}

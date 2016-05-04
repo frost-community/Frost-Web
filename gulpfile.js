@@ -14,4 +14,8 @@ gulp.task("copy", function() {
 		.pipe(gulp.dest("./assets"));
 });
 
+gulp.task("watch", function() {
+	gulp.watch("src-assets/**/*.styl", ['stylus']);
+});
+
 gulp.task("default", ["stylus", "copy"]);

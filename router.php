@@ -7,23 +7,30 @@ require_once __DIR__.'/database-manager.php';
 
 require_once __DIR__.'/controllers/api/account.php';
 
+/*
+		$_SESSION['is-login'] = true;
+		$_SESSION['me'] = [
+			'screen_name'=>$user[0]['screen_name'],
+			'id'=>$user[0]['id'],
+			'name'=>$user[0]['name'],
+		];
+*/
+
 $app->get('/', function ($req, $res, $args) use ($config)
 {
-	if ($_SESSION['is-login'])
+	if (isset($_SESSION['me']))
 	{
 		$id = $_SESSION['me']['id'];
 
-		$db = new DatabaseManager($config['db-hostname'], $config['db-username'], $config['db-password'], $config['db-dbname']);
 		$user = $db->executeQuery('select * from frost_account where id = ? limit 1', [$id])->fetch();
 
 		if (count($user) === 0)
 		{
-			$_SESSION['is-login'] = null;
-			$_SESSION['me'] = null;
+			unset($_SESSION['me']);
 		}
 	}
 
-	if ($_SESSION['is-login'])
+	if ($_SESSION['is_login'])
 		return $this->renderer->render($res, 'home', ['screenName'=>$_SESSION['me']['screen_name']]);
 	else
 		return $this->renderer->render($res, 'entrance');
@@ -58,7 +65,6 @@ $app->post('/signin', function ($req, $res, $args) use ($config)
 				if ($user[0]['password_hash'] !== $passwordHash)
 					throw new ApiException(2, ['invalid_parameter'=>'password']);
 
-				$_SESSION['is-login'] = true;
 				$_SESSION['me'] = [
 					'screen_name'=>$user[0]['screen_name'],
 					'id'=>$user[0]['id'],
@@ -81,10 +87,9 @@ $app->post('/signout', function ($req, $res, $args)
 	{
 		if (validateReferer($req))
 		{
-			$_SESSION['is-login'] = null;
-			$_SESSION['me'] = null;
+			unset($_SESSION['me']);
 
-			return withSuccess($res, 'Success signout.');
+			return withSuccess($res);
 		}
 	}
 	catch(ApiException $e)
@@ -93,20 +98,13 @@ $app->post('/signout', function ($req, $res, $args)
 	}
 });
 
-$app->group('/api', function () use ($app, $config)
-{
-	$app->get('/debug/login/toggle', function ($req, $res, $args)
-	{
-		$_SESSION['is-login'] = !$_SESSION['is-login'];
-		return withSuccess($res, 'toggled');
-	});
 
-	$app->group('/account', function () use ($app, $config)
+
+$app->group('/developer', function()
+{
+	$app->get('/', function ($req, $res, $args)
 	{
-		$app->post('/create', function ($req, $res, $args) use ($config)
-		{
-			return Account::create($req, $res, $req->getParams(), $config);
-		});	
+		return $this->renderer->render($res, 'developer');
 	});
 });
 

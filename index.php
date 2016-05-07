@@ -7,27 +7,20 @@ require_once __DIR__.'/config.php';
 require_once __DIR__.'/model/account.php';
 
 session_cache_expire(60 * 24 * 7);
-session_name($config['session-name']);
+session_name($webConfig['session-name']);
 session_start();
 
-$appConfig = [
-    'settings' => [
+$appConfig =
+[
+    'settings' =>
+    [
         'displayErrorDetails' => true
-    ]
+    ],
+    'config' => $config,
+    'renderer' => new JadeRenderer()
 ];
 
 $app = new Slim\App($appConfig);
-$container = $app->getContainer();
-$container['renderer'] = new JadeRenderer();
-
-// init
-if (!isset($_SESSION['is-login'])) {
-	$_SESSION['is-login'] = false;
-}
-
-if ($_SESSION['is-login']) {
-	//$_SESSION['me']
-}
 
 require_once './router.php';
 

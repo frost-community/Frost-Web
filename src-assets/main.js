@@ -16,10 +16,14 @@ window.showMessage = function (message) {
 }
 
 $(function () {
-	$('.signin-section form').submit(function (e) {
+	$('form').submit(function (e) {
 		e.preventDefault();
 	});
-	
+
+	$('.post-create-button').click(function () {
+		window.showMessage('ポストの投稿はまだ実装されていません。今しばらくお待ちください。');
+	});
+
 	$('.signin-button').click(function () {
 		$.post('./signin', $('.signin-section form').serialize(), function () {
 			location.reload();
@@ -27,21 +31,21 @@ $(function () {
 			window.showMessage('ログインリクエストに失敗しました');
 		});
 	});
-	
+
+	$('.signout-button').click(function () {
+		$.post('./signout', [], function () {
+			location.reload();
+		}).fail(function () {
+			window.showMessage('ログアウトリクエストに失敗しました');
+		});
+	});
+
 	$('.signup-button').click(function () {
-		$.post('./api/account/create', $('signin-section form').serialize(), function () {
+		$.post('./api/account/create', $('.signin-section form').serialize(), function () {
 			location.reload();
 		}).fail(function (xhr) {
 			var res = JSON.parse(xhr.responseText);
-			switch (res.error.code) {
-				case 2:
-					window.showMessage('アカウント作成に失敗しました。入力されたパラメータは無効です。');
-					break;
-				default:
-					window.showMessage('アカウント作成に失敗しました。');
-					break;
-			}
-			
+			window.showMessage('アカウント作成に失敗しました。('+res.error.message+')');
 		});
 	});
 });

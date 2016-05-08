@@ -6,8 +6,8 @@ require_once __DIR__.'/vendor/autoload.php';
 require_once __DIR__.'/config.php';
 require_once __DIR__.'/model/account.php';
 
-session_cache_expire(60 * 24 * 7);
-session_name($webConfig['session-name']);
+session_set_cookie_params(60 * 60 * 24 * 7, '/', $config['session_domain']);
+session_name($config['session-name']);
 session_start();
 
 $appConfig =

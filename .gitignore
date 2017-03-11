@@ -1,5 +1,7 @@
-vendor/
-composer.lock
-config.php
-node_modules/
-assets/
+node_modules
+built
+assets
+.htaccess
+.idea
+.vscode
+*.log

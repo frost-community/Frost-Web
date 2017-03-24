@@ -1,0 +1,84 @@
+@import 'nib'
+
+body
+	> header
+		background-color: rgba(250, 250, 250, 0.9)
+		height: 50px
+		position: fixed
+		width: 100%
+
+		> .column-container
+			display: flex
+			margin: 0 auto
+			justify-content: space-between
+
+	> main
+		padding-top: 50px
+
+		> .column-container
+			> .side-column
+				display: none
+
+			> .main-column
+				article.timeline
+					> ul
+						> li
+							> article.post
+								display: flex
+								margin: 10px 0
+
+								> img.icon
+									height: 64px
+									width: 64px
+
+								> .post-container
+									flex: 1
+									background-color: rgba(250, 250, 250, .5)
+									padding: 10px
+									margin: 0 10px
+
+									> header
+										display: flex
+
+										.name,
+										.screen-name
+											font-size: .7rem
+											font-weight: bold
+
+										> .screen-name
+											margin-left: .5rem
+
+										> .screen-name:before
+											content: '@'
+
+									> p
+										font-size: 1rem
+
+									> footer {}
+// 640px以上
+@media(min-width: 640px)
+	body
+		> header
+			> .column-container
+				max-width: 960px
+
+		> main
+			> .column-container
+				display: flex
+				margin: 0 auto
+				max-width: 960px
+
+				> .side-column
+					display: block
+					width: 200px
+
+				> .main-column
+					flex: 1
+
+				> .main-column
+					ul.timeline
+						> li
+							> article.post
+								> img.icon
+									height: 64px
+									width: 64px

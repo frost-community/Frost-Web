@@ -1,0 +1,57 @@
+@import 'nib'
+
+*
+	padding: 0
+	margin: 0
+	box-sizing: border-box
+
+html
+	background: rgb(43, 43, 43)
+
+body
+	background: rgb(255, 255, 255) linear-gradient(45deg, transparent, rgb(190, 214, 221))
+	color: rgb(43, 43, 43)
+	font-family: "メイリオ", Arial, Helvetica, sans-serif
+
+li
+	list-style: none
+
+form
+	> *
+		border: 1px solid rgb(43, 43, 43)
+		padding: 5px
+		border-radius: 5px
+		margin: 10px 0
+
+	> :first-child
+		margin-top: 0
+
+	> :last-child
+		margin-bottom: 0
+
+	input[type="text"]
+	input[type="password"]
+	textarea
+		padding: 8px
+		background: transparent
+
+	button
+		padding: 8px
+		background: rgb(43, 43, 43)
+		color: rgb(197, 214, 219)
+
+.message-container
+	width: 100%
+	display: flex
+
+	.message-item
+		position: fixed
+		width: 512px
+		background: rgba(0, 0, 0, .6)
+		border-radius: 0 0 5px 5px
+		color: rgb(197, 214, 219)
+		padding: 10px 0
+		margin: 0 auto
+		right: 0
+		left: 0
+		text-align: center

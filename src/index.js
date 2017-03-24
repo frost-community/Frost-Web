@@ -1,6 +1,5 @@
 'use strict';
 
-const autoprefixer = require('autoprefixer-stylus');
 const config = require('./helpers/loadConfig')();
 const express = require('express');
 const path = require('path');
@@ -15,7 +14,7 @@ console.log('--------------------');
 
 // setting
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'pug')
+app.set('view engine', 'pug');
 
 app.use(stylus.middleware({
 	src: path.join(__dirname, 'assets'),

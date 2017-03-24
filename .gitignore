@@ -1,7 +1,4 @@
 node_modules
 built
-assets
-.htaccess
-.idea
 .vscode
 *.log

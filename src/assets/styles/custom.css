@@ -1,0 +1,16 @@
+body {
+	background-color: hsl(210, 100%, 99%);
+	color: rgb(45, 45, 45);
+}
+
+.box {
+	border: 1px solid rgba(0, 0, 0, 0.1);
+	border-radius: 4px;
+	padding: 30px;
+	padding-bottom: 0px;
+}
+
+.orange-button {
+	color: hsl(0, 0%, 100%);
+	background-color: hsl(33, 100%, 64%);
+}

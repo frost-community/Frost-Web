@@ -19,7 +19,7 @@ console.log('--------------------');
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
-app.use(express.cookieParser()); //追加
+app.use(cookieParser());
 app.use(session({
 	store: new RedisStore({}),
 	secret: config.web.session.SecretToken,

@@ -1,12 +1,22 @@
 doctype html
+
 html
 	head
 		meta(charset='utf-8')
-		meta(name='viewport', content='width=device-width, initial-scale=1.0')
 		title Frost
-		link(href='./resource/base.css', rel='stylesheet')
-		link(href='./resource/entrance.css', rel='stylesheet')
-		script(src='//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js')
+		meta(name="application-name" content="Frost-Web")
+		meta(name="description" content="The cool and cool SNS")
+		meta(name="author" content="team Frost Develop")
+		meta(name='viewport', content='width=device-width, initial-scale=1')
+
+		link(href='http://fonts.googleapis.com/css?family=Raleway:400,300,600', rel='stylesheet' type='text/css')
+
+		link(href='./resource/normalize.css', rel='stylesheet' type='text/css')
+		link(href='./resource/skeleton.css', rel='stylesheet' type='text/css')
+		link(href='./resource/entrance.css', rel='stylesheet' type='text/css')
+
+		link(href='./resource/favicon.ico', rel='icon', type='image/png')
+
 		script(src='./resource/main.js')
 
 	body
@@ -14,21 +24,25 @@ html
 			.message-container
 
 		main
-			.entrance-container
-				.sub-section
-					h1 Frostへようこそ
-					p まだアカウント作成くらいしかできません。
+			.container
+				.row(style='margin-top: 20%')
+					.eight.columns.offset-by-three
+						h1
+							img.logo-icon(src='images/apple-touch-icon.png')
+							| Frost
+						p A cool and cool social-media.
+							br
+							| 冷やし中華はじめました。
+				.row(style='margin-top: 5%')
+					.six.columns.offset-by-three
+						h3 Login
+						form
+							label(for='screen_name') Username
+							input.screen-name-box(type='test', name='screen_name', placeholder='frost_abc', style="width: 100%", required)
+							label(for='password') Password
+							input.password-box(type='password', name='password', style="width: 100%", required)
+							input.button-primary#signin-button(type="submit", value="Login")
+						button.button.orange-button#signup-button アカウントを作成する
 
-				.signin-section
-					h2 ログイン/アカウント作成
-
-					form
-						input.screen-name-box(type='text', name='screen_name', placeholder='ユーザー名')
-						input.password-box(type='password', name='password', placeholder='パスワード')
-
-						button.signin-button ログイン
-
-						button.signup-button アカウントを作成
-
-		footer.entrance-footer
-			small (c) team FrostDevelop.
+		footer
+			small (c)team FrostDevelop.

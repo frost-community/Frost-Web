@@ -1,5 +1,3 @@
-var $ = jQuery;
-
 window.showMessage = function (message) {
 	var item = $('<div class="message-item">').text(message);
 	$('.message-container').prepend(item);

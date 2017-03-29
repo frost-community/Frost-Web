@@ -3,6 +3,4 @@
 	<form>
 		<button class="button orange-button">アカウントを作成する</button>
 	</form>
-
-	<style />
 </frost-signup-form>

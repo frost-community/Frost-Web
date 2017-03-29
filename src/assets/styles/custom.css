@@ -1,4 +1,5 @@
 body {
+	font-family: Raleway, HelveticaNeue, "Helvetica Neue", Helvetica, Arial, メイリオ, sans-serif;
 	background-color: hsl(210, 100%, 99%);
 	color: rgb(45, 45, 45);
 }
@@ -13,4 +14,5 @@ body {
 .orange-button {
 	color: hsl(0, 0%, 100%);
 	background-color: hsl(33, 100%, 64%);
+	border: none;
 }

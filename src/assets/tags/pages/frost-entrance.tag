@@ -1,10 +1,10 @@
-<frost-entrance-page>
+<frost-entrance>
 	<div class="container">
 		<header>
 			<div class="row" style="margin-top: 10%">
 				<div class="eight columns offset-by-two" style="text-align: center">
 					<h1>
-						<img class="logo-icon" src="./images/apple-touch-icon.png" />
+						<img class="logo-icon" src="../images/apple-touch-icon.png" />
 						Frost
 					</h1>
 					<div class="container">
@@ -45,4 +45,4 @@
 			}
 		}
 	</style>
-</frost-entrance-page>
+</frost-entrance>

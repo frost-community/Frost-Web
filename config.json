@@ -3,6 +3,9 @@
     "port": 8000
   },
   "web": {
-    "port": 8001
+    "port": 8001,
+    "session": {
+      "SecretToken": "session-secret-token"
+    }
   }
 }

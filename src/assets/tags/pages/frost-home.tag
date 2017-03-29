@@ -1,10 +1,10 @@
-<frost-home-page>
+<frost-home>
 	<div class="container">
 		<header>
 			<div class="row" style="margin-top: 20%">
 				<div class="eight columns offset-by-three">
 					<h1>
-						<img class="logo-icon" src="./images/apple-touch-icon.png" />
+						<img class="logo-icon" src="../images/apple-touch-icon.png" />
 						Frost
 					</h1>
 				</div>
@@ -16,10 +16,9 @@
 		</main>
 
 		<hr />
-		
+
 		<footer class="row" style="text-align: center">
 			<small>(c)team FrostDev.</small>
 		</footer>
 	</div>
-	<style />
-</frost-home-page>
+</frost-home>

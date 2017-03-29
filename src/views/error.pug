@@ -4,5 +4,7 @@ block prepend head
 	title Frost - Error #{error.status}
 
 block append content
-	h1 Sorry... An error has occurred.
-	p Message:  #{error.message}
+	.container
+		.row(style="margin-top: 10%")
+			h3 Sorry... An error has occurred.
+			p Message:  #{error.message}

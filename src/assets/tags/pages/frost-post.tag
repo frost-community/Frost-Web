@@ -5,13 +5,13 @@
 		</header>
 
 		<main>
-			<p>ポストが表示されるページです。</p>
+			<div class="container">
+				<div class="row" style="margin-top: 10%">
+					<p>ポストが表示されるページです。</p>
+				</div>
+			</div>
 		</main>
 
-		<hr />
-
-		<footer class="container" style="text-align: center; margin-bottom: 10%">
-			<small>(c)team FrostDev.</small>
-		</footer>
+		<frost-footer />
 	</div>
 </frost-post>

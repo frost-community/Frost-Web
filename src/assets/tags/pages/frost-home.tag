@@ -15,10 +15,6 @@
 			<p>Homeです。</p>
 		</main>
 
-		<hr />
-
-		<footer class="row" style="text-align: center">
-			<small>(c)team FrostDev.</small>
-		</footer>
+		<frost-footer />
 	</div>
 </frost-home>

@@ -9,5 +9,6 @@ import '../tags/pages/frost-post.tag';
 // components
 import '../tags/components/frost-login-form.tag';
 import '../tags/components/frost-signup-form.tag';
+import '../tags/components/frost-footer.tag';
 
 riot.mount('*');

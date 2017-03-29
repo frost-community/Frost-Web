@@ -6,11 +6,11 @@
   "main": "./built/index.js",
   "scripts": {
     "start": "node ./",
-    "clean": "rimraf ./built",
-    "build-copy": "cpx src/**/* ./built && rimraf ./built/assets/tags",
+    "clean": "rimraf './built'",
+    "build-copy": "cpx 'src/**/*' './built' && rimraf './built/assets/tags'",
     "build-rollup": "rollup -c",
     "build": "npm run clean && npm run build-copy && npm run build-rollup",
-    "test-lint": "eslint ./built/**/*.js",
+    "test-lint": "eslint './built/**/*.js'",
     "test-mocha": "mocha",
     "test": "npm run test-lint && npm run test-mocha"
   },

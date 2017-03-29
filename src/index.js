@@ -30,14 +30,9 @@ app.use(session({
 }));
 
 // securities
-app.use(helmet.frameguard({ action: 'deny' }));
-
-/*app.use(helmet.contentSecurityPolicy({
-	directives: {
-		defaultSrc: ['\'self\''],
-		styleSrc: ['\'self\'', 'maxcdn.bootstrapcdn.com']
-	}
-}));*/
+app.use(helmet({
+	frameguard: { action: 'deny' }
+}));
 
 app.use(csurf());
 

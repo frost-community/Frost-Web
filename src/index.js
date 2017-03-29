@@ -2,12 +2,14 @@
 
 const config = require('./helpers/loadConfig')();
 const express = require('express');
+const bodyParser = require('body-parser');
 const session = require('express-session');
 const RedisStore = require('connect-redis')(session);
 const csurf = require('csurf');
 const path = require('path');
 const moment = require('moment');
 const helmet = require('helmet');
+const requestApi = require('./helpers/requestApi');
 
 console.log('--------------------');
 console.log('  Frost-Web Server  ');
@@ -18,6 +20,8 @@ const app = express();
 // app settings
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
+
+app.use(bodyParser.json());
 
 // and session
 app.use(session({
@@ -47,8 +51,30 @@ app.post('/signup', (req, res) => {
 });
 
 app.post('/signin', (req, res) => {
-	req.session.accessKey = 'hoge';
-	res.send('ok');
+	(async () => {
+		try {
+			let result = await requestApi('post', '/ice_auth', {applicationKey: config.web.applicationKey});
+			result = await requestApi('post', '/ice_auth/authorize_basic', {
+				screenName: req.body.screenName,
+				password: req.body.password
+			}, {
+				'X-Application-Key': config.web.applicationKey,
+				'X-Access-Key': config.web.hostAccessKey,
+				'X-Ice-Auth-Key': result.body.iceAuthKey,
+				'Content-Type': 'application/json'
+			});
+			if (!result.body.accessKey)
+				throw new Error(`error: ${result.body.message}`);
+
+			req.session.accessKey = result.body.accessKey;
+			res.send('successful signin');
+		}
+		catch(e) {
+			console.log('faild.');
+			console.log(e);
+			res.status(400).send('signin failure');
+		}
+	})();
 });
 
 app.post('/signout', (req, res) => {

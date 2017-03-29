@@ -25,8 +25,10 @@ app.use(session({
 	secret: config.web.session.SecretToken,
 	cookie: {
 		httpOnly: false,
-		maxAge: moment().add('days', 7).toDate()
-	}
+		maxAge: moment().add(7, 'days').toDate()
+	},
+	resave: true,
+	saveUninitialized: true
 }));
 
 // securities

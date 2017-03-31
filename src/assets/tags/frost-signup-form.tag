@@ -3,14 +3,14 @@
 	<div show={isShowModal}>
 		<form method="post" action="/signup" onsubmit={submit}>
 			<label for="screenName">Username *</label>
-			<input class="screen-name-box" type='text' name='screenName' placeholder='example: frost_abc' style="width: 100%" required />
+			<input class="screen-name-box" type='text' name='screenName' placeholder='example: frost_abc' style="width: 100%" pattern="^[a-zA-Z0-9_-]+$" minlength="4" maxlength="15" required />
 			<label for="password">Password *</label>
-			<input class="password-box" type='password' name='password' style="width: 100%" required />
+			<input class="password-box" type='password' name='password' style="width: 100%" pattern="^[!-~]+$" minlength="6" required />
 			<label for="name">Name</label>
-			<input class="name-box" type='text' name='name' placeholder='froster' style="width: 100%" />
+			<input class="name-box" type='text' name='name' placeholder='froster' style="width: 100%" maxlength="32" />
 			<label for="description">Description</label>
-			<input class="description-box" type='text' name='description' style="width: 100%" />
-			<input class="button-primary" type="submit" value="Sign up" />
+			<input class="description-box" type='text' name='description' style="width: 100%" maxlength="256" />
+			<input class="button-primary" value="Sign up" />
 			<input type='hidden' name='_csrf' value={token} />
 		</form>
 	</div>

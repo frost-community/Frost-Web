@@ -9,7 +9,7 @@ const csurf = require('csurf');
 const path = require('path');
 const moment = require('moment');
 const helmet = require('helmet');
-const request = require('./helpers/requestAsync');
+const requestAsync = require('./helpers/requestAsync');
 const requestApi = require('./helpers/requestApi');
 
 console.log('--------------------');
@@ -49,26 +49,32 @@ app.use(express.static(path.join(__dirname, 'assets')));
 
 // internal APIs
 
-app.post('/signup', (req, res) => {
+const signin = async(req) => {
+	let result;
+
+	result = await requestApi('post', '/ice_auth', {
+		applicationKey: config.web.applicationKey
+	});
+
+	result = await requestApi('post', '/ice_auth/authorize_basic', {
+		screenName: req.body.screenName,
+		password: req.body.password
+	}, {
+		'X-Application-Key': config.web.applicationKey,
+		'X-Access-Key': config.web.hostAccessKey,
+		'X-Ice-Auth-Key': result.body.iceAuthKey
+	});
+
+	if (!result.body.accessKey)
+		throw new Error(`error: ${result.body.message}`);
+
+	req.session.accessKey = result.body.accessKey;
+};
+
+app.post('/signin', (req, res) => {
 	(async () => {
 		try {
-			const result = await requestApi('post', '/account', req.body, {
-				'X-Application-Key': config.web.applicationKey,
-				'X-Access-Key': config.web.hostAccessKey
-			});
-			if (!result.body.user)
-				throw new Error(`error: ${result.body}`);
-
-			await request(`http://${config.web.host}:${config.web.port}/signin`, {
-				method: 'post',
-				json: true,
-				body: {
-					_csrf: req.csrfToken(),
-					screenName: req.body.screenName,
-					password: req.body.password
-				}
-			});
-
+			await signin(req);
 			res.send('succeeded');
 		}
 		catch(e) {
@@ -79,28 +85,18 @@ app.post('/signup', (req, res) => {
 	})();
 });
 
-app.post('/signin', (req, res) => {
+app.post('/signup', (req, res) => {
 	(async () => {
 		try {
-			let result;
-
-			result = await requestApi('post', '/ice_auth', {
-				applicationKey: config.web.applicationKey
-			});
-
-			result = await requestApi('post', '/ice_auth/authorize_basic', {
-				screenName: req.body.screenName,
-				password: req.body.password
-			}, {
+			const result = await requestApi('post', '/account', req.body, {
 				'X-Application-Key': config.web.applicationKey,
-				'X-Access-Key': config.web.hostAccessKey,
-				'X-Ice-Auth-Key': result.body.iceAuthKey
+				'X-Access-Key': config.web.hostAccessKey
 			});
 
-			if (!result.body.accessKey)
-				throw new Error(`error: ${result.body.message}`);
+			if (!result.body.user)
+				throw new Error(`error: ${result.body.toString()}`);
 
-			req.session.accessKey = result.body.accessKey;
+			await signin(req);
 			res.send('succeeded');
 		}
 		catch(e) {
@@ -112,7 +108,7 @@ app.post('/signin', (req, res) => {
 });
 
 app.post('/signout', (req, res) => {
-	delete req.session.accessKey;
+	req.session.destroy();
 	res.send('succeeded');
 });
 

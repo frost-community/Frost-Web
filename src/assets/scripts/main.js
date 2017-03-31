@@ -1,14 +1,16 @@
 import riot from 'riot';
 
 // pages
+import '../tags/pages/frost-dev.tag';
 import '../tags/pages/frost-entrance.tag';
 import '../tags/pages/frost-home.tag';
-import '../tags/pages/frost-user.tag';
 import '../tags/pages/frost-post.tag';
+import '../tags/pages/frost-user.tag';
 
 // components
-import '../tags/components/frost-login-form.tag';
-import '../tags/components/frost-signup-form.tag';
-import '../tags/components/frost-footer.tag';
+import '../tags/frost-footer.tag';
+import '../tags/frost-login-form.tag';
+import '../tags/frost-page.tag';
+import '../tags/frost-signup-form.tag';
 
-riot.mount('*');
+riot.mount('frost-page');

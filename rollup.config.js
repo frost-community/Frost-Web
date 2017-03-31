@@ -1,5 +1,5 @@
 import riot from 'rollup-plugin-riot';
-import nodeResolve from 'rollup-plugin-node-resolve';
+import resolve from 'rollup-plugin-node-resolve';
 import commonjs from 'rollup-plugin-commonjs';
 import buble from 'rollup-plugin-buble';
 
@@ -10,7 +10,7 @@ export default {
 		riot({
 			style: 'scss'
 		}),
-		nodeResolve({ jsnext: true }),
+		resolve({ jsnext: true }),
 		commonjs(), // CommonJSモジュールをES6に変換
 		buble()
 	],

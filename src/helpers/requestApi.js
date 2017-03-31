@@ -1,25 +1,16 @@
 'use strict';
 
-const config = require('./loadConfig')();
-const request = require('request');
 const path = require('path');
+const config = require('./loadConfig')();
+const request = require('./requestAsync');
 
-module.exports = (method, endpoint, body, headers) => new Promise((resolve, reject) => {
-	headers = headers == null ? {
-		'X-Application-Key': config.web.applicationKey,
-		'X-Access-Key': config.web.hostAccessKey,
-		'Content-Type': 'application/json'
-	} : headers;
-	request({
+module.exports = async (method, endpoint, body, headers) => {
+	let requestHeaders = {'Content-Type': 'application/json'};
+	requestHeaders = Object.assign(requestHeaders, headers == null ? {} : headers);
+	return await request(`http://${path.join(config.api.host+':'+config.api.port, endpoint)}`, {
 		method: method,
-		url: `http://${path.join(config.api.host+':'+config.api.port, endpoint)}`,
 		json: true,
-		headers: headers,
+		headers: requestHeaders,
 		body: body
-	}, (err, res, b) => {
-		if (err)
-			reject(err);
-
-		resolve({res: res, body: b});
 	});
-});
+};

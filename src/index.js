@@ -9,8 +9,8 @@ const csurf = require('csurf');
 const path = require('path');
 const moment = require('moment');
 const helmet = require('helmet');
-const requestAsync = require('./helpers/requestAsync');
 const requestApi = require('./helpers/requestApi');
+const checkLogin = require('./helpers/checkLogin');
 
 console.log('--------------------');
 console.log('  Frost-Web Server  ');
@@ -107,7 +107,7 @@ app.post('/signup', (req, res) => {
 	})();
 });
 
-app.post('/signout', (req, res) => {
+app.post('/signout', checkLogin, (req, res) => {
 	req.session.destroy();
 	res.send('succeeded');
 });

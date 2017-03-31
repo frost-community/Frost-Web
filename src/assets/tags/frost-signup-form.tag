@@ -24,28 +24,14 @@
 		this.submit = (e) => {
 			e.preventDefault();
 
-			const screenName = document.querySelector('frost-signup-form .screen-name-box').value;
-			const password = document.querySelector('frost-signup-form .password-box').value;
-			const name = document.querySelector('frost-signup-form .name-box').value;
-			const description = document.querySelector('frost-signup-form .description-box').value;
-			const csrf = document.getElementsByName ('_csrf').item(0).content;
-
 			fetchJson('POST', '/signup', {
-				screenName: screenName,
-				password: password,
-				name: name,
-				description: description,
-				_csrf: csrf
-			}).then((res) => {
-				fetchJson('POST', '/signin', {
-					screenName: screenName,
-					password: password,
-					_csrf: csrf
-				}).then((res) => {
-					location.reload();
-				}).catch((reason) => {
-					console.log('Sign in error: ' + reason);
-				});
+				screenName: document.querySelector('frost-signup-form .screen-name-box').value,
+				password: document.querySelector('frost-signup-form .password-box').value,
+				name: document.querySelector('frost-signup-form .name-box').value,
+				description: document.querySelector('frost-signup-form .description-box').value,
+				_csrf: document.getElementsByName ('_csrf').item(0).content
+			}).then(() => {
+				location.reload();
 			}).catch((reason) => {
 				console.log('Sign up error: ' + reason);
 			});

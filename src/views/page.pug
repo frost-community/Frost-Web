@@ -3,6 +3,11 @@ extends layout.pug
 block prepend head
 	title #{title}
 
+block append head
+	if siteKey != null
+		meta(name="siteKey", content=siteKey)
+		script(src="https://www.google.com/recaptcha/api.js")
+
 block append content
 	frost-page(name=pageName)
 	script(src="/scripts/bundle.js")

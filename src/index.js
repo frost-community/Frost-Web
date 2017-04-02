@@ -9,6 +9,7 @@ const csurf = require('csurf');
 const path = require('path');
 const moment = require('moment');
 const helmet = require('helmet');
+const request = require('./helpers/requestAsync');
 const requestApi = require('./helpers/requestApi');
 const checkLogin = require('./helpers/checkLogin');
 
@@ -88,13 +89,22 @@ app.post('/signin', (req, res) => {
 app.post('/signup', (req, res) => {
 	(async () => {
 		try {
+			const verifyResult = await request('https://www.google.com/recaptcha/api/siteverify', {
+				method: 'POST',
+				json: true,
+				form: {secret: config.web.reCAPTCHA.secretKey, response: req.body.recaptchaToken}
+			});
+
+			if (verifyResult.body.success !== true)
+				throw new Error('faild to verify recaptcha');
+
 			const result = await requestApi('post', '/account', req.body, {
 				'X-Application-Key': config.web.applicationKey,
 				'X-Access-Key': config.web.hostAccessKey
 			});
 
 			if (!result.body.user)
-				throw new Error(`error: ${result.body.toString()}`);
+				throw new Error(`error: ${result.body.message}`);
 
 			await signin(req);
 			res.send('succeeded');
@@ -102,7 +112,7 @@ app.post('/signup', (req, res) => {
 		catch(e) {
 			console.log('failure');
 			console.log(e);
-			res.status(400).send('faild');
+			res.status(400).send(typeof(e) == 'string' ? e : 'faild');
 		}
 	})();
 });
@@ -119,7 +129,7 @@ app.get('/', (req, res) => {
 		res.render('page', {title: 'Frost', pageName: 'home', csrfToken: req.csrfToken()});
 	}
 	else {
-		res.render('page', {title: 'Frost', pageName: 'entrance', csrfToken: req.csrfToken()});
+		res.render('page', {title: 'Frost', pageName: 'entrance', csrfToken: req.csrfToken(), siteKey: config.web.reCAPTCHA.siteKey});
 	}
 });
 

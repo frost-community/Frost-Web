@@ -11,7 +11,7 @@
     "build-copy": "cpx \"src/**/*\" \"./built\" && rimraf \"./built/assets/tags\"",
     "build-rollup": "rollup -c",
     "build": "npm run clean && npm run build-copy && npm run build-rollup",
-    "test-lint": "eslint \"./built/**/*.js\"",
+    "test-lint": "eslint \"./src/**/*.js\"",
     "test-mocha": "mocha",
     "test": "npm run test-lint && npm run test-mocha"
   },

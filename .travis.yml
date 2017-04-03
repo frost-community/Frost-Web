@@ -8,4 +8,5 @@ cache:
   - node_modules
 
 script:
-  - npm run build
+  - wget https://raw.githubusercontent.com/Frost-Dev/Frost/master/config.json
+  - npm run test

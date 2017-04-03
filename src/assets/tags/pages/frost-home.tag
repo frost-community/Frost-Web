@@ -22,7 +22,7 @@
 		import fetchJson from '../../scripts/fetch-json';
 
 		this.signout = () => {
-			fetchJson('POST', '/signout', {
+			fetchJson('DELETE', '/session', {
 				_csrf: document.getElementsByName('_csrf').item(0).content
 			}).then((res) => {
 				document.cookie = "sid=; max-age=0";

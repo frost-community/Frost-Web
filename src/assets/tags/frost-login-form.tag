@@ -13,7 +13,7 @@
 		this.submit = (e) => {
 			e.preventDefault();
 
-			fetchJson('POST', '/signin', {
+			fetchJson('POST', '/session', {
 				screenName: document.querySelector('frost-login-form .screen-name-box').value,
 				password: document.querySelector('frost-login-form .password-box').value,
 				_csrf: document.getElementsByName('_csrf').item(0).content

@@ -27,7 +27,7 @@
 		this.submit = (e) => {
 			e.preventDefault();
 
-			fetchJson('POST', '/signup', {
+			fetchJson('POST', '/session/register', {
 				screenName: document.querySelector('frost-signup-form .screen-name-box').value,
 				password: document.querySelector('frost-signup-form .password-box').value,
 				name: document.querySelector('frost-signup-form .name-box').value,

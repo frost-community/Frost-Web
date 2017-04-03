@@ -88,12 +88,15 @@ module.exports = async () => {
 
 			result = await requestApi('post', '/ice_auth', {
 				applicationKey: config.web.applicationKey
+			}, {
+				'X-Api-Version': 1.0
 			});
 
 			result = await requestApi('post', '/ice_auth/authorize_basic', {
 				screenName: req.body.screenName,
 				password: req.body.password
 			}, {
+				'X-Api-Version': 1.0,
 				'X-Application-Key': config.web.applicationKey,
 				'X-Access-Key': config.web.hostAccessKey,
 				'X-Ice-Auth-Key': result.body.iceAuthKey
@@ -137,6 +140,7 @@ module.exports = async () => {
 						throw new Error('faild to verify recaptcha');
 
 					const result = await requestApi('post', '/account', req.body, {
+						'X-Api-Version': 1.0,
 						'X-Application-Key': config.web.applicationKey,
 						'X-Access-Key': config.web.hostAccessKey
 					});

@@ -20,6 +20,7 @@ console.log('--------------------');
 const app = express();
 
 // == app settings ==
+
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
@@ -27,6 +28,7 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
 // == and session ==
+
 app.use(session({
 	store: new RedisStore({}),
 	secret: config.web.session.SecretToken,
@@ -39,6 +41,7 @@ app.use(session({
 }));
 
 // == securities ==
+
 app.use(helmet({
 	frameguard: { action: 'deny' }
 }));
@@ -46,11 +49,14 @@ app.use(helmet({
 app.use(csurf());
 
 // == routings ==
+
+// static files
+
 app.use(express.static(path.join(__dirname, 'assets')));
 
 // internal APIs
 
-const signin = async(req) => {
+const createSession = async(req) => {
 	let result;
 
 	result = await requestApi('post', '/ice_auth', {
@@ -72,21 +78,26 @@ const signin = async(req) => {
 	req.session.accessKey = result.body.accessKey;
 };
 
-app.post('/signin', (req, res) => {
+app.route('/session')
+.post((req, res) => {
 	(async () => {
 		try {
-			await signin(req);
+			await createSession(req);
 			res.send('succeeded');
 		}
 		catch(e) {
-			console.log('failure');
+			console.log('faild');
 			console.log(e);
 			res.status(400).send('faild');
 		}
 	})();
+})
+.delete(checkLogin, (req, res) => {
+	req.session.destroy();
+	res.send('succeeded');
 });
 
-app.post('/signup', (req, res) => {
+app.post('/session/register', (req, res) => {
 	(async () => {
 		try {
 			const verifyResult = await request('https://www.google.com/recaptcha/api/siteverify', {
@@ -106,20 +117,15 @@ app.post('/signup', (req, res) => {
 			if (!result.body.user)
 				throw new Error(`error: ${result.body.message}`);
 
-			await signin(req);
+			await createSession(req);
 			res.send('succeeded');
 		}
 		catch(e) {
-			console.log('failure');
+			console.log('faild');
 			console.log(e);
 			res.status(400).send(typeof(e) == 'string' ? e : 'faild');
 		}
 	})();
-});
-
-app.post('/signout', checkLogin, (req, res) => {
-	req.session.destroy();
-	res.send('succeeded');
 });
 
 // pages
@@ -158,6 +164,7 @@ app.use((err, req, res, next) => {
 });
 
 // == start listening ==
+
 app.listen(config.web.port, () => {
 	console.log(`listen on port: ${config.web.port}`);
 });

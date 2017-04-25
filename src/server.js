@@ -159,6 +159,34 @@ module.exports = async () => {
 			})();
 		});
 
+		app.post('/applications', (req, res) => {
+			(async () => {
+				try {
+					const verifyResult = await request('https://www.google.com/recaptcha/api/siteverify', {
+						method: 'POST',
+						json: true,
+						form: {secret: config.web.reCAPTCHA.secretKey, response: req.body.recaptchaToken}
+					});
+
+					if (verifyResult.body.success !== true)
+						throw new Error('faild to verify recaptcha');
+
+					const result = await requestApi('post', '/applications', req.body, {
+						'X-Api-Version': 1.0,
+						'X-Application-Key': config.web.applicationKey,
+						'X-Access-Key': req.session.accessKey
+					});
+
+					res.status(result.body.statusCode).send(result.body);
+				}
+				catch(err) {
+					console.log('faild');
+					console.log(err);
+					res.status(500).send(typeof(e) == 'string' ? err : 'faild');
+				}
+			})();
+		});
+
 		// pages
 
 		app.get('/', (req, res) => {
@@ -180,7 +208,7 @@ module.exports = async () => {
 		});
 
 		app.get('/dev', (req, res) => {
-			res.render('page', {title: 'Frost Developers Center', pageName: 'dev', csrfToken: req.csrfToken()});
+			res.render('page', {title: 'Frost Developers Center', pageName: 'dev', csrfToken: req.csrfToken(), siteKey: config.web.reCAPTCHA.siteKey});
 		});
 
 		// errors

@@ -1,14 +1,10 @@
-/* 下の条件に合わないとき */
+/* 全般 */
 body {
 	font-family: Raleway, HelveticaNeue, "Helvetica Neue", Helvetica, Arial, メイリオ, sans-serif;
-	background-color: hsl(210, 100%, 99%);
-	color: rgb(45, 45, 45);
 }
 
-.orange-button {
-	color: hsl(0, 0%, 100%);
-	background-color: hsl(33, 100%, 64%);
-	border: none;
+label {
+	user-select: none;
 }
 
 textarea {
@@ -21,15 +17,15 @@ textarea {
 	padding: 0;
 }
 
-/* モバイルより大きいとき */
+/* モバイル以上の幅 */
 @media (min-width: 400px) {
 
 }
 
-/* ファブレットよりおおきいとき */
+/* ファブレット以上の幅 */
 @media (min-width: 550px) {
 	.box {
-		border: 1px solid rgba(0, 0, 0, 0.1);
+		border: 1px solid;
 		border-radius: 4px;
 		padding: 30px;
 		padding-bottom: 0px;

@@ -1,13 +1,19 @@
-extends layout.pug
+doctype html
+html(lang="ja")
 
-block prepend head
-	title #{title}
+	head
+		meta(charset="utf-8")
+		title #{title}
+		include includes/head
+		if pageName == 'dev'
+			link(rel="stylesheet", href="/styles/dev.css")
+		else
+			link(rel="stylesheet", href="/styles/main.css")
 
-block append head
-	if siteKey != null
-		meta(name="siteKey", content=siteKey)
-		script(src="https://www.google.com/recaptcha/api.js")
+		if siteKey != null
+			meta(name="siteKey", content=siteKey)
+			script(src="https://www.google.com/recaptcha/api.js")
 
-block append content
-	frost-page(name=pageName)
-	script(src="/scripts/bundle.js")
+	body
+		frost-page(name=pageName)
+		script(src="/scripts/bundle.js")

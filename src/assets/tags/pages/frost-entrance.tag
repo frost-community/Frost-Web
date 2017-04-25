@@ -35,7 +35,7 @@
 			height: 3.5rem;
 		}
 
-		@media (min-width: 550px){
+		@media (min-width: 550px) {
 			.logo-icon {
 				height: 4.5rem;
 			}

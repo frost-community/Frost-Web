@@ -12,7 +12,7 @@ export default {
 		}),
 		resolve({ jsnext: true }),
 		commonjs(), // CommonJSモジュールをES6に変換
-		buble()
+		buble({transforms: { forOf: false }})
 	],
 	format: 'iife'
 };

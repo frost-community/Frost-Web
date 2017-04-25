@@ -1,0 +1,25 @@
+/* 全般 */
+body {
+	background-color: hsl(210, 100%, 99%);
+	color: rgb(45, 45, 45);
+}
+
+.orange-button {
+	color: hsl(0, 0%, 100%);
+	background-color: hsl(33, 100%, 64%);
+	border: none;
+}
+
+.box {
+	border-color: rgba(0, 0, 0, 0.1);
+}
+
+/* モバイル以上の幅 */
+@media (min-width: 400px) {
+
+}
+
+/* ファブレット以上の幅 */
+@media (min-width: 550px) {
+
+}

@@ -1,0 +1,19 @@
+/* 全般 */
+body {
+	background-color: hsl(190, 26%, 50%);
+	color: hsla(0, 0%, 100%, 0.84);
+}
+
+.box {
+	border-color: hsl(0, 0%, 100%);
+}
+
+/* モバイル以上の幅 */
+@media (min-width: 400px) {
+
+}
+
+/* ファブレット以上の幅 */
+@media (min-width: 550px) {
+
+}

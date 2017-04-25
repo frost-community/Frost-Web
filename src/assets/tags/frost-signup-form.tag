@@ -22,7 +22,7 @@
 
 		this.isShowModal = false;
 		this.showModal = () => {
-			this.isShowModal = true;
+			this.isShowModal = !this.isShowModal;
 		};
 		this.submit = (e) => {
 			e.preventDefault();

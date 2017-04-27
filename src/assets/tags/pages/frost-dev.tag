@@ -5,16 +5,52 @@
 		</header>
 		<main>
 			<div class='row' style='margin-top: 10%'>
+				<div class='ten columns offset-by-one'>
+					<h4>Your Applications</h4>
+					<ul>
+						<li each={applications} style='list-style-type: none;'>
+							<div class='box'>
+								<p>App name: {name}</p>
+								<p>Description: {description}</p>
+								<p>App Id: {id}</p>
+								<p>Permissions:</p>
+								<ul>
+								<li each={permission ,i in permissions}>
+									{permission}
+								</li>
+								</ul>
+							</div>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div class='row' style='margin-top: 10%'>
 				<frost-create-application-form />
 			</div>
 		</main>
 
 		<frost-footer />
 	</div>
+	<script>
+		this.applications = [];
+		fetchJson('GET', '/applications').then(res => {
+			return res.json();
+		}).then(json => {
+			if (json.applications == null)
+				return alert(`error: faild to fetch list of appliations. ${json.message}`);
+
+			for(const application of json.applications)
+				this.applications.push(application);
+
+			this.update();
+		}).catch((reason) => {
+			alert('error: faild to fetch list of appliations. ' + reason);
+		});
+	</script>
 </frost-dev>
 
 <frost-create-application-form>
-	<div class="ten columns offset-by-one box">
+	<div class='ten columns offset-by-one box'>
 		<h4>Create your applicaiton</h4>
 		<div show={isShowModal}>
 			<form onsubmit={submit}>
@@ -46,11 +82,11 @@
 						<input type='checkbox' id='permissions-application' name='permissions' value='application'>application - Accessing about your applications</input>
 					</label>
 				</fieldset>
-				<div class="g-recaptcha" data-sitekey={siteKey}></div>
+				<div class='g-recaptcha' data-sitekey={siteKey}></div>
 				<button class='button-primary'>Create application</button>
 			</form>
 		</div>
-		<button class="button orange-button" onclick={showModal}>フォーム表示切り替え</button>
+		<button class='button orange-button' onclick={showModal}>フォーム表示切り替え</button>
 	</div>
 	<script>
 		import fetchJson from '../../scripts/fetch-json';
@@ -65,29 +101,29 @@
 			e.preventDefault();
 
 			const permissions = [];
-			for(let permission of document.querySelectorAll('frost-create-application .permissions *')) {
+			for(let permission of document.querySelectorAll('frost-create-application-form .permissions *')) {
 				if (permission.checked) {
 					permissions.push(permission.value);
 				}
 			}
 
 			fetchJson('POST', '/applications', {
-				name: document.querySelector('frost-create-application .name-box').value,
-				description: document.querySelector('frost-create-application .description-box').value,
+				name: document.querySelector('frost-create-application-form .name-box').value,
+				description: document.querySelector('frost-create-application-form .description-box').value,
 				permissions: permissions,
 				_csrf: document.getElementsByName('_csrf').item(0).content,
 				recaptchaToken: grecaptcha.getResponse()
-			}).then((res) => {
+			}).then(res => {
 				return res.json();
-			}).then((res) => {
-				if (res.statusCode == 200) {
-					alert('created application.');
-				}
-				else {
-					alert('creation error: ' + res.message);
-				}
+			}).then(json => {
+				if (json.application == null)
+					return alert(`creation error: ${json.message}`);
+
+				alert('created application.');
+				location.reload();
+
 			}).catch((reason) => {
-				console.log('response error: ' + reason);
+				alert('response error: ' + reason);
 			});
 		};
 	</script>

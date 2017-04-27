@@ -83,7 +83,7 @@ module.exports = async () => {
 
 		// internal APIs
 
-		const createSession = async(req) => {
+		const createSession = async(req, res) => {
 			let result;
 
 			result = await requestApi('post', '/ice_auth', {
@@ -91,6 +91,9 @@ module.exports = async () => {
 			}, {
 				'X-Api-Version': 1.0
 			});
+
+			if (!result.body.iceAuthKey)
+				throw new Error(`error: ${result.body.message}`);
 
 			result = await requestApi('post', '/ice_auth/authorize_basic', {
 				screenName: req.body.screenName,
@@ -112,19 +115,19 @@ module.exports = async () => {
 		.post((req, res) => {
 			(async () => {
 				try {
-					await createSession(req);
-					res.send('succeeded');
+					await createSession(req, res);
+					res.json({message: 'succeeded'});
 				}
 				catch(e) {
 					console.log('faild');
 					console.log(e);
-					res.status(400).send('faild');
+					res.status(400).json({message: 'faild'});
 				}
 			})();
 		})
 		.delete(checkLogin, (req, res) => {
 			req.session.destroy();
-			res.send('succeeded');
+			res.json({message: 'succeeded'});
 		});
 
 		app.post('/session/register', (req, res) => {
@@ -137,7 +140,7 @@ module.exports = async () => {
 					});
 
 					if (verifyResult.body.success !== true)
-						throw new Error('faild to verify recaptcha');
+						res.status(400).json({message: 'faild to verify recaptcha'});
 
 					const result = await requestApi('post', '/account', req.body, {
 						'X-Api-Version': 1.0,
@@ -145,21 +148,21 @@ module.exports = async () => {
 						'X-Access-Key': config.web.hostAccessKey
 					});
 
-					if (!result.body.user)
-						throw new Error(`error: ${result.body.message}`);
+					if (!result.res.user)
+						res.status(result.res.statusCode).send(result.body);
 
 					await createSession(req);
-					res.send('succeeded');
+					res.json({message: 'succeeded'});
 				}
-				catch(e) {
+				catch(err) {
 					console.log('faild');
-					console.log(e);
-					res.status(400).send(typeof(e) == 'string' ? e : 'faild');
+					console.log(err);
+					res.status(500).json({message: typeof(err) == 'string' ? err : 'faild'});
 				}
 			})();
 		});
 
-		app.post('/applications', (req, res) => {
+		app.post('/applications', checkLogin, (req, res) => {
 			(async () => {
 				try {
 					const verifyResult = await request('https://www.google.com/recaptcha/api/siteverify', {
@@ -169,7 +172,7 @@ module.exports = async () => {
 					});
 
 					if (verifyResult.body.success !== true)
-						throw new Error('faild to verify recaptcha');
+						res.status(400).json({message: 'faild to verify recaptcha'});
 
 					const result = await requestApi('post', '/applications', req.body, {
 						'X-Api-Version': 1.0,
@@ -182,7 +185,25 @@ module.exports = async () => {
 				catch(err) {
 					console.log('faild');
 					console.log(err);
-					res.status(500).send(typeof(e) == 'string' ? err : 'faild');
+					res.status(500).json({message: typeof(e) == 'string' ? err : 'faild'});
+				}
+			})();
+		});
+
+		app.get('/applications', checkLogin, (req, res) => {
+			(async () => {
+				try {
+					const result = await requestApi('get', '/applications', {}, {
+						'X-Api-Version': 1.0,
+						'X-Application-Key': config.web.applicationKey,
+						'X-Access-Key': req.session.accessKey
+					});
+					res.status(result.body.statusCode).send(result.body);
+				}
+				catch(err) {
+					console.log('faild');
+					console.log(err);
+					res.status(500).json({message: typeof(e) == 'string' ? err : 'faild'});
 				}
 			})();
 		});

@@ -2,19 +2,19 @@
 	<h3>Signup</h3>
 	<div show={isShowModal}>
 		<form onsubmit={submit}>
-			<label for="screenName">Username *</label>
-			<input class="screen-name-box" type='text' name='screenName' placeholder='example: frost_abc' style="width: 100%" pattern="^[a-zA-Z0-9_-]+$" minlength="4" maxlength="15" required />
-			<label for="password">Password *</label>
-			<input class="password-box" type='password' name='password' style="width: 100%" pattern="^[!-~]+$" minlength="6" required />
-			<label for="name">Name</label>
-			<input class="name-box" type='text' name='name' placeholder='froster' style="width: 100%" maxlength="32" />
-			<label for="description">Description</label>
-			<input class="description-box" type='text' name='description' style="width: 100%" maxlength="256" />
-			<div class="g-recaptcha" data-sitekey={siteKey}></div>
-			<button class="button-primary">Sign up</button>
+			<label for='screenName'>Username *</label>
+			<input class='screen-name-box' type='text' name='screenName' placeholder='example: frost_abc' style='width: 100%' pattern='^[a-zA-Z0-9_-]+$' minlength='4' maxlength='15' required />
+			<label for='password'>Password *</label>
+			<input class='password-box' type='password' name='password' style='width: 100%' pattern='^[!-~]+$' minlength='6' required />
+			<label for='name'>Name</label>
+			<input class='name-box' type='text' name='name' placeholder='froster' style='width: 100%' maxlength='32' />
+			<label for='description'>Description</label>
+			<input class='description-box' type='text' name='description' style='width: 100%' maxlength='256' />
+			<div class='g-recaptcha' data-sitekey={siteKey}></div>
+			<button class='button-primary'>Sign up</button>
 		</form>
 	</div>
-	<button class="button orange-button" onclick={showModal}>アカウントを作成する</button>
+	<button class='button orange-button' onclick={showModal}>アカウントを作成する</button>
 	<script>
 		import fetchJson from '../scripts/fetch-json';
 

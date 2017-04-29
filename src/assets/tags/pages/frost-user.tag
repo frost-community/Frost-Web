@@ -1,12 +1,12 @@
 <frost-user>
-	<div class="container">
+	<div class='container'>
 		<header>
 
 		</header>
 
 		<main>
-			<div class="container">
-				<div class="row" style="margin-top: 10%">
+			<div class='container'>
+				<div class='row' style='margin-top: 10%'>
 					<p>ユーザーページです。</p>
 				</div>
 			</div>

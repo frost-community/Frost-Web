@@ -1,12 +1,12 @@
 <frost-post>
-	<div class="container">
+	<div class='container'>
 		<header>
 
 		</header>
 
 		<main>
-			<div class="container">
-				<div class="row" style="margin-top: 10%">
+			<div class='container'>
+				<div class='row' style='margin-top: 10%'>
 					<p>ポストが表示されるページです。</p>
 				</div>
 			</div>

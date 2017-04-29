@@ -1,19 +1,19 @@
 doctype html
-html(lang="ja")
+html(lang='ja')
 
 	head
-		meta(charset="utf-8")
+		meta(charset='utf-8')
 		title #{title}
 		include includes/head
 		if pageName == 'dev'
-			link(rel="stylesheet", href="/styles/dev.css")
+			link(rel='stylesheet', href='/styles/dev.css')
 		else
-			link(rel="stylesheet", href="/styles/main.css")
+			link(rel='stylesheet', href='/styles/main.css')
 
 		if siteKey != null
-			meta(name="siteKey", content=siteKey)
-			script(src="https://www.google.com/recaptcha/api.js")
+			meta(name='siteKey', content=siteKey)
+			script(src='https://www.google.com/recaptcha/api.js')
 
 	body
 		frost-page(name=pageName)
-		script(src="/scripts/bundle.js")
+		script(src='/scripts/bundle.js')

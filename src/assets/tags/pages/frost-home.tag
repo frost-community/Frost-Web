@@ -1,10 +1,10 @@
 <frost-home>
-	<div class="container">
+	<div class='container'>
 		<header>
-			<div class="row" style="margin-top: 20%">
-				<div class="eight columns offset-by-three">
+			<div class='row' style='margin-top: 20%'>
+				<div class='eight columns offset-by-three'>
 					<h1>
-						<img class="logo-icon" src="../images/apple-touch-icon.png" />
+						<img class='logo-icon' src='../images/apple-touch-icon.png' />
 						Frost
 					</h1>
 				</div>
@@ -13,7 +13,7 @@
 
 		<main>
 			<p>Homeです。</p>
-			<button type="button" onclick={signout}>Logout</button>
+			<button type='button' onclick={signout}>Logout</button>
 		</main>
 
 		<frost-footer />
@@ -25,7 +25,7 @@
 			fetchJson('DELETE', '/session', {
 				_csrf: document.getElementsByName('_csrf').item(0).content
 			}).then((res) => {
-				document.cookie = "sid=; max-age=0";
+				document.cookie = 'sid=; max-age=0';
 				location.reload();
 			})
 			.catch(reason => {

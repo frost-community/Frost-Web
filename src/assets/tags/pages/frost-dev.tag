@@ -33,7 +33,7 @@
 	</div>
 	<script>
 		this.applications = [];
-		fetchJson('GET', '/applications').then(res => {
+		fetchJson('POST', '/api', {method: 'get', endpoint: '/applications', headers: {'x-api-version': 1.0}, _csrf: document.getElementsByName('_csrf').item(0).content}).then(res => {
 			return res.json();
 		}).then(json => {
 			if (json.applications == null)

@@ -151,7 +151,7 @@ module.exports = async () => {
 					if (!result.res.user)
 						res.status(result.res.statusCode).send(result.body);
 
-					await createSession(req);
+					await createSession(req, res);
 					res.json({message: 'succeeded'});
 				}
 				catch(err) {

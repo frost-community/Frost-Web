@@ -148,8 +148,8 @@ module.exports = async () => {
 						'X-Access-Key': config.web.hostAccessKey
 					});
 
-					if (!result.res.user)
-						res.status(result.res.statusCode).send(result.body);
+					if (!result.body.user)
+						return res.status(result.res.statusCode).send(result.body);
 
 					await createSession(req, res);
 					res.json({message: 'succeeded'});

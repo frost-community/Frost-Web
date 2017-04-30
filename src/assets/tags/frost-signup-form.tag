@@ -14,7 +14,7 @@
 			<button class='button-primary'>Sign up</button>
 		</form>
 	</div>
-	<button class='button orange-button' onclick={showModal}>アカウントを作成する</button>
+	<button class='button orange-button' onclick={showModal}>{ isShowModal ? '折りたたむ -' : '展開する +' }</button>
 	<script>
 		import fetchJson from '../scripts/fetch-json';
 

@@ -86,7 +86,7 @@
 				<button class='button-primary'>Create application</button>
 			</form>
 		</div>
-		<button class='button orange-button' onclick={showModal}>フォーム表示切り替え</button>
+		<button class='button orange-button' onclick={showModal}>{ isShowModal ? '折りたたむ -' : '展開する +' }</button>
 	</div>
 	<script>
 		import fetchJson from '../../scripts/fetch-json';

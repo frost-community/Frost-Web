@@ -256,7 +256,7 @@ module.exports = async () => {
 						next();
 					}
 					else {
-						res.render('page', {title: `Frost - ${screenName}さんのページ`, user: result.body.users[0], pageName: 'user', csrfToken: req.csrfToken()});
+						res.render('user', {title: `Frost - ${screenName}さんのページ`, user: result.body.users[0], csrfToken: req.csrfToken()});
 					}
 				}
 				catch(err) {

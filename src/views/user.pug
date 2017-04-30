@@ -1,0 +1,23 @@
+doctype html
+html(lang='ja')
+
+	head
+		meta(charset='utf-8')
+		title #{title}
+		include includes/head
+		link(rel='stylesheet', href='/styles/main.css')
+
+	body
+		.container
+			header
+
+			main
+				.container
+					.row(style='margin-top: 10%')
+						h1 #{user.name} @#{user.screenName}
+						h2 Description:
+						p #{user.description}
+
+			frost-footer
+
+		script(src='/scripts/bundle.js')

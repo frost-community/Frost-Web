@@ -241,8 +241,28 @@ module.exports = async () => {
 			}
 		});
 
-		app.get('/users/:screenName', (req, res) => {
-			res.render('page', {title: `Frost - ${req.params.screenName}さんのページ`, pageName: 'user', csrfToken: req.csrfToken()});
+		app.get('/users/:screenName', (req, res, next) => {
+			(async () => {
+				try {
+					const screenName = req.params.screenName;
+
+					const result = await requestApi('get', `/users?screen_names=${screenName}`, {}, {
+						'X-Api-Version': 1.0,
+						'X-Application-Key': config.web.applicationKey,
+						'X-Access-Key': req.session.accessKey != null ? req.session.accessKey : config.web.hostAccessKey,
+					});
+
+					if (result.body.users == null || result.body.users.length == 0) {
+						next();
+					}
+					else {
+						res.render('page', {title: `Frost - ${screenName}さんのページ`, user: result.body.users[0], pageName: 'user', csrfToken: req.csrfToken()});
+					}
+				}
+				catch(err) {
+					res.status(500).send(err);
+				}
+			})();
 		});
 
 		app.get('/posts/:postId', (req, res) => {

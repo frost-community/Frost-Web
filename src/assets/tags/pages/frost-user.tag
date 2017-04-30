@@ -7,7 +7,9 @@
 		<main>
 			<div class='container'>
 				<div class='row' style='margin-top: 10%'>
-					<p>ユーザーページです。</p>
+					<h1>{user.name} @{user.screenName}</h1>
+					<h2>Description:</h2>
+					<p>{user.description}</p>
 				</div>
 			</div>
 		</main>

@@ -237,7 +237,7 @@ module.exports = async () => {
 				res.render('page', {title: 'Frost', pageName: 'home', csrfToken: req.csrfToken()});
 			}
 			else {
-				res.render('page', {title: 'Frost', pageName: 'entrance', csrfToken: req.csrfToken(), siteKey: config.web.reCAPTCHA.siteKey});
+				res.render('entrance', {csrfToken: req.csrfToken(), siteKey: config.web.reCAPTCHA.siteKey});
 			}
 		});
 
@@ -256,7 +256,7 @@ module.exports = async () => {
 						next();
 					}
 					else {
-						res.render('user', {title: `Frost - ${screenName}さんのページ`, user: result.body.users[0], csrfToken: req.csrfToken()});
+						res.render('user', {user: result.body.users[0], csrfToken: req.csrfToken()});
 					}
 				}
 				catch(err) {
@@ -266,8 +266,7 @@ module.exports = async () => {
 		});
 
 		app.get('/posts/:postId', (req, res) => {
-			const screenName = 'hoge';
-			res.render('page', {title: `Frost - ${screenName}さんの投稿`, pageName: 'post', csrfToken: req.csrfToken()});
+			res.render('post', {post: {user: {screenName: 'hoge'}}, csrfToken: req.csrfToken()});
 		});
 
 		app.get('/dev', (req, res) => {

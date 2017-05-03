@@ -1,0 +1,46 @@
+doctype html
+html(lang='ja')
+
+	head
+		meta(charset='utf-8')
+		title Frost
+		include includes/head
+		link(rel='stylesheet', href='/styles/main.css')
+		style.
+			.logo-icon {
+				height: 3.5rem;
+			}
+
+			@media (min-width: 550px) {
+				.logo-icon {
+					height: 4.5rem;
+				}
+			}
+
+	body
+		.container
+			frost-header
+
+			main
+				.row(style='margin-top: 10%')
+					.eight.columns.offset-by-two(style='text-align: center')
+						h1
+							img.logo-icon(src='../images/apple-touch-icon.png')
+							| Frost
+
+						.container
+							| A cool and cool social-media.
+							br
+							| 冷やし中華はじめました。
+
+				.row(style='margin-top: 10%')
+					.eight.columns.offset-by-two.box
+						frost-login-form
+
+				.row(style='margin-top: 5%')
+					.eight.columns.offset-by-two.box
+						frost-signup-form
+
+			frost-footer
+
+		script(src='/scripts/bundle.js')

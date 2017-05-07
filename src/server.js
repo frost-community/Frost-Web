@@ -191,8 +191,10 @@ module.exports = async () => {
 		});
 
 		const endpointWhiteList = [
+			{method: 'get', path: '/general/timeline'},
 			{method: 'get', path: '/applications'},
 			{method: 'get', path: '/applications/:id'},
+			{method: 'post', path: '/posts/post_status'},
 		];
 
 		app.post('/api', checkLogin, (req, res) => {
@@ -201,7 +203,7 @@ module.exports = async () => {
 					const method = req.body.method.toLowerCase();
 					const endpoint = req.body.endpoint;
 					const headers = req.body.headers;
-					let payload;
+					let body;
 
 					const isPass = endpointWhiteList.find(e => {
 						return e.method == method && require('path-to-regexp')(e.path, []).test(endpoint);
@@ -211,17 +213,17 @@ module.exports = async () => {
 						return res.status(400).json({message: `'${endpoint}' endpoint is not access allowed on '/api'.`});
 
 					if (method == 'post' || method == 'put') {
-						payload = req.body.payload;
+						body = req.body.body;
 					}
 					else {
-						payload = {};
+						body = {};
 					}
 
 					const mixedHeaders = Object.assign({
 						'X-Application-Key': config.web.applicationKey,
 						'X-Access-Key': req.session.accessKey
 					}, headers);
-					const result = await requestApi(method, endpoint, payload, mixedHeaders);
+					const result = await requestApi(method, endpoint, body, mixedHeaders);
 					res.status(result.res.statusCode).send(result.body);
 				}
 				catch(err) {

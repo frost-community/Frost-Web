@@ -29,8 +29,9 @@
 			<h5>Public Timeline</h5>
 			<div>
 				<div class='box' style='margin: 10px 0' each={timelinePosts}>
-					<p>userId: {userId}, createdAt: {createdAt}</p>
+					<p>{user.name} @{user.screenName}</p>
 					<p>{text}</p>
+					<p>createdAt: {createdAt}</p>
 				</div>
 			</div>
 		</main>

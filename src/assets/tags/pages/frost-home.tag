@@ -14,6 +14,11 @@
 		<main>
 			<p>Homeです。</p>
 			<button type='button' onclick={signout}>Logout</button>
+
+			<h5>リンク</h5>
+			<ul>
+				<li><a href='/dev' target='_blank'>Frost Developers Center</a></li>
+			</ul>
 		</main>
 
 		<frost-footer />

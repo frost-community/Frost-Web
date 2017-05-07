@@ -19,12 +19,62 @@
 			<ul>
 				<li><a href='/dev' target='_blank'>Frost Developers Center</a></li>
 			</ul>
+
+			<h5>Create status form</h5>
+			<form onsubmit={createStatus}>
+				<input type='text' id='text' placeholder='ねえ今どんな気持ち？？'></input>
+				<button type='submit'>post</button>
+			</form>
+
+			<h5>Public Timeline</h5>
+			<div>
+				<div class='box' style='margin: 10px 0' each={timelinePosts}>
+					<p>userId: {userId}, createdAt: {createdAt}</p>
+					<p>{text}</p>
+				</div>
+			</div>
 		</main>
 
 		<frost-footer />
 	</div>
 	<script>
 		import fetchJson from '../../scripts/fetch-json';
+
+		this.timelinePosts = [];
+
+		this.updateTimeline = () => {
+			this.timelinePosts = [];
+			fetchJson('POST', '/api', {method: 'get', endpoint: '/general/timeline', headers: {'x-api-version': 1.0}, _csrf: document.getElementsByName('_csrf').item(0).content}).then(res => {
+				return res.json();
+			}).then(json => {
+				if (json.posts != null) {
+					this.timelinePosts = json.posts;
+					this.timelinePosts.reverse();
+					this.update();
+				}
+			}).catch(reason => {
+				console.log('update timeline error: ' + reason);
+			});
+		};
+		this.updateTimeline();
+
+		this.createStatus = (e) => {
+			e.preventDefault();
+			fetchJson('POST', '/api', {method: 'post', endpoint: '/posts/post_status', headers: {'x-api-version': 1.0}, body: {'text': document.getElementById('text').value}, _csrf: document.getElementsByName('_csrf').item(0).content}).then(res => {
+				return res.json();
+			}).then(json => {
+				if (json.postStatus != null) {
+					this.timelinePosts.splice(0, 0, json.postStatus);
+					document.getElementById('text').value = '';
+					this.update();
+				}
+				else {
+					alert('Error: ' + json.message);
+				}
+			}).catch(reason => {
+				console.log('update timeline error: ' + reason);
+			});
+		};
 
 		this.signout = () => {
 			fetchJson('DELETE', '/session', {

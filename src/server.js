@@ -236,7 +236,7 @@ module.exports = async () => {
 
 		app.get('/', (req, res) => {
 			if (req.session.accessKey) {
-				res.render('page', {title: 'Frost', pageName: 'home', csrfToken: req.csrfToken()});
+				res.render('home', {csrfToken: req.csrfToken()});
 			}
 			else {
 				res.render('entrance', {csrfToken: req.csrfToken(), siteKey: config.web.reCAPTCHA.siteKey});

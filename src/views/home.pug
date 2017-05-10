@@ -19,23 +19,37 @@ html(lang='ja')
 				margin: 10px 0;
 			}
 
-			.logo-icon {
+			.logo {
+				font-size: 4.5rem;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				padding: 0.5rem 0;
+			}
+
+			.logo .icon {
 				height: 4.5rem;
 			}
 
-			.home-container {
+			.liquid-container {
 				display: flex;
 			}
 
-			#side-col {
+			.liquid-container .side {
 				min-width: 300px;
 				width: 300px;
 				margin-right: 10px;
 			}
 
-			#main-col {
+			.liquid-container .main {
 				min-width: 300px;
 				flex: 1;
+			}
+
+			.liquid-container .main > h1,
+			.liquid-container .side > h1 {
+				font-size: 18px;
+				margin-bottom: 10px;
 			}
 
 	body
@@ -44,17 +58,15 @@ html(lang='ja')
 
 			main
 				.row(style='margin-top: 10%')
-					.home-container
-						#side-col
-							div
-								h1
-									img.logo-icon(src='../images/apple-touch-icon.png')
-									| Frost
-							div
-								h5 投稿する
-								frost-create-status-form
-						.box#main-col
-							h5 パブリック タイムライン
+					.liquid-container
+						.side
+							.logo
+								img.icon(src='../images/apple-touch-icon.png')
+								| Frost
+							h1 投稿する
+							frost-create-status-form
+						.main.box
+							h1 パブリック タイムライン
 							frost-public-timeline
 
 			frost-footer

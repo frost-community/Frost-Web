@@ -2,10 +2,12 @@
 	<div class='box' style='margin: 10px 0' each={timelinePosts}>
 		<p>{user.name} @{user.screenName}</p>
 		<p>{text}</p>
-		<p>createdAt: {createdAt}</p>
+		<p>{ parent.moment.unix(createdAt).fromNow() }</p>
 	</div>
 	<script>
 		import fetchJson from '../scripts/fetch-json';
+		import moment from 'moment';
+		this.moment = moment;
 		this.csrfToken = document.getElementsByName('_csrf').item(0).content;
 		const obs = opts.obs;
 
@@ -17,8 +19,9 @@
 
 		this.add = (statuses) => {
 			if (Array.isArray(statuses) && statuses.length != 0) {
-				for (const status of statuses)
+				for (const status of statuses) {
 					this.timelinePosts.splice(0, 0, status);
+				}
 				this.update();
 			}
 			else if (statuses != null) {

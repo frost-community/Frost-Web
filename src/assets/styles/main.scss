@@ -2,32 +2,28 @@
 body {
 	background-color: hsl(210, 100%, 99%);
 	color: rgb(45, 45, 45);
-}
 
-.orange-button {
-	color: hsl(0, 0%, 100%);
-	background-color: hsl(33, 100%, 64%);
-	border: none;
-}
+	.orange-button {
+		color: hsl(0, 0%, 100%);
+		background-color: hsl(33, 100%, 64%);
+		border: none;
+	}
 
-.box {
-	border-color: rgba(0, 0, 0, 0.1);
-}
+	.box {
+		border-color: rgba(0, 0, 0, 0.1);
+	}
 
-.container {
-	max-width: 1280px;
+	.container {
+		max-width: 1280px;
+	}
 }
 
 /* モバイル以上の幅 */
 @media (min-width: 400px) {
-	.container {
 
-	}
 }
 
 /* ファブレット以上の幅 */
 @media (min-width: 550px) {
-	.container {
 
-	}
 }

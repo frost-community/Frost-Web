@@ -1,0 +1,74 @@
+doctype html
+html(lang='ja')
+
+	head
+		meta(charset='utf-8')
+		title Frost
+		include includes/head
+		link(rel='stylesheet', href='/styles/main.css')
+		style.
+			@media screen and (max-width: 480px) {
+
+			}
+
+			#side-col .box {
+				margin: 10px 0;
+			}
+
+			#side-col .box {
+				margin: 10px 0;
+			}
+
+			.logo {
+				font-size: 4.5rem;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				padding: 0.5rem 0;
+			}
+
+			.logo .icon {
+				height: 5rem;
+			}
+
+			.liquid-container {
+				display: flex;
+			}
+
+			.liquid-container .side {
+				min-width: 300px;
+				width: 300px;
+				margin-right: 10px;
+			}
+
+			.liquid-container .main {
+				min-width: 300px;
+				flex: 1;
+			}
+
+			.liquid-container .main > h1,
+			.liquid-container .side > h1 {
+				font-size: 18px;
+				margin-bottom: 10px;
+			}
+
+	body
+		.container
+			include includes/header
+
+			main
+				.row(style='margin-top: 10%')
+					.liquid-container
+						.side
+							.logo
+								img.icon(src='../images/apple-touch-icon.png')
+								| Frost
+							h1 投稿する
+							frost-create-status-form
+						.main.box
+							h1 パブリック タイムライン
+							frost-public-timeline
+
+			frost-footer
+
+		script(src='/scripts/bundle.js')

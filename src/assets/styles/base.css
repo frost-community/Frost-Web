@@ -1,0 +1,33 @@
+/* 全般 */
+body {
+	font-family: Raleway, HelveticaNeue, 'Helvetica Neue', Helvetica, Arial, メイリオ, sans-serif;
+}
+
+label {
+	user-select: none;
+}
+
+textarea {
+	resize: none;
+}
+
+.box {
+	border: none;
+	border-radius: unset;
+	padding: 0;
+}
+
+/* モバイル以上の幅 */
+@media (min-width: 400px) {
+
+}
+
+/* ファブレット以上の幅 */
+@media (min-width: 550px) {
+	.box {
+		border: 1px solid;
+		border-radius: 4px;
+		padding: 30px;
+		padding-bottom: 0px;
+	}
+}

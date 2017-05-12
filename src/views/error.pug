@@ -1,0 +1,14 @@
+doctype html
+html(lang='ja')
+
+	head
+		meta(charset='utf-8')
+		title Frost - Error #{error.status}
+		include includes/head
+		link(rel='stylesheet', href='/styles/main.css')
+
+	body
+		.container
+			.row(style='margin-top: 10%')
+				h3 Sorry... An error has occurred.
+				p Message:  #{error.message}

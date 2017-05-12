@@ -1,5 +1,6 @@
-vendor/
-composer.lock
-config.php
-node_modules/
-assets/
+node_modules
+built
+.vscode
+*.log
+old/
+/config.json

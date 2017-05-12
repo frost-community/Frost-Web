@@ -1,0 +1,22 @@
+doctype html
+html(lang='ja')
+
+	head
+		meta(charset='utf-8')
+		title Frost - #{screenName}さんのページ
+		include includes/head
+		link(rel='stylesheet', href='/styles/main.css')
+
+	body
+		.container
+			include includes/header
+
+			main
+				.row(style='margin-top: 10%')
+					h2 #{user.name} @#{user.screenName}
+					h4 Description:
+					p #{user.description}
+
+			frost-footer
+
+		script(src='/scripts/bundle.js')

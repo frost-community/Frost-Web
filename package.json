@@ -1,8 +1,54 @@
 {
+  "name": "frost-web",
+  "version": "0.0.0",
+  "description": "Frost Web Server",
   "private": true,
-  "devDependencies": {
-    "gulp": "^3.9.1",
-    "gulp-autoprefixer": "^3.1.0",
-    "gulp-stylus": "^2.3.1"
-  }
+  "main": "./built/index.js",
+  "scripts": {
+    "install": "npm run build",
+    "start": "node ./",
+    "build:copy:others": "cpx \"src/*\" \"built\" && cpx \"src/{helpers,views}/*\" \"built\"",
+    "build:copy:assets": "cpx \"src/assets/**/!(*.tag|*.scss|*.sass)\" \"built/assets\"",
+    "build:copy": "npm run build:copy:assets && npm run build:copy:others",
+    "build:sass": "node-sass \"src/assets/styles\" -o \"built/assets/styles\"",
+    "build:bundle": "rollup -c",
+    "build": "npm run build:copy && npm run build:sass && npm run build:bundle",
+    "clean": "rimraf \"./built\"",
+    "rebuild": "npm run clean && npm run build",
+    "test:lint": "eslint \"./src/**/*.js\"",
+    "test:mocha": "mocha",
+    "test": "npm run test:lint && npm run test:mocha"
+  },
+  "author": "team FrostDevelop",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.17.1",
+    "connect-redis": "^3.2.0",
+    "cpx": "^1.5.0",
+    "csurf": "^1.9.0",
+    "eslint": "^3.19.0",
+    "eslint-config-standard": "^7.1.0",
+    "eslint-plugin-node": "^4.2.2",
+    "eslint-plugin-promise": "^3.5.0",
+    "eslint-plugin-standard": "^2.1.1",
+    "express": "^4.15.2",
+    "express-session": "^1.15.2",
+    "helmet": "^3.5.0",
+    "mocha": "^3.2.0",
+    "moment": "^2.18.1",
+    "node-sass": "^4.5.2",
+    "path-to-regexp": "^1.7.0",
+    "pug": "^2.0.0-beta11",
+    "request": "^2.81.0",
+    "rimraf": "^2.6.1",
+    "riot": "^3.4.0",
+    "rollup": "^0.41.6",
+    "rollup-plugin-buble": "^0.15.0",
+    "rollup-plugin-commonjs": "^8.0.2",
+    "rollup-plugin-node-resolve": "^3.0.0",
+    "rollup-plugin-riot": "^1.1.0"
+  },
+  "files": [
+    "*"
+  ]
 }

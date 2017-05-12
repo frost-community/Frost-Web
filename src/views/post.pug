@@ -1,0 +1,20 @@
+doctype html
+html(lang='ja')
+
+	head
+		meta(charset='utf-8')
+		title Frost - #{post.user.screenName}さんの投稿
+		include includes/head
+		link(rel='stylesheet', href='/styles/main.css')
+
+	body
+		.container
+			include includes/header
+
+			main
+				.row(style='margin-top: 10%')
+					p ポストが表示されるページです。
+
+			frost-footer
+
+		script(src='/scripts/bundle.js')

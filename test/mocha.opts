@@ -1,0 +1,4 @@
+--ui bdd
+--recursive
+-s 30
+--reporter spec

@@ -7,7 +7,7 @@
   "scripts": {
     "install": "npm run build",
     "start": "node ./",
-    "build:copy:others": "cpx \"src/*\" \"built\" && cpx \"src/{helpers,views}/*\" \"built\"",
+    "build:copy:others": "cpx \"src/*\" \"built\" && cpx \"src/{helpers,views}/**/*\" \"built\"",
     "build:copy:assets": "cpx \"src/assets/**/!(*.tag|*.scss|*.sass)\" \"built/assets\"",
     "build:copy": "npm run build:copy:assets && npm run build:copy:others",
     "build:sass": "node-sass \"src/assets/styles\" -o \"built/assets/styles\"",

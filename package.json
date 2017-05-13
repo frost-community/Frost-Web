@@ -5,7 +5,7 @@
   "private": true,
   "main": "./built/index.js",
   "scripts": {
-    "install": "npm run build",
+    "install": "npm run rebuild",
     "start": "node ./",
     "build:copy:others": "cpx \"src/*\" \"built\" && cpx \"src/{helpers,views}/**/*\" \"built\"",
     "build:copy:assets": "cpx \"src/assets/**/!(*.tag|*.scss|*.sass)\" \"built/assets\"",

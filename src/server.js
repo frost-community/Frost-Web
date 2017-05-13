@@ -57,8 +57,10 @@ module.exports = async () => {
 
 		// == and session ==
 
+		const sessionStore = new RedisStore({});
+
 		app.use(session({
-			store: new RedisStore({}),
+			store: sessionStore,
 			secret: config.web.session.SecretToken,
 			cookie: {
 				httpOnly: false,
@@ -251,7 +253,7 @@ module.exports = async () => {
 			console.log(`listen on port: ${config.web.port}`);
 		});
 
-		require('./streaming-server')(http, config);
+		require('./streaming-server')(http, sessionStore, config);
 	}
 	catch(err) {
 		console.log(`Unprocessed Server Error: ${err.stack}`);

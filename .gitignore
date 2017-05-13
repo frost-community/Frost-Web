@@ -3,4 +3,4 @@ built
 .vscode
 *.log
 old/
-/config.json
+/config*.json

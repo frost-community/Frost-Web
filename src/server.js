@@ -253,7 +253,7 @@ module.exports = async () => {
 			console.log(`listen on port: ${config.web.port}`);
 		});
 
-		require('./streaming-server')(http, sessionStore, config);
+		require('./streaming-proxy')(http, sessionStore, config);
 	}
 	catch(err) {
 		console.log(`Unprocessed Server Error: ${err.stack}`);

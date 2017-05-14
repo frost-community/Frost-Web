@@ -84,6 +84,8 @@ module.exports = (http, sessionStore, config) => {
 				for (const eventName of eventNames) {
 					addResponseEvent(eventName);
 				}
+
+				frontManager.stream('ready', {});
 			});
 		})();
 	});

@@ -16,7 +16,7 @@ import '../tags/frost-public-timeline.tag';
 
 const socket = io(); /* headのscriptタグからsocket.ioを読み込んで使用している(妥協) */
 
-socket.on('connect', () => {
+socket.on('ready', () => {
 	const obs = riot.observable();
 
 	riot.mount('*', {obs: obs, socket: socket});

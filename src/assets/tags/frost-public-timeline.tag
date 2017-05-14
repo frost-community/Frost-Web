@@ -5,48 +5,44 @@
 		<p>{ parent.moment.unix(createdAt).fromNow() }</p>
 	</div>
 	<script>
-		import fetchJson from '../scripts/fetch-json';
 		import moment from 'moment';
 		this.moment = moment;
-		this.csrfToken = document.getElementsByName('_csrf').item(0).content;
-		const obs = opts.obs;
+		this.socket = opts.socket;
 
 		this.timelinePosts = [];
 
-		obs.on('create-status', (status) => {
-			this.add(status);
-		});
-
-		this.add = (statuses) => {
-			if (Array.isArray(statuses) && statuses.length != 0) {
-				for (const status of statuses) {
-					this.timelinePosts.splice(0, 0, status);
-				}
-				this.update();
-			}
-			else if (statuses != null) {
-				this.timelinePosts.splice(0, 0, statuses);
-				this.update();
-			}
-		};
-
 		this.reload = () => {
 			this.timelinePosts = [];
-			fetchJson('POST', '/api', {
-				method: 'get',
-				endpoint: '/general/timeline',
+
+			this.socket.emit('rest', {request: {
+				method: 'get', endpoint: '/general/timeline',
 				headers: {'x-api-version': 1.0},
-				_csrf: this.csrfToken
-			}).then(res => {
-				return res.json();
-			}).then(json => {
-				if (json.posts != null) {
-					this.timelinePosts = json.posts;
-					this.timelinePosts.reverse();
-					this.update();
+			}});
+
+			this.socket.on('rest', (data) => {
+				if (data.request.endpoint == '/general/timeline') {
+					if (data.posts != null) {
+						this.timelinePosts = data.posts;
+						this.timelinePosts.reverse();
+						this.update();
+
+						this.socket.emit('timeline-connect', {type: 'public'});
+					}
 				}
-			}).catch(reason => {
-				console.log('update timeline error: ' + reason);
+			});
+
+			this.socket.on('data:public:status', (statusData) => {
+				console.log('status: ' + statusData);
+				this.timelinePosts.splice(0, 0, statusData);
+				this.update();
+			});
+
+			this.socket.on('success', (data) => {
+				console.log('success: ' + data.message);
+			});
+
+			this.socket.on('error', (data) => {
+				console.log('error: ' + data.message);
 			});
 		};
 

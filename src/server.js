@@ -249,7 +249,7 @@ module.exports = async () => {
 
 		// == start listening ==
 
-		app.listen(config.web.port, () => {
+		http.listen(config.web.port, () => {
 			console.log(`listen on port: ${config.web.port}`);
 		});
 

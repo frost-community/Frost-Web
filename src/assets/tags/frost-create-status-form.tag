@@ -5,9 +5,8 @@
 	</form>
 
 	<script>
-		import fetchJson from '../scripts/fetch-json';
-		this.csrfToken = document.getElementsByName('_csrf').item(0).content;
 		const obs = opts.obs;
+		const socket = opts.socket;
 
 		this.submit = (e) => {
 			e.preventDefault();
@@ -18,26 +17,31 @@
 		};
 
 		this.createStatus = () => {
-			fetchJson('POST', '/api', {
-				method: 'post',
-				endpoint: '/posts/post_status',
+			socket.emit('rest', {request: {
+				method: 'post', endpoint: '/posts/post_status',
 				headers: {'x-api-version': 1.0},
-				body: {'text': document.getElementById('text').value},
-				_csrf: this.csrfToken
-			}).then(res => {
-				return res.json();
-			}).then(json => {
-				if (json.postStatus != null) {
-					obs.trigger('create-status', json.postStatus);
-					return true;
+				body: {text: document.getElementById('text').value}
+			}}); /* TODO: need csrf? */
+
+			socket.on('rest', (data) => {
+				if (data.request.endpoint == '/posts/post_status') {
+					if (json.postStatus != null) {
+						obs.trigger('create-status', json.postStatus);
+						return true;
+					}
+					else {
+						alert('Error: ' + json.message);
+					}
 				}
-				else {
-					alert('Error: ' + json.message);
-				}
-			}).catch(reason => {
-				console.log('update timeline error: ' + reason);
 			});
-			return false;
+
+			socket.on('success', (data) => {
+				console.log('success: ' + data.message);
+			});
+
+			socket.on('error', (data) => {
+				console.log('error: ' + data.message);
+			});
 		};
 
 		this.clear = () => {

@@ -10,10 +10,7 @@
 
 		this.submit = (e) => {
 			e.preventDefault();
-			if (this.createStatus()) {
-				this.clear();
-				this.update();
-			}
+			this.createStatus();
 		};
 
 		this.createStatus = () => {
@@ -25,14 +22,18 @@
 
 			socket.on('rest', (data) => {
 				if (data.request.endpoint == '/posts/post_status') {
-					if (json.postStatus != null) {
-						obs.trigger('create-status', json.postStatus);
-						return true;
+					if (data.postStatus != null) {
+						obs.trigger('create-status', data.postStatus);
 					}
 					else {
-						alert('Error: ' + json.message);
+						alert('Error: ' + data.message);
 					}
 				}
+			});
+
+			obs.on('create-status', (postStatus) => {
+				this.clear();
+				this.update();
 			});
 
 			socket.on('success', (data) => {

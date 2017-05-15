@@ -3,17 +3,14 @@ html(lang='ja')
 
 	head
 		meta(charset='utf-8')
-		title #{title}
+		title Frost Developers Center
 		include includes/head
-		if pageName == 'dev'
-			link(rel='stylesheet', href='/styles/dev.css')
-		else
-			link(rel='stylesheet', href='/styles/main.css')
+		link(rel='stylesheet', href='/styles/dev.css')
 
 		if siteKey != null
 			meta(name='siteKey', content=siteKey)
 			script(src='https://www.google.com/recaptcha/api.js')
 
 	body
-		frost-page(name=pageName)
+		frost-page(name='dev')
 		script(src='/scripts/bundle.js')

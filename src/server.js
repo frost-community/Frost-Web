@@ -57,7 +57,7 @@ module.exports = async () => {
 		app.use(bodyParser.urlencoded({extended: false}));
 		app.use(bodyParser.json());
 
-		// == and session ==
+		// == session ==
 
 		const sessionStore = new RedisStore({});
 
@@ -72,7 +72,16 @@ module.exports = async () => {
 			saveUninitialized: true
 		}));
 
-		// == securities ==
+		// == Middlewares ==
+
+		app.use((req, res, next) => {
+			req.isSmartPhone = require('./helpers/isSmartPhone')(req.header('User-Agent'));
+			if (req.isSmartPhone)
+				app.set('views', path.join(__dirname, 'views', 'sp'));
+			next();
+		});
+
+		// securities
 
 		app.use(helmet({
 			frameguard: { action: 'deny' }
@@ -235,7 +244,7 @@ module.exports = async () => {
 		});
 
 		app.get('/dev', (req, res) => {
-			res.render('page', {title: 'Frost Developers Center', pageName: 'dev', csrfToken: req.csrfToken(), siteKey: config.web.reCAPTCHA.siteKey});
+			res.render('dev', {csrfToken: req.csrfToken(), siteKey: config.web.reCAPTCHA.siteKey});
 		});
 
 		// errors

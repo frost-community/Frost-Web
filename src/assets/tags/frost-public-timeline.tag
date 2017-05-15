@@ -7,45 +7,47 @@
 	<script>
 		import moment from 'moment';
 		this.moment = moment;
-		this.socket = opts.socket;
+		const socket = opts.socket;
 
 		this.timelinePosts = [];
 
 		this.reload = () => {
 			this.timelinePosts = [];
 
-			this.socket.emit('rest', {request: {
+			socket.emit('rest', {request: {
 				method: 'get', endpoint: '/general/timeline',
 				headers: {'x-api-version': 1.0},
 			}});
 
-			this.socket.on('rest', (data) => {
+			socket.on('rest', (data) => {
 				if (data.request.endpoint == '/general/timeline') {
 					if (data.posts != null) {
 						this.timelinePosts = data.posts;
 						this.timelinePosts.reverse();
 						this.update();
 
-						this.socket.emit('timeline-connect', {type: 'public'});
+						socket.emit('timeline-connect', {type: 'public'});
 					}
 				}
 			});
 
-			this.socket.on('data:public:status', (statusData) => {
+			socket.on('data:public:status', (statusData) => {
 				console.log('status: ' + statusData);
 				this.timelinePosts.splice(0, 0, statusData);
 				this.update();
 			});
-
-			this.socket.on('success', (data) => {
-				console.log('success: ' + data.message);
-			});
-
-			this.socket.on('error', (data) => {
-				console.log('error: ' + data.message);
-			});
 		};
 
-		this.reload();
+		socket.on('ready', () => {
+			this.reload();
+		});
+
+		socket.on('success', (data) => {
+			console.log('success: ' + data.message);
+		});
+
+		socket.on('error', (data) => {
+			console.log('error: ' + data.message);
+		});
 	</script>
 </frost-public-timeline>

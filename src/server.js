@@ -22,6 +22,8 @@ const checkLogin = require('./helpers/checkLogin');
 const urlConfigFile = 'https://raw.githubusercontent.com/Frost-Dev/Frost/master/config.json';
 const questionResult = (ans) => (ans.toLowerCase()).indexOf('y') === 0;
 
+process.on('unhandledRejection', console.dir);
+
 module.exports = async () => {
 	try {
 		console.log('--------------------');
@@ -143,7 +145,7 @@ module.exports = async () => {
 					});
 
 					if (verifyResult.body.success !== true)
-						res.status(400).json({message: 'faild to verify recaptcha'});
+						return res.status(400).json({message: 'faild to verify recaptcha'});
 
 					const result = await requestApi('post', '/account', req.body, {
 						'X-Api-Version': 1.0,
@@ -175,7 +177,7 @@ module.exports = async () => {
 					});
 
 					if (verifyResult.body.success !== true)
-						res.status(400).json({message: 'faild to verify recaptcha'});
+						return res.status(400).json({message: 'faild to verify recaptcha'});
 
 					const result = await requestApi('post', '/applications', req.body, {
 						'X-Api-Version': 1.0,

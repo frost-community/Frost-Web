@@ -1,4 +1,4 @@
-@import "base";
+@import "main";
 
 $backColor: hsl(210, 100%, 99%);
 $foreColor: rgb(45, 45, 45);
@@ -27,6 +27,10 @@ body {
 	max-width: 1280px;
 }
 
+.logo-icon {
+	height: 3.5rem;
+}
+
 /* モバイル以上の幅 */
 @media (min-width: 400px) {
 
@@ -34,5 +38,7 @@ body {
 
 /* ファブレット以上の幅 */
 @media (min-width: 550px) {
-
+	.logo-icon {
+		height: 4.5rem;
+	}
 }

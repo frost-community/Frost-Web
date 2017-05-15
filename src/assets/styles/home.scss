@@ -1,4 +1,4 @@
-@import "base";
+@import "main";
 
 $backColor: hsl(210, 100%, 99%);
 $foreColor: rgb(45, 45, 45);
@@ -26,6 +26,45 @@ body {
 .container {
 	max-width: 1280px;
 }
+
+.logo {
+	font-size: 4.5rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0.5rem 0;
+
+	.icon {
+		height: 5rem;
+	}
+}
+
+.liquid-container {
+	display: flex;
+
+	.side {
+		min-width: 300px;
+		width: 300px;
+		margin-right: 10px;
+
+		.box {
+			margin: 10px 0;
+		}
+	}
+
+	.main {
+		min-width: 300px;
+		flex: 1;
+	}
+
+	.main > h1,
+	.side > h1 {
+		font-size: 18px;
+		margin-bottom: 10px;
+	}
+}
+
+
 
 /* モバイル以上の幅 */
 @media (min-width: 400px) {

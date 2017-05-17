@@ -50,7 +50,7 @@
 			e.preventDefault();
 
 			const permissions = [];
-			for(let permission of document.querySelectorAll('frost-create-application-form .permissions *')) {
+			for (let permission of document.querySelectorAll('frost-create-application-form .permissions *')) {
 				if (permission.checked) {
 					permissions.push(permission.value);
 				}
@@ -65,8 +65,9 @@
 			}).then(res => {
 				return res.json();
 			}).then(json => {
-				if (json.application == null)
+				if (json.application == null) {
 					return alert(`creation error: ${json.message}`);
+				}
 
 				alert('created application.');
 				location.reload();

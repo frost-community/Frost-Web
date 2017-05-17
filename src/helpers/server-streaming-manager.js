@@ -24,8 +24,9 @@ class ServerStreamingManager {
 
 			this.ioServer.to(this.ioServerSocket.id).emit(type, data);
 		}
-		else
+		else {
 			throw new Error('invalid arguments count');
+		}
 	}
 
 	/**
@@ -47,8 +48,9 @@ class ServerStreamingManager {
 				callback(data);
 			});
 		}
-		else
+		else {
 			throw new Error('invalid arguments count');
+		}
 	}
 
 	/**

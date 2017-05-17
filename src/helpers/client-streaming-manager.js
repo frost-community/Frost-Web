@@ -23,8 +23,9 @@ class ClientStreamingManager {
 
 			this.ioClientSocket.emit(type, data);
 		}
-		else
+		else {
 			throw new Error('invalid arguments count');
+		}
 	}
 
 	/**
@@ -46,8 +47,9 @@ class ClientStreamingManager {
 				callback(data);
 			});
 		}
-		else
+		else {
 			throw new Error('invalid arguments count');
+		}
 	}
 
 	/**

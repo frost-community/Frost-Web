@@ -48,8 +48,9 @@
 				}
 			}
 
-			for(const application of json.applications)
+			for (const application of json.applications) {
 				this.applications.push(application);
+			}
 
 			this.update();
 		}).catch((reason) => {

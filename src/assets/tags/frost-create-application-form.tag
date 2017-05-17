@@ -1,8 +1,8 @@
 <frost-create-application-form>
 	<div class='ten columns offset-by-one box'>
 		<h4>Create your applicaiton</h4>
-		<div show={isShowModal}>
-			<form onsubmit={submit}>
+		<div show={ isShowModal }>
+			<form onsubmit={ submit }>
 				<label for='application-name'>Name *</label>
 				<input class='name-box' type='text' id='application-name' name='name' placeholder='example: Frost Client' style='width: 100%' maxlength='32' required />
 				<label for='application-description'>Description</label>
@@ -31,11 +31,11 @@
 						<input type='checkbox' id='permissions-application' name='permissions' value='application'>application - Accessing about your applications</input>
 					</label>
 				</fieldset>
-				<div class='g-recaptcha' data-sitekey={siteKey}></div>
+				<div class='g-recaptcha' data-sitekey={ siteKey }></div>
 				<button class='button-primary'>Create application</button>
 			</form>
 		</div>
-		<button class='button orange-button' onclick={showModal}>{ isShowModal ? '折りたたむ -' : '展開する +' }</button>
+		<button class='button orange-button' onclick={ showModal }>{ isShowModal ? '折りたたむ -' : '展開する +' }</button>
 	</div>
 	<script>
 		import fetchJson from '../scripts/fetch-json';

@@ -7,22 +7,22 @@
 			<div class='row' style='margin-top: 10%'>
 				<div class='ten columns offset-by-one'>
 					<h4>Your Applications</h4>
-					<ul if={applications.length != 0}>
-						<li each={applications} style='list-style-type: none;'>
+					<ul if={ applications.length != 0 }>
+						<li each={ applications } style='list-style-type: none;'>
 							<div class='box'>
-								<p>App name: {name}</p>
-								<p>Description: {description}</p>
-								<p>App Id: {id}</p>
+								<p>App name: { name }</p>
+								<p>Description: { description }</p>
+								<p>App Id: { id }</p>
 								<p>Permissions:</p>
 								<ul>
-								<li each={permission ,i in permissions}>
-									{permission}
+								<li each={ permission ,i in permissions }>
+									{ permission }
 								</li>
 								</ul>
 							</div>
 						</li>
 					</ul>
-					<p if={applications.length == 0}>You don't have any applications.</p>
+					<p if={ applications.length == 0 }>You don't have any applications.</p>
 				</div>
 			</div>
 			<div class='row' style='margin-top: 10%'>

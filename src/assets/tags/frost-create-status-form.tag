@@ -1,5 +1,5 @@
 <frost-create-status-form>
-	<form onsubmit={submit}>
+	<form onsubmit={ submit }>
 		<input type='text' id='text' placeholder='ねえ今どんな気持ち？'></input>
 		<button type='submit'>post</button>
 	</form>

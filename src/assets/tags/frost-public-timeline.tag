@@ -1,7 +1,7 @@
 <frost-public-timeline>
-	<div class='box' style='margin: 10px 0' each={timelinePosts}>
-		<p>{user.name} @{user.screenName}</p>
-		<p>{text}</p>
+	<div class='box' style='margin: 10px 0' each={ timelinePosts }>
+		<p>{ user.name } @{ user.screenName }</p>
+		<p>{ text }</p>
 		<p>{ parent.moment.unix(createdAt).fromNow() }</p>
 	</div>
 	<script>

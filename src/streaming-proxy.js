@@ -1,3 +1,5 @@
+'use strict';
+
 const ioServer = require('socket.io');
 const ioClient = require('socket.io-client');
 const getSessionFromCookieAsync = require('./helpers/get-session-from-cookie-async');

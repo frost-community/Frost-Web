@@ -40,6 +40,7 @@
     "moment": "^2.18.1",
     "node-sass": "^4.5.2",
     "path-to-regexp": "^1.7.0",
+    "prominence": "^0.2.0",
     "pug": "^2.0.0-beta11",
     "request": "^2.81.0",
     "rimraf": "^2.6.1",

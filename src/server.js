@@ -216,6 +216,9 @@ module.exports = async () => {
 				if (req.isSmartPhone) {
 					app.set('views', path.join(__dirname, 'views', 'sp'));
 				}
+				else {
+					app.set('views', path.join(__dirname, 'views'));
+				}
 
 				// default render params
 				req.renderParams = {

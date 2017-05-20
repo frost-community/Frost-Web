@@ -50,14 +50,5 @@
 				this.update();
 			}
 		});
-
-		socket.on('success', (data) => {
-			console.log('success: ' + data.message);
-		});
-
-		socket.on('error', (data) => {
-			console.log('error: ' + data.message);
-		});
-
 	</script>
 </frost-applications>

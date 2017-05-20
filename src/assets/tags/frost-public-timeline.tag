@@ -45,13 +45,5 @@
 				this.update();
 			}, 60 * 1000);
 		});
-
-		socket.on('success', (data) => {
-			console.log('success: ' + data.message);
-		});
-
-		socket.on('error', (data) => {
-			console.log('error: ' + data.message);
-		});
 	</script>
 </frost-public-timeline>

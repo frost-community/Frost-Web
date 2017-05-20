@@ -12,4 +12,12 @@ import '../tags/frost-create-application-form.tag';
 const socket = io(); /* headのscriptタグからsocket.ioを読み込んで使用している(妥協) */
 const obs = riot.observable();
 
+socket.on('success', (data) => {
+	console.log('success: ' + data.message);
+});
+
+socket.on('error', (data) => {
+	console.log('error: ' + data.message);
+});
+
 riot.mount('*', {obs: obs, socket: socket});

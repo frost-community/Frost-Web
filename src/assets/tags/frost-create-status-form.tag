@@ -5,7 +5,6 @@
 	</form>
 
 	<script>
-		const obs = opts.obs;
 		const socket = opts.socket;
 
 		this.submit = (e) => {
@@ -23,25 +22,13 @@
 			socket.on('rest', (data) => {
 				if (data.request.endpoint == '/posts/post_status') {
 					if (data.postStatus != null) {
-						obs.trigger('create-status', data.postStatus);
+						this.clear();
+						this.update();
 					}
 					else {
 						alert('Error: ' + data.message);
 					}
 				}
-			});
-
-			obs.on('create-status', (postStatus) => {
-				this.clear();
-				this.update();
-			});
-
-			socket.on('success', (data) => {
-				console.log('success: ' + data.message);
-			});
-
-			socket.on('error', (data) => {
-				console.log('error: ' + data.message);
 			});
 		};
 

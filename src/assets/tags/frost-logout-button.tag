@@ -9,7 +9,6 @@
 			fetchJson('DELETE', '/session', {
 				_csrf: this.csrfToken
 			}).then((res) => {
-				document.cookie = 'sid=; max-age=0';
 				location.reload();
 			})
 			.catch(reason => {

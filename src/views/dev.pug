@@ -7,10 +7,21 @@ html(lang='ja')
 		include includes/head
 		link(rel='stylesheet', href='/styles/dev.css')
 
-		if siteKey != null
-			meta(name='siteKey', content=siteKey)
-			script(src='https://www.google.com/recaptcha/api.js')
-
 	body
-		frost-page(name='dev')
+		.container
+			include includes/header
+
+			header
+				h3 Frost Developers Center
+
+			main
+				.row(style='margin-top: 10%')
+					.ten.columns.offset-by-one
+						h4 Your Applications
+						frost-applications
+				.row(style='margin-top: 10%')
+					frost-create-application-form
+
+			include includes/footer
+
 		script(src='/scripts/bundle.js')

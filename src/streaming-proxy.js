@@ -12,7 +12,7 @@ module.exports = (http, sessionStore, config) => {
 			const frontManager = new (require('./helpers/server-streaming-manager'))(ioServerToFront, ioServerToFrontSocket, {});
 			const session = await getSessionFromCookieAsync(ioServerToFrontSocket.request.headers.cookie, config.web.session.name, config.web.session.SecretToken, sessionStore);
 
-			if (session.accessKey == null) {
+			if (session == null || session.accessKey == null) {
 				frontManager.stream('error', {message: 'unauthorized'});
 				frontManager.disconnect();
 				return;

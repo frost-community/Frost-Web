@@ -66,6 +66,7 @@ module.exports = async () => {
 
 		app.use(session({
 			store: sessionStore,
+			name: config.web.session.name,
 			secret: config.web.session.SecretToken,
 			cookie: {
 				httpOnly: false,
@@ -84,23 +85,6 @@ module.exports = async () => {
 		}));
 
 		app.use(csurf());
-
-		// general
-
-		app.use((req, res, next) => {
-			req.isSmartPhone = require('./helpers/isSmartPhone')(req.header('User-Agent'));
-			if (req.isSmartPhone) {
-				app.set('views', path.join(__dirname, 'views', 'sp'));
-			}
-
-			// default render params
-			req.renderParams = {
-				authorized: req.session.userId != null,
-				csrfToken: req.csrfToken()
-			};
-
-			next();
-		});
 
 		// == routings ==
 
@@ -138,7 +122,6 @@ module.exports = async () => {
 			}
 
 			req.session.accessKey = result.body.accessKey;
-			req.session.userId = result.body.accessKey.split('-')[0];
 		};
 
 		app.route('/session')
@@ -223,11 +206,53 @@ module.exports = async () => {
 			})();
 		});
 
+		// page middleware
+
+		app.use((req, res, next) => {
+			(async () => {
+				const authorized = req.session.accessKey != null;
+
+				req.isSmartPhone = require('./helpers/isSmartPhone')(req.header('User-Agent'));
+				if (req.isSmartPhone) {
+					app.set('views', path.join(__dirname, 'views', 'sp'));
+				}
+
+				// default render params
+				req.renderParams = {
+					authorized: authorized,
+					csrfToken: req.csrfToken()
+				};
+
+				// verify session info
+				if (authorized) {
+					let result;
+
+					const userId = req.session.accessKey.split('-')[0];
+
+					result = await requestApi('get', `/users/${userId}`, {}, {
+						'X-Api-Version': 1.0,
+						'X-Application-Key': config.web.applicationKey,
+						'X-Access-Key': req.session.accessKey
+					});
+
+					if (result.body.user == null) {
+						console.log('session error: ' + result.message);
+						req.session.destroy();
+						return res.redirect('/');
+					}
+
+					req.session.user = result.body.user;
+				}
+
+				next();
+			})();
+		});
+
 		// pages
 
 		app.get('/', (req, res) => {
-			if (req.session.accessKey) {
-				res.render('home', Object.assign(req.renderParams, {}));
+			if (req.session.accessKey != null) {
+				res.render('home', Object.assign(req.renderParams, {user: req.session.user}));
 			}
 			else {
 				res.render('entrance', Object.assign(req.renderParams, {siteKey: config.web.reCAPTCHA.siteKey}));

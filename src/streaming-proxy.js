@@ -4,15 +4,13 @@ const ioServer = require('socket.io');
 const ioClient = require('socket.io-client');
 const getSessionFromCookieAsync = require('./helpers/get-session-from-cookie-async');
 
-const sessionCookieName = 'connect.sid';
-
 module.exports = (http, sessionStore, config) => {
 	const ioServerToFront = ioServer(http);
 
 	ioServerToFront.sockets.on('connection', ioServerToFrontSocket => {
 		(async () => {
 			const frontManager = new (require('./helpers/server-streaming-manager'))(ioServerToFront, ioServerToFrontSocket, {});
-			const session = await getSessionFromCookieAsync(ioServerToFrontSocket.request.headers.cookie, sessionCookieName, config.web.session.SecretToken, sessionStore);
+			const session = await getSessionFromCookieAsync(ioServerToFrontSocket.request.headers.cookie, config.web.session.name, config.web.session.SecretToken, sessionStore);
 
 			if (session.accessKey == null) {
 				frontManager.stream('error', {message: 'unauthorized'});

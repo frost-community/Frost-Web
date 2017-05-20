@@ -35,10 +35,12 @@ module.exports = async () => {
 			if (questionResult(await i('config file is not found. generate now? (y/n) > '))) {
 				let configPath;
 
-				if (questionResult(await i('generate config.json in the parent directory of repository? (y/n) > ')))
+				if (questionResult(await i('generate config.json in the parent directory of repository? (y/n) > '))) {
 					configPath = `${process.cwd()}/../config.json`;
-				else
+				}
+				else {
 					configPath = `${process.cwd()}/config.json`;
+				}
 
 				const configJson = (await requestAsync(urlConfigFile)).body;
 				fs.writeFileSync(configPath, configJson);
@@ -46,8 +48,9 @@ module.exports = async () => {
 			config = loadConfig();
 		}
 
-		if (config == null)
+		if (config == null) {
 			return;
+		}
 
 		// == app settings ==
 
@@ -74,13 +77,6 @@ module.exports = async () => {
 
 		// == Middlewares ==
 
-		app.use((req, res, next) => {
-			req.isSmartPhone = require('./helpers/isSmartPhone')(req.header('User-Agent'));
-			if (req.isSmartPhone)
-				app.set('views', path.join(__dirname, 'views', 'sp'));
-			next();
-		});
-
 		// securities
 
 		app.use(helmet({
@@ -88,6 +84,23 @@ module.exports = async () => {
 		}));
 
 		app.use(csurf());
+
+		// general
+
+		app.use((req, res, next) => {
+			req.isSmartPhone = require('./helpers/isSmartPhone')(req.header('User-Agent'));
+			if (req.isSmartPhone) {
+				app.set('views', path.join(__dirname, 'views', 'sp'));
+			}
+
+			// default render params
+			req.renderParams = {
+				authorized: req.session.userId != null,
+				csrfToken: req.csrfToken()
+			};
+
+			next();
+		});
 
 		// == routings ==
 
@@ -106,8 +119,9 @@ module.exports = async () => {
 				'X-Api-Version': 1.0
 			});
 
-			if (!result.body.iceAuthKey)
+			if (!result.body.iceAuthKey) {
 				throw new Error(`error: ${result.body.message}`);
+			}
 
 			result = await requestApi('post', '/ice_auth/authorize_basic', {
 				screenName: req.body.screenName,
@@ -119,10 +133,12 @@ module.exports = async () => {
 				'X-Ice-Auth-Key': result.body.iceAuthKey
 			});
 
-			if (!result.body.accessKey)
+			if (!result.body.accessKey) {
 				throw new Error(`error: ${result.body.message}`);
+			}
 
 			req.session.accessKey = result.body.accessKey;
+			req.session.userId = result.body.accessKey.split('-')[0];
 		};
 
 		app.route('/session')
@@ -130,7 +146,7 @@ module.exports = async () => {
 			(async () => {
 				try {
 					await createSession(req, res);
-					res.json({message: 'succeeded'});
+					res.end();
 				}
 				catch(e) {
 					console.log('faild');
@@ -141,7 +157,7 @@ module.exports = async () => {
 		})
 		.delete(checkLogin, (req, res) => {
 			req.session.destroy();
-			res.json({message: 'succeeded'});
+			res.end();
 		});
 
 		app.post('/session/register', (req, res) => {
@@ -153,8 +169,9 @@ module.exports = async () => {
 						form: {secret: config.web.reCAPTCHA.secretKey, response: req.body.recaptchaToken}
 					});
 
-					if (verifyResult.body.success !== true)
+					if (verifyResult.body.success !== true) {
 						return res.status(400).json({message: 'faild to verify recaptcha'});
+					}
 
 					const result = await requestApi('post', '/account', req.body, {
 						'X-Api-Version': 1.0,
@@ -162,11 +179,12 @@ module.exports = async () => {
 						'X-Access-Key': config.web.hostAccessKey
 					});
 
-					if (!result.body.user)
+					if (!result.body.user) {
 						return res.status(result.res.statusCode).send(result.body);
+					}
 
 					await createSession(req, res);
-					res.json({message: 'succeeded'});
+					res.end();
 				}
 				catch(err) {
 					console.log('faild');
@@ -185,8 +203,9 @@ module.exports = async () => {
 						form: {secret: config.web.reCAPTCHA.secretKey, response: req.body.recaptchaToken}
 					});
 
-					if (verifyResult.body.success !== true)
+					if (verifyResult.body.success !== true) {
 						return res.status(400).json({message: 'faild to verify recaptcha'});
+					}
 
 					const result = await requestApi('post', '/applications', req.body, {
 						'X-Api-Version': 1.0,
@@ -208,10 +227,10 @@ module.exports = async () => {
 
 		app.get('/', (req, res) => {
 			if (req.session.accessKey) {
-				res.render('home', {csrfToken: req.csrfToken()});
+				res.render('home', Object.assign(req.renderParams, {}));
 			}
 			else {
-				res.render('entrance', {csrfToken: req.csrfToken(), siteKey: config.web.reCAPTCHA.siteKey});
+				res.render('entrance', Object.assign(req.renderParams, {siteKey: config.web.reCAPTCHA.siteKey}));
 			}
 		});
 
@@ -230,7 +249,7 @@ module.exports = async () => {
 						next();
 					}
 					else {
-						res.render('user', {user: result.body.users[0], csrfToken: req.csrfToken()});
+						res.render('user', Object.assign(req.renderParams, {user: result.body.users[0]}));
 					}
 				}
 				catch(err) {
@@ -240,11 +259,11 @@ module.exports = async () => {
 		});
 
 		app.get('/posts/:postId', (req, res) => {
-			res.render('post', {post: {user: {screenName: 'hoge'}}, csrfToken: req.csrfToken()});
+			res.render('post', Object.assign(req.renderParams, {post: {user: {screenName: 'hoge'}}}));
 		});
 
 		app.get('/dev', (req, res) => {
-			res.render('dev', {csrfToken: req.csrfToken(), siteKey: config.web.reCAPTCHA.siteKey});
+			res.render('dev', Object.assign(req.renderParams, {siteKey: config.web.reCAPTCHA.siteKey}));
 		});
 
 		// errors

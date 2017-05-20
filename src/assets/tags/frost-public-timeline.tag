@@ -18,28 +18,32 @@
 				method: 'get', endpoint: '/general/timeline',
 				headers: {'x-api-version': 1.0},
 			}});
-
-			socket.on('rest', (data) => {
-				if (data.request.endpoint == '/general/timeline') {
-					if (data.posts != null) {
-						this.timelinePosts = data.posts;
-						this.timelinePosts.reverse();
-						this.update();
-
-						socket.emit('timeline-connect', {type: 'public'});
-					}
-				}
-			});
-
-			socket.on('data:public:status', (statusData) => {
-				console.log('status: ' + statusData);
-				this.timelinePosts.splice(0, 0, statusData);
-				this.update();
-			});
 		};
+
+		socket.on('rest', (data) => {
+			if (data.request.endpoint == '/general/timeline') {
+				if (data.posts != null) {
+					this.timelinePosts = data.posts;
+					this.timelinePosts.reverse();
+					this.update();
+
+					socket.emit('timeline-connect', {type: 'public'});
+				}
+			}
+		});
+
+		socket.on('data:public:status', (statusData) => {
+			console.log('status: ' + statusData);
+			this.timelinePosts.splice(0, 0, statusData);
+			this.update();
+		});
 
 		socket.on('ready', () => {
 			this.reload();
+
+			setInterval(() => {
+				this.update();
+			}, 60 * 1000);
 		});
 
 		socket.on('success', (data) => {

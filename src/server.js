@@ -8,6 +8,7 @@ const express = require('express');
 const httpClass = require('http');
 const app = express();
 const http = httpClass.Server(app);
+const compression = require('compression');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const RedisStore = require('connect-redis')(session);
@@ -60,10 +61,19 @@ module.exports = async () => {
 		app.use(bodyParser.urlencoded({extended: false}));
 		app.use(bodyParser.json());
 
-		// == session ==
+		// == Middlewares ==
+
+		// compression
+
+		app.use(compression({
+			threshold: 0,
+			level: 9,
+			memLevel: 9
+		}));
+
+		// session
 
 		const sessionStore = new RedisStore({});
-
 		app.use(session({
 			store: sessionStore,
 			name: config.web.session.name,
@@ -75,8 +85,6 @@ module.exports = async () => {
 			resave: true,
 			saveUninitialized: true
 		}));
-
-		// == Middlewares ==
 
 		// securities
 

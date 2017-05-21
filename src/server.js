@@ -90,7 +90,9 @@ module.exports = async () => {
 
 		// static files
 
-		app.use(express.static(path.join(__dirname, 'assets')));
+		app.use(express.static(path.join(__dirname, 'assets'), {
+			etag: false
+		}));
 
 		// internal APIs
 

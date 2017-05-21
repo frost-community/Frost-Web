@@ -9,7 +9,7 @@
     "build:copy:others": "cpx \"src/*\" \"built\" && cpx \"src/{helpers,views}/**/*\" \"built\"",
     "build:copy:assets": "cpx \"src/assets/**/!(*.tag|*.scss|*.sass)\" \"built/assets\"",
     "build:copy": "npm run build:copy:assets && npm run build:copy:others",
-    "build:sass": "node-sass \"src/assets/styles\" -o \"built/assets/styles\"",
+    "build:sass": "node-sass --output-style compressed \"src/assets/styles\" -o \"built/assets/styles\"",
     "build:bundle": "rollup -c",
     "build": "npm run build:copy && npm run build:sass && npm run build:bundle",
     "clean": "rimraf \"./built\"",

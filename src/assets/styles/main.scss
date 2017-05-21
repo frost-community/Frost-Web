@@ -1,13 +1,16 @@
 @import "base";
 
-$backColor: hsl(210, 100%, 99%);
-$foreColor: rgb(45, 45, 45);
+/* 変数 */
+
+$backColor: hsl(214, 100%, 98%);
+$foreColor: hsl(189, 50%, 20%);
 $borderColor: rgba(0, 0, 0, 0.1);
 
 $white: hsl(0, 0%, 100%);
 $orange: hsl(33, 100%, 64%);
 
 /* 全般 */
+
 body {
 	background-color: $backColor;
 	color: $foreColor;

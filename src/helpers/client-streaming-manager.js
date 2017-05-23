@@ -9,6 +9,26 @@ class ClientStreamingManager {
 	}
 
 	/**
+	 * 指定されたイベントが最初に受信されるまで待機します
+	 */
+	waitEventAsync(eventName) {
+		return new Promise((resolve, reject) => {
+			const handler = (data) => {
+				this.ioClientSocket.removeListener(eventName, handler);
+				resolve(data);
+			};
+			this.ioClientSocket.on(eventName, handler);
+		});
+	}
+
+	/**
+	 * connectイベントが最初に受信されるまで待機します
+	 */
+	waitConnectAsync() {
+		return this.waitEventAsync('connect');
+	}
+
+	/**
 	 * ストリームに基本的なイベントを発行します
 	 */
 	stream(arg1, arg2, arg3) {
@@ -52,6 +72,10 @@ class ClientStreamingManager {
 		else {
 			throw new Error('invalid arguments count');
 		}
+	}
+
+	removeListener(eventName, handler) {
+		this.ioClientSocket.removeListener(eventName, handler);
 	}
 
 	/**

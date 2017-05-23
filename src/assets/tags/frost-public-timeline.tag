@@ -20,16 +20,28 @@
 			}});
 		};
 
-		socket.on('rest', (data) => {
-			if (data.request.endpoint == '/general/timeline') {
-				if (data.posts != null) {
-					this.timelinePosts = data.posts;
-					this.timelinePosts.reverse();
-					this.update();
-
-					socket.emit('timeline-connect', {type: 'public'});
+		socket.on('rest', (restData) => {
+			if (restData.request.endpoint == '/general/timeline') {
+				if (restData.success) {
+					if (restData.response.posts != null) {
+						this.timelinePosts = restData.response.posts;
+						this.timelinePosts.reverse();
+						this.update();
+					}
+					else {
+						return alert(`api error: failed to fetch general timeline posts. ${data.response.message}`);
+					}
 				}
+				else {
+					alert(`internal error: ${restData.message}`);
+				}
+
+				socket.emit('timeline-connect', {type: 'public'});
 			}
+		});
+
+		socket.on('timeline-connect', (data) => {
+			console.log(data.message);
 		});
 
 		socket.on('data:public:status', (statusData) => {
@@ -38,12 +50,14 @@
 			this.update();
 		});
 
-		socket.on('ready', () => {
-			this.reload();
+		// 定期的に画面を更新
+		setInterval(() => {
+			this.update();
+		}, 60 * 1000);
 
-			setInterval(() => {
-				this.update();
-			}, 60 * 1000);
+		socket.on('ready', (readyData) => {
+			// タイムラインのリロード
+			this.reload();
 		});
 	</script>
 </frost-public-timeline>

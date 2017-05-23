@@ -236,26 +236,8 @@ module.exports = async () => {
 					csrfToken: req.csrfToken()
 				};
 
-				// verify session info
-				if (authorized) {
-					let result;
-
-					const userId = req.session.accessKey.split('-')[0];
-
-					result = await requestApi('get', `/users/${userId}`, {}, {
-						'X-Api-Version': 1.0,
-						'X-Application-Key': config.web.applicationKey,
-						'X-Access-Key': req.session.accessKey
-					});
-
-					if (result.body.user == null) {
-						console.log('session error: ' + result.message);
-						req.session.destroy();
-						return res.redirect('/');
-					}
-
-					req.session.user = result.body.user;
-				}
+				if (authorized)
+					req.renderParams.userId = req.session.accessKey.split('-')[0];
 
 				next();
 			})();
@@ -321,7 +303,7 @@ module.exports = async () => {
 			console.log(`listen on port: ${config.web.port}`);
 		});
 
-		require('./streaming-proxy')(http, sessionStore, config);
+		await require('./streaming-proxy')(http, sessionStore, config);
 	}
 	catch(err) {
 		console.log(`Unprocessed Server Error: ${err.stack}`);

@@ -17,20 +17,20 @@
 				method: 'post', endpoint: '/posts/post_status',
 				headers: {'x-api-version': 1.0},
 				body: {text: document.getElementById('text').value}
-			}}); /* TODO: need csrf? */
-
-			socket.on('rest', (data) => {
-				if (data.request.endpoint == '/posts/post_status') {
-					if (data.postStatus != null) {
-						this.clear();
-						this.update();
-					}
-					else {
-						alert('Error: ' + data.message);
-					}
-				}
-			});
+			}});
 		};
+
+		socket.on('rest', (restData) => {
+			if (restData.request.endpoint == '/posts/post_status') {
+				if (restData.success) {
+					this.clear();
+					this.update();
+				}
+				else {
+					alert('status creation error: ' + restData.response.message);
+				}
+			}
+		});
 
 		this.clear = () => {
 			document.getElementById('text').value = '';

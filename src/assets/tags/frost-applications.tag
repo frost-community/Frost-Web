@@ -17,6 +17,7 @@
 	<p if={ applications.length == 0 }>You don't have any applications.</p>
 	<script>
 		const socket = opts.socket;
+		const obs = opts.obs;
 
 		this.applications = [];
 
@@ -27,26 +28,22 @@
 			}});
 		});
 
+		obs.on('add-application', (data) => {
+			this.applications.push(data.application);
+			this.update();
+		});
+
 		socket.on('rest', (data) => {
-			if (data.request.endpoint == '/applications') {
-				if (data.posts != null) {
-					this.timelinePosts = data.posts;
-					this.timelinePosts.reverse();
-					this.update();
-
-					socket.emit('timeline-connect', {type: 'public'});
-				}
-
-				if (data.applications == null) {
-					if (data.message == 'applications are empty') {
-						data.applications = [];
+			if (data.request.method == 'get' && data.request.endpoint == '/applications') {
+				if (data.response.applications == null) {
+					if (data.response.message == 'applications are empty') {
+						data.response.applications = [];
 					}
 					else {
-						return alert(`error: faild to fetch list of appliations. ${data.message}`);
+						return alert(`api error: faild to fetch list of appliations. ${data.response.message}`);
 					}
 				}
-
-				this.applications = data.applications;
+				this.applications = data.response.applications;
 				this.update();
 			}
 		});

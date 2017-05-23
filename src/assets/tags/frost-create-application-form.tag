@@ -38,7 +38,8 @@
 		<button class='button orange-button' onclick={ showModal }>{ isShowModal ? '折りたたむ -' : '展開する +' }</button>
 	</div>
 	<script>
-		import fetchJson from '../scripts/fetch-json';
+		const socket = opts.socket;
+		const obs = opts.obs;
 
 		this.siteKey = document.getElementsByName('siteKey').item(0).content;
 
@@ -46,6 +47,7 @@
 		this.showModal = () => {
 			this.isShowModal = !this.isShowModal;
 		};
+
 		this.submit = (e) => {
 			e.preventDefault();
 
@@ -56,25 +58,33 @@
 				}
 			}
 
-			fetchJson('POST', '/applications', {
-				name: document.querySelector('frost-create-application-form .name-box').value,
-				description: document.querySelector('frost-create-application-form .description-box').value,
-				permissions: permissions,
-				_csrf: document.getElementsByName('_csrf').item(0).content,
-				recaptchaToken: grecaptcha.getResponse()
-			}).then(res => {
-				return res.json();
-			}).then(json => {
-				if (json.application == null) {
-					return alert(`creation error: ${json.message}`);
+			socket.emit('rest', {request: {
+				method: 'post', endpoint: '/applications',
+				headers: {'x-api-version': 1.0},
+				body: {
+					name: document.querySelector('frost-create-application-form .name-box').value,
+					description: document.querySelector('frost-create-application-form .description-box').value,
+					permissions: permissions,
+					recaptchaToken: grecaptcha.getResponse()
 				}
-
-				alert('created application.');
-				location.reload();
-
-			}).catch((reason) => {
-				alert('response error: ' + reason);
-			});
+			}});
 		};
+
+		socket.on('rest', (restData) => {
+			if (restData.request.method == 'post' && restData.request.endpoint == '/applications') {
+				if (restData.success) {
+					if (restData.response.application != null) {
+						obs.trigger('add-application', {application: restData.response.application});
+						alert('created application.');
+					}
+					else {
+						alert(`api error: faild to create application. ${data.response.message}`);
+					}
+				}
+				else {
+					alert(`internal error: ${restData.message}`);
+				}
+			}
+		});
 	</script>
 </frost-create-application-form>

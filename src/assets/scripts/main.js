@@ -12,12 +12,32 @@ import '../tags/frost-create-application-form.tag';
 const socket = io(); /* headのscriptタグからsocket.ioを読み込んで使用している(妥協) */
 const obs = riot.observable();
 
-socket.on('success', (data) => {
-	console.log('success: ' + data.message);
+const mountOption = {obs: obs, socket: socket};
+
+const userId = document.getElementsByName ('frost-userId').item(0).content;
+
+socket.on('ready', (readyData) => {
+	if (userId != null) {
+		mountOption.userId = userId;
+		socket.emit('rest', {request: {
+			method: 'get', endpoint: `/users/${userId}`,
+			headers: {'x-api-version': 1.0},
+		}});
+
+		const handler = (restData) => {
+			if (restData.request.endpoint == `/users/${userId}`) {
+				socket.removeListener('rest', handler);
+				if (restData.success) {
+					mountOption.user = restData.response.user;
+					console.log('set user data.');
+				}
+				else {
+					console.log('faild to fetch user data.');
+				}
+			}
+		};
+		socket.on('rest', handler);
+	}
 });
 
-socket.on('error', (data) => {
-	console.log('error: ' + data.message);
-});
-
-riot.mount('*', {obs: obs, socket: socket});
+riot.mount('*', mountOption);

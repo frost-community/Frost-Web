@@ -4,7 +4,7 @@
  * SocketIO.Serverのラッパークラス
  */
 class ServerStreamingManager {
-	constructor(ioServer, ioServerSocket, options) {
+	constructor(ioServer, ioServerSocket) {
 		this.ioServer = ioServer;
 		this.ioServerSocket = ioServerSocket;
 	}

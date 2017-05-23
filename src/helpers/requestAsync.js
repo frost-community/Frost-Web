@@ -8,8 +8,6 @@ module.exports = (url, options) => new Promise((resolve, reject) => {
 			reject(err);
 		}
 
-		console.log(require('util').inspect(res));
-
 		resolve({res: res, body: body});
 	});
 });

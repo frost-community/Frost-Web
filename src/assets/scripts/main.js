@@ -27,20 +27,22 @@ socket.on('ready', (readyData) => {
 			method: 'get', endpoint: `/users/${userId}`,
 			headers: {'x-api-version': 1.0},
 		}});
+	}
+});
 
-		const handler = (restData) => {
-			if (restData.request.endpoint == `/users/${userId}`) {
-				socket.removeListener('rest', handler);
-				if (restData.success) {
-					mountOption.user = restData.response.user;
-					console.log('set user data.');
-				}
-				else {
-					console.log('faild to fetch user data.');
-				}
+socket.on('rest', (restData) => {
+	if (restData.request.endpoint == `/users/${userId}`) {
+		if (restData.success) {
+			if (restData.response.user != null) {
+				mountOption.user = restData.response.user;
 			}
-		};
-		socket.on('rest', handler);
+			else {
+				console.log('api error: faild to fetch user data. ' + restData.response.message);
+			}
+		}
+		else {
+			console.log('internal error: faild to fetch user data. ' + restData.message);
+		}
 	}
 });
 

@@ -17,6 +17,16 @@ textarea {
 	padding: 0;
 }
 
+input[type=email],
+input[type=number],
+input[type=password],
+input[type=search],
+input[type=tel],
+input[type=text],
+input[type=url],
+textarea {
+	background-color: transparent;
+}
 
 /* モバイル以上の幅 */
 @media (min-width: 400px) {

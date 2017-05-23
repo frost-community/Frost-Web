@@ -14,7 +14,11 @@ const obs = riot.observable();
 
 const mountOption = {obs: obs, socket: socket};
 
-const userId = document.getElementsByName ('frost-userId').item(0).content;
+let userId;
+const elements = document.getElementsByName('frost-userId');
+if(elements.length != 0) {
+	userId = elements.item(0).content;
+}
 
 socket.on('ready', (readyData) => {
 	if (userId != null) {

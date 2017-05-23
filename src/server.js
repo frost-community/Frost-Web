@@ -236,8 +236,19 @@ module.exports = async () => {
 					csrfToken: req.csrfToken()
 				};
 
-				if (authorized)
-					req.renderParams.userId = req.session.accessKey.split('-')[0];
+				if (authorized) {
+					const userId = req.session.accessKey.split('-')[0];
+					req.renderParams.userId = userId;
+
+					if (req.session.user == null) {
+						const result = await requestApi('get', '/users/' + userId, {}, {
+							'X-Api-Version': 1.0,
+							'X-Application-Key': config.web.applicationKey,
+							'X-Access-Key': req.session.accessKey
+						});
+						req.session.user = result.body.user;
+					}
+				}
 
 				next();
 			})();

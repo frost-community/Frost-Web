@@ -1,8 +1,14 @@
 <frost-public-timeline>
-	<div class='box' style='margin: 10px 0' each={ timelinePosts }>
+	<div class='box' style='margin: 10px 0' each={ timelinePosts } if={ !loading && timelinePosts.length != 0 }>
 		<p>{ user.name } @{ user.screenName }</p>
 		<p>{ text }</p>
 		<p>{ parent.moment.unix(createdAt).fromNow() }</p>
+	</div>
+	<div style='margin: 5rem auto' if={ !loading && timelinePosts.length == 0 }>
+		<p>投稿がありません。</p>
+	</div>
+	<div style='margin: 5rem auto' if={ loading }>
+		<p>取得しています...</p>
 	</div>
 	<script>
 		import moment from 'moment';
@@ -10,9 +16,11 @@
 		const socket = opts.socket;
 
 		this.timelinePosts = [];
+		this.loading = true;
 
 		this.reload = () => {
-			this.timelinePosts = [];
+			this.loading = true;
+			this.update();
 
 			socket.emit('rest', {request: {
 				method: 'get', endpoint: '/general/timeline',
@@ -26,10 +34,9 @@
 					if (restData.response.posts != null) {
 						this.timelinePosts = restData.response.posts;
 						this.timelinePosts.reverse();
-						this.update();
 					}
 					else {
-						return alert(`api error: failed to fetch general timeline posts. ${data.response.message}`);
+						alert(`api error: failed to fetch general timeline posts. ${data.response.message}`);
 					}
 				}
 				else {
@@ -37,6 +44,9 @@
 				}
 
 				socket.emit('timeline-connect', {type: 'public'});
+
+				this.loading = false;
+				this.update();
 			}
 		});
 

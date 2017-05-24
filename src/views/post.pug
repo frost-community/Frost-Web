@@ -7,14 +7,13 @@ html(lang='ja')
 		include includes/head
 		link(rel='stylesheet', href='/styles/main.css')
 
-	body
-		.container
-			include includes/header
+	body.container
+		include includes/header
 
-			main
-				.row(style='margin-top: 10%')
-					p ポストが表示されるページです。
+		main
+			.row(style='margin-top: 30px')
+				p ポストが表示されるページです。
 
-			include includes/footer
+		include includes/footer
 
 		script(src='/scripts/bundle.js')

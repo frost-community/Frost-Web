@@ -7,30 +7,29 @@ html(lang='ja')
 		include includes/head
 		link(rel='stylesheet', href='/styles/entrance.css')
 
-	body
-		.container
-			include includes/header
+	body.container
+		include includes/header
 
-			main
-				.row(style='margin-top: 10%')
-					.eight.columns.offset-by-two(style='text-align: center')
-						h1
-							img.logo-icon(src='../images/apple-touch-icon.png')
-							| Frost
+		main
+			.row(style='margin-top: 30px')
+				.eight.columns.offset-by-two(style='text-align: center')
+					h1
+						img.logo-icon(src='../images/apple-touch-icon.png')
+						| Frost
 
-						.container
-							| A cool and cool social-media.
-							br
-							| 冷やし中華はじめました。
+					.container
+						| A cool and cool social-media.
+						br
+						| 冷やし中華はじめました。
 
-				.row(style='margin-top: 10%')
-					.eight.columns.offset-by-two.box
-						frost-login-form
+			.row(style='margin-top: 30px')
+				.eight.columns.offset-by-two.box
+					frost-login-form
 
-				.row(style='margin-top: 5%')
-					.eight.columns.offset-by-two.box
-						frost-signup-form
+			.row(style='margin-top: 30px')
+				.eight.columns.offset-by-two.box
+					frost-signup-form
 
-			include includes/footer
+		include includes/footer
 
 		script(src='/scripts/bundle.js')

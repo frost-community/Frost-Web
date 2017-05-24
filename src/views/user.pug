@@ -7,16 +7,15 @@ html(lang='ja')
 		include includes/head
 		link(rel='stylesheet', href='/styles/main.css')
 
-	body
-		.container
-			include includes/header
+	body.container
+		include includes/header
 
-			main
-				.row(style='margin-top: 10%')
-					h3 #{user.name} @#{user.screenName}
-					h4 Description:
-					p #{user.description}
+		main
+			.row(style='margin-top: 30px')
+				h3 #{user.name} @#{user.screenName}
+				h4 Description:
+				p #{user.description}
 
-			include includes/footer
+		include includes/footer
 
 		script(src='/scripts/bundle.js')

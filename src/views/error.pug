@@ -7,10 +7,9 @@ html(lang='ja')
 		include includes/head
 		link(rel='stylesheet', href='/styles/main.css')
 
-	body
-		.container
-			.row(style='margin-top: 10%')
-				h3 Sorry... An error has occurred.
-				p Message:  #{error.message}
+	body.container
+		.row(style='margin-top: 30px')
+			h3 Sorry... An error has occurred.
+			p Message:  #{error.message}
 
-			include includes/footer
+		include includes/footer

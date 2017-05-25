@@ -17,7 +17,7 @@
 .layout-container {
 	display: flex;
 
-	.side {
+	> .side {
 		min-width: 300px;
 		width: 300px;
 		margin-right: 2rem;
@@ -27,13 +27,13 @@
 		}
 	}
 
-	.main {
+	> .main {
 		min-width: 300px;
 		flex: 1;
 	}
 
-	.main > h1,
-	.side > h1 {
+	> .main > h1,
+	> .side > h1 {
 		font-size: 18px;
 		margin-bottom: 10px;
 	}

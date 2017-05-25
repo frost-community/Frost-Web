@@ -21,7 +21,7 @@
 
 		this.applications = [];
 
-		socket.on('ready', () => {
+		socket.once('ready', () => {
 			socket.emit('rest', {request: {
 				method: 'get', endpoint: '/applications',
 				headers: {'x-api-version': 1.0},

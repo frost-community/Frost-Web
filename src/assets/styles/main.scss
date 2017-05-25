@@ -30,6 +30,10 @@ body {
 	max-width: 1280px;
 }
 
+form :last-child {
+	margin-bottom: 0;
+}
+
 /* モバイル以上の幅 */
 @media (min-width: 400px) {
 

@@ -7,6 +7,8 @@ const getSessionFromCookieAsync = require('./helpers/get-session-from-cookie-asy
 const ClientStreamingManager = require('./helpers/client-streaming-manager');
 const ServerStreamingManager = require('./helpers/server-streaming-manager');
 
+const debugDetail = false;
+
 const endpointWhiteList = [
 	{method: 'get', path: '/general/timeline'},
 	{method: 'get', path: '/users/:id'},
@@ -36,7 +38,7 @@ module.exports = (http, sessionStore, config) => {
 
 			apiManager.onDisconnect(() => {
 				frontManager.disconnect();
-				console.log('front disconnect');
+				console.log('api disconnect');
 			});
 
 			// 認証チェック
@@ -60,17 +62,20 @@ module.exports = (http, sessionStore, config) => {
 					return;
 				}
 
-				console.log('[>api] rest');
+				if (debugDetail)
+					console.log('[>api] rest');
 				apiManager.stream('rest', data);
 			});
 
 			frontManager.on('timeline-connect', data => {
-				console.log('[>api] timeline-connect');
+				if (debugDetail)
+					console.log('[>api] timeline-connect');
 				apiManager.stream('timeline-connect', data);
 			});
 
 			frontManager.on('timeline-disconnect', data => {
-				console.log('[>api] timeline-disconnect');
+				if (debugDetail)
+					console.log('[>api] timeline-disconnect');
 				apiManager.stream('timeline-disconnect', data);
 			});
 
@@ -78,7 +83,8 @@ module.exports = (http, sessionStore, config) => {
 
 			const addResponseEvent = (eventName) => {
 				apiManager.on(eventName, data => {
-					console.log(`[front<] ${eventName}`);
+					if (debugDetail)
+						console.log(`[front<] ${eventName}`);
 					frontManager.stream(eventName, data);
 				});
 			};

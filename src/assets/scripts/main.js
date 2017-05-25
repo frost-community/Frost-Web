@@ -20,7 +20,7 @@ if(elements.length != 0) {
 	userId = elements.item(0).content;
 }
 
-socket.on('ready', (readyData) => {
+socket.once('ready', (readyData) => {
 	if (userId != null) {
 		mountOption.userId = userId;
 		socket.emit('rest', {request: {

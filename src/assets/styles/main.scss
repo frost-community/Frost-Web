@@ -1,19 +1,11 @@
+@import "variables";
 @import "base";
-
-/* 変数 */
-
-$backColor: hsl(214, 100%, 98%);
-$foreColor: hsl(189, 50%, 20%);
-$borderColor: rgba(0, 0, 0, 0.1);
-
-$white: hsl(0, 0%, 100%);
-$orange: hsl(33, 100%, 64%);
 
 /* 全般 */
 
 body {
-	background-color: $backColor;
-	color: $foreColor;
+	background-color: $back-color;
+	color: $fore-color;
 }
 
 .orange-button {
@@ -23,7 +15,7 @@ body {
 }
 
 .box {
-	border-color: $borderColor;
+	border-color: $border-color;
 }
 
 .container {

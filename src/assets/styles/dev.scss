@@ -1,22 +1,14 @@
+@import "variables";
 @import "base";
-
-/* 変数 */
-
-$backColor: hsl(190, 26%, 50%);
-$foreColor: hsla(0, 0%, 100%, 0.84);
-$borderColor: hsla(0, 0%, 100%, 0.3);
-
-$white: hsl(0, 0%, 100%);
-$orange: hsl(33, 100%, 64%);
 
 /* 全般 */
 
 body {
-	background-color: $backColor;
-	color: $foreColor;
+	background-color: $back-color-dev;
+	color: $fore-color-dev;
 
 	.box {
-		border-color: $borderColor;
+		border-color: $border-color-dev;
 	}
 }
 

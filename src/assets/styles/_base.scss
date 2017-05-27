@@ -1,8 +1,10 @@
+@import "variables";
 @import "header";
 
 /* 全般 */
 body {
 	font-family: Raleway, HelveticaNeue, 'Helvetica Neue', Helvetica, Arial, メイリオ, sans-serif;
+	word-wrap: break-word;
 }
 
 label {
@@ -27,7 +29,7 @@ input[type=tel],
 input[type=text],
 input[type=url],
 textarea {
-	background-color: transparent;
+	background-color: $textbox-back-color;
 }
 
 /* モバイル以上の幅 */

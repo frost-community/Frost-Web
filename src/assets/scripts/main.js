@@ -5,6 +5,7 @@ import '../tags/frost-login-form.tag';
 import '../tags/frost-signup-form.tag';
 import '../tags/frost-logout-button.tag';
 import '../tags/frost-create-status-form.tag';
+import '../tags/frost-post-status.tag';
 import '../tags/frost-public-timeline.tag';
 import '../tags/frost-applications.tag';
 import '../tags/frost-create-application-form.tag';

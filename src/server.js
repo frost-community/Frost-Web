@@ -224,7 +224,8 @@ module.exports = async () => {
 
 				req.isSmartPhone = require('./helpers/isSmartPhone')(req.header('User-Agent'));
 				if (req.isSmartPhone) {
-					app.set('views', path.join(__dirname, 'views', 'sp'));
+					// app.set('views', path.join(__dirname, 'views', 'sp'));
+					app.set('views', path.join(__dirname, 'views'));
 				}
 				else {
 					app.set('views', path.join(__dirname, 'views'));

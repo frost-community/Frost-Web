@@ -234,7 +234,8 @@ module.exports = async () => {
 				// default render params
 				req.renderParams = {
 					authorized: authorized,
-					csrfToken: req.csrfToken()
+					csrfToken: req.csrfToken(),
+					isSmartPhone: req.isSmartPhone
 				};
 
 				if (authorized) {

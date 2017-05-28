@@ -21,6 +21,7 @@
 
 			.main {
 				width: 100%;
+				word-break: break-word;
 
 				.info {
 					display: flex;

@@ -7,22 +7,20 @@ html(lang='ja')
 		include includes/head
 		link(rel='stylesheet', href='/styles/home.css')
 
-	body.container
+	body
 		include includes/header
 
 		main
-			.row(style='margin-top: 30px')
-				.layout-container
-					.side
-						.logo
-							img.icon(src='../images/apple-touch-icon.png')
-							| Frost
-						p ようこそ、#{user.name}さん。
-						hr
-						frost-create-status-form
-					.main
-						h1 パブリック タイムライン
-						frost-public-timeline
+			.side
+				.logo
+					img.icon(src='../images/apple-touch-icon.png')
+					| Frost
+				p ようこそ、#{user.name}さん。
+				hr
+				frost-create-status-form
+			.main
+				h1 パブリック タイムライン
+				frost-public-timeline
 
 		include includes/footer
 

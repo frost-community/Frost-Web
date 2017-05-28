@@ -15,13 +15,18 @@
 	}
 }
 
-.layout-container {
-	display: flex;
+main {
+	@include responsive();
+
+	margin-top: 2rem;
 
 	> .side {
-		min-width: 300px;
-		width: 300px;
 		margin-right: 2rem;
+		width: 250px;
+
+		@media (max-width: 750px) {
+			display: none;
+		}
 
 		.box {
 			margin: 10px 0;
@@ -33,19 +38,38 @@
 		flex: 1;
 	}
 
-	> .main > h1,
-	> .side > h1 {
-		font-size: 18px;
-		margin-bottom: 10px;
+	> .main ,
+	> .side {
+		margin: 0 2rem;
+
+		h1 {
+			font-size: 18px;
+			margin-bottom: 10px;
+		}
 	}
 }
 
-/* モバイル以上の幅 */
+/* モバイル以下 */
 @media (min-width: 400px) {
 
 }
 
-/* ファブレット以上の幅 */
+/* ファブレット */
 @media (min-width: 550px) {
+
+}
+
+/* タブレット */
+@media (min-width: 750px) {
+
+}
+
+/* デスクトップ */
+@media (min-width: 1000px) {
+
+}
+
+/* デスクトップHD 以上 */
+@media (min-width: 1200px) {
 
 }

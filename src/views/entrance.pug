@@ -7,28 +7,24 @@ html(lang='ja')
 		include includes/head
 		link(rel='stylesheet', href='/styles/entrance.css')
 
-	body.container
+	body
 		include includes/header
 
-		main
-			.row(style='margin-top: 30px')
-				.eight.columns.offset-by-two(style='text-align: center')
-					h1
-						img.logo-icon(src='../images/apple-touch-icon.png')
-						| Frost
+		.content
+			section
+				h1
+					img.logo-icon(src='../images/apple-touch-icon.png')
+					| Frost
+				p
+					| A cool and cool social-media.
+					br
+					| 冷やし中華はじめました。
 
-					.container
-						| A cool and cool social-media.
-						br
-						| 冷やし中華はじめました。
+			section
+				frost-login-form
 
-			.row(style='margin-top: 30px')
-				.eight.columns.offset-by-two.box
-					frost-login-form
-
-			.row(style='margin-top: 30px')
-				.eight.columns.offset-by-two.box
-					frost-signup-form
+			section
+				frost-signup-form
 
 		include includes/footer
 

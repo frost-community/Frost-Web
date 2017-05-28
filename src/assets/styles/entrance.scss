@@ -5,16 +5,8 @@
 
 .logo-icon {
 	height: 3.5rem;
-}
 
-/* モバイル以上の幅 */
-@media (min-width: 400px) {
-
-}
-
-/* ファブレット以上の幅 */
-@media (min-width: 550px) {
-	.logo-icon {
+	@media (min-width: $phablet) {
 		height: 4.5rem;
 	}
 }

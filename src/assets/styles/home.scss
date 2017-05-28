@@ -15,16 +15,12 @@
 	}
 }
 
-main {
-	@include responsive();
-
-	margin-top: 2rem;
-
+.content {
 	> .side {
 		margin-right: 2rem;
 		width: 250px;
 
-		@media (max-width: 750px) {
+		@media (max-width: $tablet) {
 			display: none;
 		}
 
@@ -47,29 +43,4 @@ main {
 			margin-bottom: 10px;
 		}
 	}
-}
-
-/* モバイル以下 */
-@media (min-width: 400px) {
-
-}
-
-/* ファブレット */
-@media (min-width: 550px) {
-
-}
-
-/* タブレット */
-@media (min-width: 750px) {
-
-}
-
-/* デスクトップ */
-@media (min-width: 1000px) {
-
-}
-
-/* デスクトップHD 以上 */
-@media (min-width: 1200px) {
-
 }

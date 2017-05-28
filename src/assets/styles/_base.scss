@@ -21,6 +21,13 @@ textarea {
 	border: none;
 	border-radius: unset;
 	padding: 0;
+
+	@media (min-width: $phablet) {
+		border: 1px solid;
+		border-radius: 4px;
+		padding: 30px;
+		padding-bottom: 0px;
+	}
 }
 
 input[type=email],
@@ -32,19 +39,4 @@ input[type=text],
 input[type=url],
 textarea {
 	background-color: $textbox-back-color;
-}
-
-/* モバイル以上の幅 */
-@media (min-width: 400px) {
-
-}
-
-/* ファブレット以上の幅 */
-@media (min-width: 550px) {
-	.box {
-		border: 1px solid;
-		border-radius: 4px;
-		padding: 30px;
-		padding-bottom: 0px;
-	}
 }

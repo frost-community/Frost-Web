@@ -18,20 +18,12 @@ body {
 	border-color: $border-color;
 }
 
-.container {
-	max-width: 1280px;
+.content {
+	@include responsive();
+
+	margin-top: 2rem;
 }
 
 form :last-child {
 	margin-bottom: 0;
-}
-
-/* モバイル以上の幅 */
-@media (min-width: 400px) {
-
-}
-
-/* ファブレット以上の幅 */
-@media (min-width: 550px) {
-
 }

@@ -180,8 +180,7 @@ module.exports = async () => {
 					res.end();
 				}
 				catch(err) {
-					console.log('faild');
-					console.log(err);
+					console.dir(err);
 					res.status(500).json({message: typeof(err) == 'string' ? err : 'faild'});
 				}
 			})();
@@ -209,8 +208,7 @@ module.exports = async () => {
 					res.status(result.body.statusCode).send(result.body);
 				}
 				catch(err) {
-					console.log('faild');
-					console.log(err);
+					console.dir(err);
 					res.status(500).json({message: typeof(e) == 'string' ? err : 'faild'});
 				}
 			})();
@@ -260,7 +258,7 @@ module.exports = async () => {
 
 		app.get('/', (req, res) => {
 			if (req.session.accessKey != null) {
-				res.render('home', Object.assign(req.renderParams, {user: req.session.user}));
+				res.render('home', Object.assign(req.renderParams, {account: req.session.user}));
 			}
 			else {
 				res.render('entrance', Object.assign(req.renderParams, {siteKey: config.web.reCAPTCHA.siteKey}));
@@ -282,17 +280,44 @@ module.exports = async () => {
 						next();
 					}
 					else {
-						res.render('user', Object.assign(req.renderParams, {user: result.body.users[0]}));
+						res.render('user', Object.assign(req.renderParams, {account: req.session.user, user: result.body.users[0]}));
 					}
 				}
 				catch(err) {
+					console.dir(err);
 					res.status(500).send(err);
 				}
 			})();
 		});
 
-		app.get('/posts/:postId', (req, res) => {
-			res.render('post', Object.assign(req.renderParams, {post: {user: {screenName: 'hoge'}}}));
+		app.get('/posts/:postId', (req, res, next) => {
+			(async () => {
+				try {
+					const postId = req.params.postId;
+
+					const result = await requestApi('get', `/posts/${postId}`, {}, {
+						'X-Api-Version': 1.0,
+						'X-Application-Key': config.web.applicationKey,
+						'X-Access-Key': req.session.accessKey != null ? req.session.accessKey : config.web.hostAccessKey,
+					});
+
+					if (result.res.statusCode >= 400) {
+						if (result.res.statusCode == 404) {
+							next();
+						}
+						else {
+							throw new Error(result.body.message);
+						}
+					}
+					else {
+						res.render('post', Object.assign(req.renderParams, {account: req.session.user, post: result.body.post}));
+					}
+				}
+				catch(err) {
+					console.dir(err);
+					res.status(500).send(err);
+				}
+			})();
 		});
 
 		app.get('/dev', (req, res) => {
@@ -319,6 +344,7 @@ module.exports = async () => {
 		await require('./streaming-proxy')(http, sessionStore, config);
 	}
 	catch(err) {
-		console.log(`Unprocessed Server Error: ${err.stack}`);
+		console.log('Unprocessed Server Error:');
+		console.dir(err);
 	}
 };

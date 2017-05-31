@@ -2,7 +2,7 @@
 	<div class='side'></div>
 	<div class='main'>
 		<div class='info'>
-			<div class='name'>{ status.user.name } @{ status.user.screenName }</div>
+			<a href={ '/users/' + status.user.screenName }>{ status.user.name } @{ status.user.screenName }</a>
 			<time>{ moment.unix(opts.status.createdAt).fromNow() }</time>
 		</div>
 		<p ref='text'></p>

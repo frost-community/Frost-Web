@@ -3,7 +3,7 @@
 	<div class='main'>
 		<div class='info'>
 			<a href={ '/users/' + status.user.screenName }>{ status.user.name } @{ status.user.screenName }</a>
-			<time>{ moment.unix(opts.status.createdAt).fromNow() }</time>
+			<time datetime={ getTime().format() } title={ getTime().format() }>{ getTime().fromNow() }</time>
 		</div>
 		<p ref='text'></p>
 
@@ -34,8 +34,13 @@
 
 	<script>
 		import moment from 'moment';
+		import 'moment/';
 		this.moment = moment;
 		this.status = opts.status;
+
+		this.getTime = () => {
+			return this.moment.unix(this.status.createdAt);
+		};
 
 		this.compileText = (text) => {
 			text = text

@@ -3,7 +3,9 @@ header
 		li
 			a(href='/') Home
 		li
-			a(href='/dev' target='_blank') Frost Developers Center
+			a(href='/dev' target='_blank') Developers Center
 		if userId != null
+			li
+				a(href='/users/'+user.screenName target='_blank') @#{user.screenName}
 			li
 				frost-logout-button

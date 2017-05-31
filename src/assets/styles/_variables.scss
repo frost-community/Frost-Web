@@ -26,19 +26,29 @@ $textbox-back-color: transparent;
 	display: flex;
 	min-width: $minWidth;
 	margin: 0 auto;
-	padding: 0 2rem;
+	padding: 0 .5rem;
 
-	// タブレットより幅の小さい端末では100%幅表示
+	// タブレットより幅の小さい端末
 	@media (max-width: $tablet - 1px) {
 		width: 100%;
 	}
 
+	// 携帯端末の幅以上の端末
+	@media (min-width: $phone) {
+		padding: 0 1.5rem;
+	}
+
+	// タブレットの幅以上の端末
 	@media (min-width: $tablet) {
 		max-width: $tablet;
 	}
+
+	// デスクトップの幅以上の端末
 	@media (min-width: $desktop) {
 		max-width: $desktop;
 	}
+
+	// デスクトップ(HD)の幅以上の端末
 	@media (min-width: $desktopHD) {
 		max-width: $desktopHD;
 	}

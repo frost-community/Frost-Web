@@ -21,7 +21,7 @@ body {
 .content {
 	@include responsive();
 
-	padding-top: 2rem;
+	padding-top: 2rem !important;
 }
 
 form :last-child {

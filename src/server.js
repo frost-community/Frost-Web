@@ -248,6 +248,7 @@ module.exports = async () => {
 						});
 						req.session.user = result.body.user;
 					}
+					req.renderParams.account = req.session.user;
 				}
 
 				next();
@@ -258,7 +259,7 @@ module.exports = async () => {
 
 		app.get('/', (req, res) => {
 			if (req.session.accessKey != null) {
-				res.render('home', Object.assign(req.renderParams, {account: req.session.user}));
+				res.render('home', Object.assign(req.renderParams, {}));
 			}
 			else {
 				res.render('entrance', Object.assign(req.renderParams, {siteKey: config.web.reCAPTCHA.siteKey}));
@@ -280,7 +281,7 @@ module.exports = async () => {
 						next();
 					}
 					else {
-						res.render('user', Object.assign(req.renderParams, {account: req.session.user, user: result.body.users[0]}));
+						res.render('user', Object.assign(req.renderParams, {user: result.body.users[0]}));
 					}
 				}
 				catch(err) {
@@ -310,7 +311,7 @@ module.exports = async () => {
 						}
 					}
 					else {
-						res.render('post', Object.assign(req.renderParams, {account: req.session.user, post: result.body.post}));
+						res.render('post', Object.assign(req.renderParams, {post: result.body.post}));
 					}
 				}
 				catch(err) {

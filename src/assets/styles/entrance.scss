@@ -6,7 +6,7 @@
 .logo-icon {
 	height: 3.5rem;
 
-	@media (min-width: $phablet) {
+	@media (min-width: $phone) {
 		height: 4.5rem;
 	}
 }
@@ -15,7 +15,7 @@
 	flex-direction: column;
 	align-items: flex-start;
 
-	@media (min-width: $phablet) {
+	@media (min-width: $phone) {
 		align-items: center;
 	}
 
@@ -23,7 +23,7 @@
 		padding: 3rem;
 		margin: 1rem;
 
-		@media (min-width: $phablet) {
+		@media (min-width: $phone) {
 			width: 370px;
 			border: 1px solid $border-color;
 			border-radius: 4px;

@@ -2,6 +2,10 @@
 @import "header";
 
 /* 全般 */
+* {
+	box-sizing: border-box;
+}
+
 body {
 	margin: 0;
 	padding: 0;
@@ -22,7 +26,7 @@ textarea {
 	border-radius: unset;
 	padding: 0;
 
-	@media (min-width: $phablet) {
+	@media (min-width: $phone) {
 		border: 1px solid;
 		border-radius: 4px;
 		padding: 30px;

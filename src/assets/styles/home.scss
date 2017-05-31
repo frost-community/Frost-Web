@@ -17,10 +17,9 @@
 
 .content {
 	> .side {
-		margin-right: 2rem;
 		width: 250px;
 
-		@media (max-width: $tablet) {
+		@media (max-width: $tablet - 1px) {
 			display: none;
 		}
 
@@ -34,13 +33,15 @@
 		flex: 1;
 	}
 
-	> .main ,
-	> .side {
-		margin: 0 2rem;
-
+	> .side,
+	> .main {
 		h1 {
 			font-size: 18px;
 			margin-bottom: 10px;
 		}
+	}
+
+	> :not(:last-child) {
+		margin-right: 2rem;
 	}
 }

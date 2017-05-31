@@ -1,10 +1,9 @@
 /* display width */
 
-$mobile: 400px;
-$phablet: 550px;
-$tablet: 750px;
-$desktop: 1000px;
-$desktopHD: 1200px;
+$phone: 420px;
+$tablet: 768px;
+$desktop: 1024px;
+$desktopHD: 1280px;
 
 /* colors */
 
@@ -27,13 +26,13 @@ $textbox-back-color: transparent;
 	display: flex;
 	min-width: $minWidth;
 	margin: 0 auto;
+	padding: 0 2rem;
 
-	@media (min-width: $mobile) {
-		max-width: $mobile;
+	// タブレットより幅の小さい端末では100%幅表示
+	@media (max-width: $tablet - 1px) {
+		width: 100%;
 	}
-	@media (min-width: $phablet) {
-		max-width: $phablet;
-	}
+
 	@media (min-width: $tablet) {
 		max-width: $tablet;
 	}

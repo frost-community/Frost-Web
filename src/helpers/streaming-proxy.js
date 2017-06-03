@@ -3,97 +3,113 @@
 const pathToRegexp = require('path-to-regexp');
 const requestAsync = require('request-promise');
 
-const debugDetail = false;
-
-// 利用可能なエンドポイント一覧
-const endpointWhiteList = [
-	{method: 'get', path: '/general/timeline'},
-	{method: 'get', path: '/users/:id'},
-	{method: 'post', path: '/applications', before: async (data, frontManager, apiManager, config) => {
-		const verifyResult = await requestAsync('https://www.google.com/recaptcha/api/siteverify', {
-			method: 'POST',
-			json: true,
-			form: {secret: config.web.reCAPTCHA.secretKey, response: data.request.body.recaptchaToken}
-		});
-
-		if (verifyResult.body.success !== true) {
-			frontManager.stream('rest', {success: false, request: data.request, message: 'faild to verify recaptcha'});
-		}
-
-		return verifyResult.body.success === true;
-	}},
-	{method: 'get', path: '/applications'},
-	{method: 'get', path: '/applications/:id'},
-	{method: 'post', path: '/posts/post_status'},
-];
-
 /**
  * ストリーミングREST APIへのリクエストを代理します。
  */
-module.exports = (frontManager, apiManager, config) => {
+class StreamingProxy {
+	constructor(frontManager, apiManager, debugDetail, config) {
+		// 利用可能なエンドポイント一覧
+		this.endpointWhiteList = [
+			{method: 'get', path: '/general/timeline'},
+			{method: 'get', path: '/users/:id'},
+			{method: 'post', path: '/applications', before: async (data, frontManager, apiManager, config) => {
+				const verifyResult = await requestAsync('https://www.google.com/recaptcha/api/siteverify', {
+					method: 'POST',
+					json: true,
+					form: {secret: config.web.reCAPTCHA.secretKey, response: data.request.body.recaptchaToken}
+				});
 
-	// front -> api
+				if (verifyResult.body.success !== true) {
+					frontManager.stream('rest', {success: false, request: data.request, message: 'faild to verify recaptcha'});
+				}
 
-	frontManager.on('rest', data => {
-		(async () => {
-			const {request} = data;
-			const {method, endpoint} = request;
+				return verifyResult.body.success === true;
+			}},
+			{method: 'get', path: '/applications'},
+			{method: 'get', path: '/applications/:id'},
+			{method: 'post', path: '/posts/post_status'},
+		];
 
-			const endpointInfo = endpointWhiteList.find(e => {
-				return e.method == method && pathToRegexp(e.path).test(endpoint);
-			});
+		// クライアントに返却する必要のあるイベント一覧
+		this.needReturnEventNames = [
+			'authorization',
+			'rest',
+			'timeline-connect',
+			'timeline-disconnect',
+			'data:public:status',
+			'data:home:status'
+		];
 
-			if (endpointInfo == null) {
-				frontManager.stream('rest', {success: false, request: request, message: `'${endpoint}' endpoint is not access allowed on 'rest' event.`});
-				return;
-			}
+		this.frontManager = frontManager;
+		this.apiManager = apiManager;
+		this.debugDetail = debugDetail != null ? debugDetail : false;
+		this.config = config;
+	}
 
-			if (debugDetail)
-				console.log('[>api] rest');
+	/**
+	 * クライアントに返却する必要のあるイベントを追加します。
+	 */
+	addNeedReturnEvent (eventName) {
+		this.apiManager.on(eventName, data => {
+			if (this.debugDetail)
+				console.log(`[front<] ${eventName}`);
+			this.frontManager.stream(eventName, data);
+		});
+	}
 
-			// 前処理
-			if (endpointInfo.before != null) {
-				if (await endpointInfo.before(data, frontManager, apiManager, config) !== true) {
+	/**
+	 * 開始します。
+	 */
+	start() {
+
+		// front -> api
+
+		this.frontManager.on('rest', data => {
+			(async () => {
+				const {request} = data;
+				const {method, endpoint} = request;
+
+				const endpointInfo = this.endpointWhiteList.find(e => {
+					return e.method == method && pathToRegexp(e.path).test(endpoint);
+				});
+
+				if (endpointInfo == null) {
+					this.frontManager.stream('rest', {success: false, request: request, message: `'${endpoint}' endpoint is not access allowed on 'rest' event.`});
 					return;
 				}
-			}
 
-			apiManager.stream('rest', data);
-		})();
-	});
+				if (this.debugDetail)
+					console.log('[>api] rest');
 
-	frontManager.on('timeline-connect', data => {
-		if (debugDetail)
-			console.log('[>api] timeline-connect');
-		apiManager.stream('timeline-connect', data);
-	});
+				// 前処理
+				if (endpointInfo.before != null) {
+					if (await endpointInfo.before(data, this.frontManager, this.apiManager, this.config) !== true) {
+						return;
+					}
+				}
 
-	frontManager.on('timeline-disconnect', data => {
-		if (debugDetail)
-			console.log('[>api] timeline-disconnect');
-		apiManager.stream('timeline-disconnect', data);
-	});
-
-	// front <- api
-
-	const addResponseEvent = (eventName) => {
-		apiManager.on(eventName, data => {
-			if (debugDetail)
-				console.log(`[front<] ${eventName}`);
-			frontManager.stream(eventName, data);
+				this.apiManager.stream('rest', data);
+			})();
 		});
-	};
 
-	const eventNames = [
-		'authorization',
-		'rest',
-		'timeline-connect',
-		'timeline-disconnect',
-		'data:public:status',
-		'data:home:status'
-	];
+		this.frontManager.on('timeline-connect', data => {
+			if (this.debugDetail)
+				console.log('[>api] timeline-connect');
+			this.apiManager.stream('timeline-connect', data);
+		});
 
-	for (const eventName of eventNames) {
-		addResponseEvent(eventName);
+		this.frontManager.on('timeline-disconnect', data => {
+			if (this.debugDetail)
+				console.log('[>api] timeline-disconnect');
+			this.apiManager.stream('timeline-disconnect', data);
+		});
+
+		// front <- api
+
+		for (const eventName of this.needReturnEventNames) {
+			this.addNeedReturnEvent(eventName);
+		}
 	}
-};
+}
+
+module.exports = StreamingProxy;

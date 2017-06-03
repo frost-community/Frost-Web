@@ -5,7 +5,7 @@ const ioClient = require('socket.io-client');
 const getSessionFromCookieAsync = require('./helpers/get-session-from-cookie-async');
 const ClientStreamingManager = require('./helpers/client-streaming-manager');
 const ServerStreamingManager = require('./helpers/server-streaming-manager');
-const streamingProxy = require('./helpers/streaming-proxy');
+const StreamingProxy = require('./helpers/streaming-proxy');
 
 /**
  * Webクライアントのストリーミング接続をサポートします。
@@ -42,7 +42,8 @@ module.exports = (http, sessionStore, config) => {
 				return;
 			}
 
-			streamingProxy(frontManager, apiManager, config);
+			const streamingProxy = new StreamingProxy(frontManager, apiManager, false, config);
+			streamingProxy.start();
 
 			const userId = session.accessKey.split('-')[0];
 			frontManager.stream('ready', {userId: userId});

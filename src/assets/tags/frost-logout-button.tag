@@ -1,5 +1,5 @@
 <frost-logout-button>
-	<button type='button' onclick={ signout }>Logout</button>
+	<a href='javascript:void(0)' onclick={ signout }>Logout</a>
 
 	<script>
 		import fetchJson from '../scripts/fetch-json';

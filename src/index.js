@@ -1,5 +1,7 @@
 'use strict';
 
+const server = require('./server');
+
 (async () => {
-	await require('./server')();
+	await server();
 })();

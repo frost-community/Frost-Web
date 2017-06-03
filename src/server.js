@@ -1,24 +1,25 @@
 'use strict';
 
+const bodyParser = require('body-parser');
+const checkLogin = require('./helpers/checkLogin');
+const compression = require('compression');
+const connectRedis = require('connect-redis');
+const csurf = require('csurf');
+const express = require('express');
+const expressSession = require('express-session');
 const fs = require('fs');
-const requestAsync = require('./helpers/requestAsync');
+const helmet = require('helmet');
 const i = require('./helpers/readline');
 const loadConfig = require('./helpers/loadConfig');
-const express = require('express');
-const httpClass = require('http');
-const app = express();
-const http = httpClass.Server(app);
-const compression = require('compression');
-const bodyParser = require('body-parser');
-const session = require('express-session');
-const RedisStore = require('connect-redis')(session);
-const csurf = require('csurf');
-const path = require('path');
 const moment = require('moment');
-const helmet = require('helmet');
-const request = require('./helpers/requestAsync');
+const path = require('path');
 const requestApi = require('./helpers/requestApi');
-const checkLogin = require('./helpers/checkLogin');
+const requestAsync = require('./helpers/requestAsync');
+const server = require('http').Server;
+
+const app = express();
+const http = server(app);
+const sessionStore = new (connectRedis(expressSession))({});
 
 const urlConfigFile = 'https://raw.githubusercontent.com/Frost-Dev/Frost/master/config.json';
 const questionResult = (ans) => (ans.toLowerCase()).indexOf('y') === 0;
@@ -73,8 +74,7 @@ module.exports = async () => {
 
 		// session
 
-		const sessionStore = new RedisStore({});
-		app.use(session({
+		app.use(expressSession({
 			store: sessionStore,
 			name: config.web.session.name,
 			secret: config.web.session.SecretToken,
@@ -156,7 +156,7 @@ module.exports = async () => {
 		app.post('/session/register', (req, res) => {
 			(async () => {
 				try {
-					const verifyResult = await request('https://www.google.com/recaptcha/api/siteverify', {
+					const verifyResult = await requestAsync('https://www.google.com/recaptcha/api/siteverify', {
 						method: 'POST',
 						json: true,
 						form: {secret: config.web.reCAPTCHA.secretKey, response: req.body.recaptchaToken}
@@ -189,7 +189,7 @@ module.exports = async () => {
 		app.post('/applications', checkLogin, (req, res) => {
 			(async () => {
 				try {
-					const verifyResult = await request('https://www.google.com/recaptcha/api/siteverify', {
+					const verifyResult = await requestAsync('https://www.google.com/recaptcha/api/siteverify', {
 						method: 'POST',
 						json: true,
 						form: {secret: config.web.reCAPTCHA.secretKey, response: req.body.recaptchaToken}
@@ -342,7 +342,7 @@ module.exports = async () => {
 			console.log(`listen on port: ${config.web.port}`);
 		});
 
-		await require('./streaming-proxy')(http, sessionStore, config);
+		await require('./streaming-server')(http, sessionStore, config);
 	}
 	catch(err) {
 		console.log('Unprocessed Server Error:');

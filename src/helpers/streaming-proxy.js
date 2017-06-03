@@ -19,11 +19,11 @@ class StreamingProxy {
 					form: {secret: config.web.reCAPTCHA.secretKey, response: data.request.body.recaptchaToken}
 				});
 
-				if (verifyResult.body.success !== true) {
+				if (verifyResult.success !== true) {
 					frontManager.stream('rest', {success: false, request: data.request, message: 'faild to verify recaptcha'});
 				}
 
-				return verifyResult.body.success === true;
+				return verifyResult.success === true;
 			}},
 			{method: 'get', path: '/applications'},
 			{method: 'get', path: '/applications/:id'},

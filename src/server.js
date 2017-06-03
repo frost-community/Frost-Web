@@ -47,7 +47,7 @@ module.exports = async () => {
 					configPath = `${process.cwd()}/config.json`;
 				}
 
-				const configJson = (await requestAsync(urlConfigFile)).body;
+				const configJson = await requestAsync(urlConfigFile);
 				fs.writeFileSync(configPath, configJson);
 			}
 			config = loadConfig();
@@ -116,8 +116,8 @@ module.exports = async () => {
 				'X-Api-Version': 1.0
 			});
 
-			if (!result.body.iceAuthKey) {
-				throw new Error(`error: ${result.body.message}`);
+			if (!result.iceAuthKey) {
+				throw new Error(`error: ${result.message}`);
 			}
 
 			result = await requestApiAsync('post', '/ice_auth/authorize_basic', {
@@ -127,14 +127,14 @@ module.exports = async () => {
 				'X-Api-Version': 1.0,
 				'X-Application-Key': config.web.applicationKey,
 				'X-Access-Key': config.web.hostAccessKey,
-				'X-Ice-Auth-Key': result.body.iceAuthKey
+				'X-Ice-Auth-Key': result.iceAuthKey
 			});
 
-			if (!result.body.accessKey) {
-				throw new Error(`error: ${result.body.message}`);
+			if (!result.accessKey) {
+				throw new Error(`error: ${result.message}`);
 			}
 
-			req.session.accessKey = result.body.accessKey;
+			req.session.accessKey = result.accessKey;
 		};
 
 		app.route('/session')
@@ -144,9 +144,9 @@ module.exports = async () => {
 					await createSession(req, res);
 					res.end();
 				}
-				catch(e) {
+				catch(err) {
 					console.log('faild');
-					console.log(e);
+					console.dir(err);
 					res.status(400).json({message: 'faild'});
 				}
 			})();
@@ -165,7 +165,7 @@ module.exports = async () => {
 						form: {secret: config.web.reCAPTCHA.secretKey, response: req.body.recaptchaToken}
 					});
 
-					if (verifyResult.body.success !== true) {
+					if (verifyResult.success !== true) {
 						return res.status(400).json({message: 'faild to verify recaptcha'});
 					}
 
@@ -175,8 +175,8 @@ module.exports = async () => {
 						'X-Access-Key': config.web.hostAccessKey
 					});
 
-					if (!result.body.user) {
-						return res.status(result.res.statusCode).send(result.body);
+					if (!result.user) {
+						return res.status(result.statusCode != null ? result.statusCode : 500).send(result);
 					}
 
 					await createSession(req, res);
@@ -198,7 +198,7 @@ module.exports = async () => {
 						form: {secret: config.web.reCAPTCHA.secretKey, response: req.body.recaptchaToken}
 					});
 
-					if (verifyResult.body.success !== true) {
+					if (verifyResult.success !== true) {
 						return res.status(400).json({message: 'faild to verify recaptcha'});
 					}
 
@@ -208,7 +208,7 @@ module.exports = async () => {
 						'X-Access-Key': req.session.accessKey
 					});
 
-					res.status(result.body.statusCode).send(result.body);
+					res.status(result.statusCode != null ? result.statusCode : 500).send(result);
 				}
 				catch(err) {
 					console.dir(err);
@@ -249,7 +249,7 @@ module.exports = async () => {
 							'X-Application-Key': config.web.applicationKey,
 							'X-Access-Key': req.session.accessKey
 						});
-						req.session.user = result.body.user;
+						req.session.user = result.user;
 					}
 					req.renderParams.account = req.session.user;
 				}
@@ -280,11 +280,11 @@ module.exports = async () => {
 						'X-Access-Key': req.session.accessKey != null ? req.session.accessKey : config.web.hostAccessKey,
 					});
 
-					if (result.body.users == null || result.body.users.length == 0) {
+					if (result.users == null || result.users.length == 0) {
 						next();
 					}
 					else {
-						res.render('user', Object.assign(req.renderParams, {user: result.body.users[0]}));
+						res.render('user', Object.assign(req.renderParams, {user: result.users[0]}));
 					}
 				}
 				catch(err) {
@@ -305,16 +305,16 @@ module.exports = async () => {
 						'X-Access-Key': req.session.accessKey != null ? req.session.accessKey : config.web.hostAccessKey,
 					});
 
-					if (result.res.statusCode >= 400) {
-						if (result.res.statusCode == 404) {
+					if (result.statusCode >= 400) {
+						if (result.statusCode == 404) {
 							next();
 						}
 						else {
-							throw new Error(result.body.message);
+							throw new Error(result.message);
 						}
 					}
 					else {
-						res.render('post', Object.assign(req.renderParams, {post: result.body.post}));
+						res.render('post', Object.assign(req.renderParams, {post: result.post}));
 					}
 				}
 				catch(err) {

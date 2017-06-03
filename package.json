@@ -43,6 +43,7 @@
     "prominence": "^0.2.0",
     "pug": "^2.0.0-beta11",
     "request": "^2.81.0",
+    "request-promise": "^4.2.1",
     "rimraf": "^2.6.1",
     "riot": "^3.5.1",
     "rollup": "^0.41.6",

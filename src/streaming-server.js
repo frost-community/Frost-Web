@@ -1,10 +1,5 @@
 'use strict';
 
-/*
-Description:
- Webクライアントのストリーミング接続をサポートします。セッション経由でAPIにアクセスできる機能が含まれます。
-*/
-
 const ioServer = require('socket.io');
 const ioClient = require('socket.io-client');
 const getSessionFromCookieAsync = require('./helpers/get-session-from-cookie-async');
@@ -12,6 +7,10 @@ const ClientStreamingManager = require('./helpers/client-streaming-manager');
 const ServerStreamingManager = require('./helpers/server-streaming-manager');
 const streamingProxy = require('./streaming-proxy');
 
+/**
+ * Webクライアントのストリーミング接続をサポートします。
+ * セッション経由でAPIにアクセスできる機能が含まれます。
+ */
 module.exports = (http, sessionStore, config) => {
 	const ioServerToFront = ioServer(http);
 
@@ -19,7 +18,7 @@ module.exports = (http, sessionStore, config) => {
 		(async () => {
 			const frontManager = new ServerStreamingManager(ioServerToFront, ioServerToFrontSocket);
 
-			// セッションからAPIにアクセスするための情報を取得
+			// セッションからaccessKeyを取得
 			const session = await getSessionFromCookieAsync(ioServerToFrontSocket.request.headers.cookie, config.web.session.name, config.web.session.SecretToken, sessionStore);
 
 			const apiManager = new ClientStreamingManager(ioClient(config.web.apiBaseUrl, {

@@ -1,7 +1,7 @@
 'use strict';
 
 const bodyParser = require('body-parser');
-const checkLogin = require('./helpers/checkLogin');
+const checkLogin = require('./helpers/check-login');
 const compression = require('compression');
 const connectRedis = require('connect-redis');
 const csurf = require('csurf');
@@ -10,27 +10,30 @@ const expressSession = require('express-session');
 const fs = require('fs');
 const helmet = require('helmet');
 const i = require('./helpers/input-async');
-const loadConfig = require('./helpers/loadConfig');
+const isSmartPhone = require('./helpers/is-smart-phone');
+const loadConfig = require('./helpers/load-config');
 const moment = require('moment');
 const path = require('path');
-const requestApi = require('./helpers/requestApi');
-const requestAsync = require('./helpers/requestAsync');
+const requestApiAsync = require('./helpers/request-api-async');
+const requestAsync = require('request-promise');
 const server = require('http').Server;
-
-const app = express();
-const http = server(app);
-const sessionStore = new (connectRedis(expressSession))({});
+const streamingServer = require('./streaming-server');
 
 const urlConfigFile = 'https://raw.githubusercontent.com/Frost-Dev/Frost/master/config.json';
 const questionResult = (ans) => (ans.toLowerCase()).indexOf('y') === 0;
 
-process.on('unhandledRejection', console.dir);
-
+/**
+ * Webクライアント向けのWebサーバ。
+ */
 module.exports = async () => {
 	try {
 		console.log('--------------------');
 		console.log('  Frost-Web Server  ');
 		console.log('--------------------');
+
+		const app = express();
+		const http = server(app);
+		const sessionStore = new (connectRedis(expressSession))({});
 
 		let config = loadConfig();
 		if (config == null) {
@@ -107,7 +110,7 @@ module.exports = async () => {
 		const createSession = async(req, res) => {
 			let result;
 
-			result = await requestApi('post', '/ice_auth', {
+			result = await requestApiAsync('post', '/ice_auth', {
 				applicationKey: config.web.applicationKey
 			}, {
 				'X-Api-Version': 1.0
@@ -117,7 +120,7 @@ module.exports = async () => {
 				throw new Error(`error: ${result.body.message}`);
 			}
 
-			result = await requestApi('post', '/ice_auth/authorize_basic', {
+			result = await requestApiAsync('post', '/ice_auth/authorize_basic', {
 				screenName: req.body.screenName,
 				password: req.body.password
 			}, {
@@ -166,7 +169,7 @@ module.exports = async () => {
 						return res.status(400).json({message: 'faild to verify recaptcha'});
 					}
 
-					const result = await requestApi('post', '/account', req.body, {
+					const result = await requestApiAsync('post', '/account', req.body, {
 						'X-Api-Version': 1.0,
 						'X-Application-Key': config.web.applicationKey,
 						'X-Access-Key': config.web.hostAccessKey
@@ -199,7 +202,7 @@ module.exports = async () => {
 						return res.status(400).json({message: 'faild to verify recaptcha'});
 					}
 
-					const result = await requestApi('post', '/applications', req.body, {
+					const result = await requestApiAsync('post', '/applications', req.body, {
 						'X-Api-Version': 1.0,
 						'X-Application-Key': config.web.applicationKey,
 						'X-Access-Key': req.session.accessKey
@@ -220,7 +223,7 @@ module.exports = async () => {
 			(async () => {
 				const authorized = req.session.accessKey != null;
 
-				req.isSmartPhone = require('./helpers/isSmartPhone')(req.header('User-Agent'));
+				req.isSmartPhone = isSmartPhone(req.header('User-Agent'));
 				if (req.isSmartPhone) {
 					// app.set('views', path.join(__dirname, 'views', 'sp'));
 					app.set('views', path.join(__dirname, 'views'));
@@ -241,7 +244,7 @@ module.exports = async () => {
 					req.renderParams.userId = userId;
 
 					if (req.session.user == null) {
-						const result = await requestApi('get', '/users/' + userId, {}, {
+						const result = await requestApiAsync('get', '/users/' + userId, {}, {
 							'X-Api-Version': 1.0,
 							'X-Application-Key': config.web.applicationKey,
 							'X-Access-Key': req.session.accessKey
@@ -271,7 +274,7 @@ module.exports = async () => {
 				try {
 					const screenName = req.params.screenName;
 
-					const result = await requestApi('get', `/users?screen_names=${screenName}`, {}, {
+					const result = await requestApiAsync('get', `/users?screen_names=${screenName}`, {}, {
 						'X-Api-Version': 1.0,
 						'X-Application-Key': config.web.applicationKey,
 						'X-Access-Key': req.session.accessKey != null ? req.session.accessKey : config.web.hostAccessKey,
@@ -296,7 +299,7 @@ module.exports = async () => {
 				try {
 					const postId = req.params.postId;
 
-					const result = await requestApi('get', `/posts/${postId}`, {}, {
+					const result = await requestApiAsync('get', `/posts/${postId}`, {}, {
 						'X-Api-Version': 1.0,
 						'X-Application-Key': config.web.applicationKey,
 						'X-Access-Key': req.session.accessKey != null ? req.session.accessKey : config.web.hostAccessKey,
@@ -342,7 +345,9 @@ module.exports = async () => {
 			console.log(`listen on port: ${config.web.port}`);
 		});
 
-		await require('./streaming-server')(http, sessionStore, config);
+		streamingServer(http, sessionStore, config);
+
+		console.log('Initialization complete.');
 	}
 	catch(err) {
 		console.log('Unprocessed Server Error:');

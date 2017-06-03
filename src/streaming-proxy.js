@@ -1,15 +1,11 @@
 'use strict';
 
-/*
-Description:
- ストリーミングREST APIへのリクエストを代理します。これはStreamingServerの一部です。
-*/
-
 const pathToRegexp = require('path-to-regexp');
-const requestAsync = require('./helpers/requestAsync');
+const requestAsync = require('request-promise');
 
 const debugDetail = false;
 
+// 利用可能なエンドポイント一覧
 const endpointWhiteList = [
 	{method: 'get', path: '/general/timeline'},
 	{method: 'get', path: '/users/:id'},
@@ -31,8 +27,13 @@ const endpointWhiteList = [
 	{method: 'post', path: '/posts/post_status'},
 ];
 
+/**
+ * ストリーミングREST APIへのリクエストを代理します。
+ * これはStreamingServerの一部です。
+ */
 module.exports = (frontManager, apiManager, config) => {
-	// front -> web -> api
+
+	// front -> api
 
 	frontManager.on('rest', data => {
 		(async () => {
@@ -74,7 +75,7 @@ module.exports = (frontManager, apiManager, config) => {
 		apiManager.stream('timeline-disconnect', data);
 	});
 
-	// front <- web <- api
+	// front <- api
 
 	const addResponseEvent = (eventName) => {
 		apiManager.on(eventName, data => {

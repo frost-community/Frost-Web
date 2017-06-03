@@ -5,7 +5,7 @@ const ioClient = require('socket.io-client');
 const getSessionFromCookieAsync = require('./helpers/get-session-from-cookie-async');
 const ClientStreamingManager = require('./helpers/client-streaming-manager');
 const ServerStreamingManager = require('./helpers/server-streaming-manager');
-const streamingProxy = require('./streaming-proxy');
+const streamingProxy = require('./helpers/streaming-proxy');
 
 /**
  * Webクライアントのストリーミング接続をサポートします。

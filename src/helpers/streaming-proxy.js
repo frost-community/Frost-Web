@@ -29,7 +29,6 @@ const endpointWhiteList = [
 
 /**
  * ストリーミングREST APIへのリクエストを代理します。
- * これはStreamingServerの一部です。
  */
 module.exports = (frontManager, apiManager, config) => {
 

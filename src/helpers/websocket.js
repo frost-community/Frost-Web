@@ -5,30 +5,15 @@ const WsServer = ws.server;
 const WsClient = ws.client;
 const EventEmitter = require('events').EventEmitter;
 
-class Utility {
-	static parse (json) {
-		const event = JSON.parse(json);
-		if (event.name == null || event.content == null || typeof event.name != 'string') {
-			throw new Error('invalid event data');
-		}
-		return event;
-	}
-
-	static serialize(eventName, content) {
-		return JSON.stringify({name: eventName, content: content});
-	}
-}
-exports.Utility = Utility;
-
 class Server {
 	constructor(httpServer) {
 		this._emitter = new EventEmitter();
 		this._server = new WsServer({httpServer: httpServer});
 
 		this._server.on('request', request => {
-			const connection = request.accept();
+			const connection = request.accept(); // or request.reject()
 			this._socketEmitter = new EventEmitter();
-			this._emitter.emit('request', new ServerSocket(connection, this._socketEmitter));
+			this._emitter.emit('request', new Connection(connection, this._socketEmitter));
 
 			connection.on('close', (reasonCode, description) => {
 				this._socketEmitter.emit('close', {reasonCode: reasonCode, description: description});
@@ -53,44 +38,10 @@ class Server {
 		});
 	}
 
-	on(event, listener) {
-		this._emitter.on(event, listener);
+	onRequest(listener) {
+		this._emitter.on('request', listener);
 	}
 }
-exports.Server = Server;
-
-class ServerSocket {
-	constructor(connection, emitter) {
-		this._connection = connection;
-		this._emitter = emitter;
-	}
-
-	emit (event, content) {
-		if (event == 'close') {
-			console.log('invalid emit');
-			return false;
-		}
-
-		this._connection.sendUTF(Utility.serialize(event, content));
-
-		return true;
-	}
-
-	on (event, listener) {
-		this._emitter.on(event, listener);
-	}
-}
-exports.Socket = ServerSocket;
-
-/* (e.g.)
-const server = new WSServer(null);
-server.on('request', socket => {
-	socket.on('event_name1', data => {
-
-	});
-	socket.emit('event_name2', {});
-});
-*/
 
 class Client {
 	constructor() {
@@ -98,19 +49,19 @@ class Client {
 		this._emitter = new EventEmitter();
 
 		this._client.on('connectFailed', err => {
-			console.log('connect error');
+			this._emitter.emit('connect-failed', err);
 		});
 
 		this._client.on('connect', connection => {
 			this._socketEmitter = new EventEmitter();
-			this._emitter.emit('connect', new ClientSocket(connection, this._socketEmitter));
+			this._emitter.emit('connect', new Connection(connection, this._socketEmitter));
 
 			connection.on('error', err => {
-				console.log('error');
+				this._socketEmitter.emit('error', err);
 			});
 
 			connection.on('close', () => {
-				console.log('closed');
+				this._socketEmitter.emit('close');
 			});
 
 			connection.on('message', message => {
@@ -136,10 +87,13 @@ class Client {
 	on(event, listener) {
 		this._emitter.on(event, listener);
 	}
-}
-exports.Client = Client;
 
-class ClientSocket {
+	onConnect(listener) {
+		this._emitter.on('connect', listener);
+	}
+}
+
+class Connection {
 	constructor(connection, emitter) {
 		this._connection = connection;
 		this._emitter = emitter;
@@ -147,6 +101,10 @@ class ClientSocket {
 
 	on(event, listener) {
 		this._emitter.on(event, listener);
+	}
+
+	onClose (listener) {
+		this._socketEmitter.on('close', listener);
 	}
 
 	emit(event, content) {
@@ -159,15 +117,41 @@ class ClientSocket {
 		return this._connection.close();
 	}
 }
-exports.ClientSocket = ClientSocket;
+
+class Utility {
+	static parse (json) {
+		const event = JSON.parse(json);
+		if (event.name == null || event.content == null || typeof event.name != 'string') {
+			throw new Error('invalid event data');
+		}
+		return event;
+	}
+
+	static serialize(eventName, content) {
+		return JSON.stringify({name: eventName, content: content});
+	}
+}
 
 /* (e.g.)
-const client = new WSClient();
-client.on('connect', socket => {
-	socket.on('event_name1', data => {
+const server = new Server(null);
+server.onRequest(connection => {
+	connection.on('event_name1', data => {
 
 	});
-	socket.emit('event_name2', {});
+	connection.emit('event_name2', {});
 });
-client.connect('ws://localhost:8080/');
+
+const client = new Client();
+client.onConnect(connection => {
+	connection.on('event_name1', data => {
+
+	});
+	connection.emit('event_name2', {});
+});
+client.connect('ws://localhost:8001/');
 */
+
+exports.Server = Server;
+exports.Client = Client;
+exports.Connection = Connection;
+exports.Utility = Utility;

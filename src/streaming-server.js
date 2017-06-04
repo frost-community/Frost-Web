@@ -51,7 +51,7 @@ module.exports = (http, sessionStore, config) => {
 		})();
 	});
 
-	const WebSocket = require('./helpers/websocket');
+	const WebSocket = require('snow-ws');
 
 	const server = new WebSocket.Server(http);
 	server.onRequest(connection => {

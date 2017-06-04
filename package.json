@@ -51,6 +51,7 @@
     "rollup-plugin-commonjs": "^8.0.2",
     "rollup-plugin-node-resolve": "^3.0.0",
     "rollup-plugin-riot": "^1.1.0",
+    "snow-ws": "0.0.1",
     "socket.io": "^2.0.1",
     "socket.io-client": "^2.0.1",
     "websocket": "^1.0.24"

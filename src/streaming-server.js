@@ -28,13 +28,13 @@ module.exports = (http, sessionStore, config) => {
 				}
 			}));
 
-			// 接続されるまで待機
-			await apiManager.waitConnectAsync();
-
 			apiManager.onDisconnect(() => {
 				frontManager.disconnect();
 				console.log('api disconnect');
 			});
+
+			// 接続されるまで待機
+			await apiManager.waitConnectAsync();
 
 			// 認証チェック
 			if ((await apiManager.waitEventAsync('authorization')).success === false) {
@@ -42,6 +42,9 @@ module.exports = (http, sessionStore, config) => {
 				return;
 			}
 
+
+
+			// API代理
 			const streamingProxy = new StreamingProxy(frontManager, apiManager, false, config);
 			streamingProxy.start();
 

@@ -104,17 +104,21 @@ class Connection {
 	}
 
 	onClose (listener) {
-		this._socketEmitter.on('close', listener);
+		this._emitter.on('close', listener);
 	}
 
 	emit(event, content) {
 		if (this._connection.connected) {
-			this._connection.sendUTF(null);
+			this._connection.sendUTF(Utility.serialize(event, content));
 		}
 	}
 
+	ping(data) {
+		this._connection.ping(data);
+	}
+
 	close() {
-		return this._connection.close();
+		this._connection.close();
 	}
 }
 
@@ -133,7 +137,7 @@ class Utility {
 }
 
 /* (e.g.)
-const server = new Server(null);
+const server = new Server(httpServer);
 server.onRequest(connection => {
 	connection.on('event_name1', data => {
 

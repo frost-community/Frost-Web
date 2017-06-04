@@ -42,8 +42,6 @@ module.exports = (http, sessionStore, config) => {
 				return;
 			}
 
-
-
 			// API代理
 			const streamingProxy = new StreamingProxy(frontManager, apiManager, false, config);
 			streamingProxy.start();
@@ -52,4 +50,28 @@ module.exports = (http, sessionStore, config) => {
 			frontManager.stream('ready', {userId: userId});
 		})();
 	});
+
+	const WebSocket = require('./helpers/websocket');
+
+	const server = new WebSocket.Server(http);
+	server.onRequest(connection => {
+		connection.on('event_name1', data => {
+			console.log('on event_name1:');
+			console.dir(data);
+		});
+		connection.onClose(data => {
+			console.log('on close:', data.reasonCode, data.description);
+		});
+		connection.emit('event_name2', {});
+	});
+/*
+	const client = new WebSocket.Client();
+	client.onConnect(connection => {
+		connection.on('event_name1', data => {
+			console.log('on event_name1:');
+			console.dir(data);
+		});
+	});
+	client.connect('ws://localhost:8000');
+*/
 };

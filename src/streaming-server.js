@@ -2,9 +2,7 @@
 
 const getSessionFromCookieAsync = require('./helpers/get-session-from-cookie-async');
 const WebSocket = require('websocket');
-const websocketUtilities = require('./helpers/websocket-utilities');
-const ConnectionUtility = websocketUtilities.WebSocketConnectionUtility;
-const ClientUtility = websocketUtilities.WebSocketClientUtility;
+const {ConnectionUtility, ClientUtility} = require('./helpers/websocket-utilities');
 const StreamingProxy = require('./helpers/streaming-proxy');
 
 /**

@@ -20,7 +20,7 @@ class WebSocketClientUtility {
 		});
 	}
 }
-exports.WebSocketClientUtility = WebSocketClientUtility;
+exports.ClientUtility = WebSocketClientUtility;
 
 class WebSocketConnectionUtility {
 	static addExtensionMethods(connection) {
@@ -40,4 +40,4 @@ class WebSocketConnectionUtility {
 		return `${prefix}:${type}`;
 	}
 }
-exports.WebSocketConnectionUtility = WebSocketConnectionUtility;
+exports.ConnectionUtility = WebSocketConnectionUtility;

@@ -54,7 +54,8 @@
     "snow-ws": "0.0.1",
     "socket.io": "^2.0.1",
     "socket.io-client": "^2.0.1",
-    "websocket": "^1.0.24"
+    "websocket": "^1.0.24",
+    "websocket-events": "0.0.1"
   },
   "files": [
     "*"

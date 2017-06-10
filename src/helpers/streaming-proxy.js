@@ -21,9 +21,9 @@ class StreamingProxy {
 
 				if (verifyResult.success !== true) {
 					frontConnection.send('rest', {success: false, request: data.request, message: 'faild to verify recaptcha'});
-				}
 
-				return verifyResult.success === true;
+					throw new Error('faild to verify recaptcha');
+				}
 			}},
 			{method: 'get', path: '/applications'},
 			{method: 'get', path: '/applications/:id'},
@@ -83,7 +83,11 @@ class StreamingProxy {
 
 				// 前処理
 				if (endpointInfo.before != null) {
-					if (await endpointInfo.before(data, this.frontConnection, this.apiConnection, this.config) !== true) {
+					try {
+						await endpointInfo.before(data, this.frontConnection, this.apiConnection, this.config);
+					}
+					catch (err) {
+						console.dir(err);
 						return;
 					}
 				}

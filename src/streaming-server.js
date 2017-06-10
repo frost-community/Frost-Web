@@ -2,7 +2,7 @@
 
 const getSessionFromCookieAsync = require('./helpers/get-session-from-cookie-async');
 const WebSocket = require('websocket');
-const {ConnectionUtility, ClientUtility} = require('./helpers/websocket-utilities');
+const WebSocketUtility = require('./helpers/websocket-utility');
 const StreamingProxy = require('./helpers/streaming-proxy');
 
 /**
@@ -26,7 +26,8 @@ module.exports = (http, sessionStore, config) => {
 			let apiConnection;
 			try {
 				const wsUrl = `${config.web.apiBaseUrl}?application_key=${config.web.applicationKey}&access_key=${session.accessKey}`;
-				apiConnection = await ClientUtility.connectAsync(wsUrl);
+				apiConnection = await WebSocketUtility.connectAsync(wsUrl);
+				WebSocketUtility.addExtensionMethods(apiConnection);
 			}
 			catch (err) {
 				console.log('faild to connect api:');
@@ -45,6 +46,7 @@ module.exports = (http, sessionStore, config) => {
 
 			// リクエストを受理
 			const frontConnection = request.accept();
+			WebSocketUtility.addExtensionMethods(frontConnection);
 
 			frontConnection.on('error', err => {
 				console.log('front error:', err);
@@ -53,8 +55,6 @@ module.exports = (http, sessionStore, config) => {
 			frontConnection.on('close', data => {
 				console.log('front close:', data.reasonCode, data.description);
 			});
-
-			ConnectionUtility.addExtensionMethods(frontConnection);
 
 			// 認証チェック
 			const authorization = await frontConnection.onceAsync('authorization');

@@ -22,6 +22,7 @@ class WebSocketUtility {
 
 	/**
 	 * コネクションに各種拡張メソッドを追加します。
+	 * これによってユーザーイベントの受信ができるようになります。
 	 */
 	static addExtensionMethods(connection) {
 		events(connection);

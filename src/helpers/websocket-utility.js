@@ -3,9 +3,9 @@
 const WebSocket = require('websocket');
 const events = require('websocket-events');
 
-class WebSocketClientUtility {
+class WebSocketUtility {
 	/**
-	 * 非同期的に接続してコネクションを取得します。
+	 * webSocketサーバーに接続してコネクションを取得します。
 	 */
 	static connectAsync(requestUrl, protocols, origin, headers) {
 		return new Promise((resolve, reject) => {
@@ -19,10 +19,10 @@ class WebSocketClientUtility {
 			client.connect(requestUrl, protocols, origin, headers);
 		});
 	}
-}
-exports.ClientUtility = WebSocketClientUtility;
 
-class WebSocketConnectionUtility {
+	/**
+	 * コネクションに各種拡張メソッドを追加します。
+	 */
 	static addExtensionMethods(connection) {
 		events(connection);
 
@@ -36,8 +36,11 @@ class WebSocketConnectionUtility {
 		});
 	}
 
+	/**
+	 * イベント名を構築します
+	 */
 	static createEventName(prefix, type) {
 		return `${prefix}:${type}`;
 	}
 }
-exports.ConnectionUtility = WebSocketConnectionUtility;
+module.exports = WebSocketUtility;

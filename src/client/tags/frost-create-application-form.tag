@@ -65,22 +65,24 @@
 			}});
 		}
 
-		this.webSocket.addEventListener('rest', event => {
-			const restData = event.data;
-			if (restData.request.method == 'post' && restData.request.endpoint == '/applications') {
-				if (restData.success) {
-					if (restData.response.application != null) {
-						this.obs.trigger('add-application', {application: restData.response.application});
-						alert('created application.');
+		this.on('mount', () => {
+			this.webSocket.addEventListener('rest', event => {
+				const restData = event.data;
+				if (restData.request.method == 'post' && restData.request.endpoint == '/applications') {
+					if (restData.success) {
+						if (restData.response.application != null) {
+							this.obs.trigger('add-application', {application: restData.response.application});
+							alert('created application.');
+						}
+						else {
+							alert(`api error: faild to create application. ${restData.response.message}`);
+						}
 					}
 					else {
-						alert(`api error: faild to create application. ${restData.response.message}`);
+						alert(`internal error: ${restData.message}`);
 					}
 				}
-				else {
-					alert(`internal error: ${restData.message}`);
-				}
-			}
+			});
 		});
 	</script>
 </frost-create-application-form>

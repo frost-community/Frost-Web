@@ -11,12 +11,10 @@ require('./tags/frost-public-timeline.tag');
 require('./tags/frost-applications.tag');
 require('./tags/frost-create-application-form.tag');
 
+const mixinGlobal = {};
+
 (async () => {
 	try {
-		// mixin
-		const mixinGlobal = {};
-		riot.mixin(mixinGlobal);
-
 		// WebSocket
 		const webSocket = await WebSocketEvents.connectAsync(`ws://${location.host}`);
 		webSocket.addEventListener('close', ev => { console.log('close:'); console.dir(ev); });
@@ -28,8 +26,12 @@ require('./tags/frost-create-application-form.tag');
 		mixinGlobal.obs = riot.observable();
 
 		// others
-		mixinGlobal.siteKey = document.getElementsByName('siteKey').item(0).content;
-		mixinGlobal.csrfToken = document.getElementsByName('_csrf').item(0).content;
+		const siteKeyElement = document.getElementsByName('siteKey').item(0);
+		const csrfElement = document.getElementsByName('_csrf').item(0);
+		if (siteKeyElement != null)
+			mixinGlobal.siteKey = siteKeyElement.content;
+		if (csrfElement != null)
+			mixinGlobal.csrfToken = csrfElement.content;
 
 		const readyAsync = () => new Promise((resolve, reject) => {
 			webSocket.addEventListener('ready', readyEvent => {
@@ -73,5 +75,6 @@ require('./tags/frost-create-application-form.tag');
 		console.dir(err);
 	}
 
+	riot.mixin(mixinGlobal);
 	riot.mount('*');
 })();

@@ -57,7 +57,7 @@ module.exports = (http, sessionStore, config) => {
 			});
 
 			// 認証チェック
-			const authorization = await frontConnection.onceAsync('authorization');
+			const authorization = await apiConnection.onceAsync('authorization');
 
 			if (authorization.success === false) {
 				console.log('failure authorization');

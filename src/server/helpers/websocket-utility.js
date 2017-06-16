@@ -25,7 +25,12 @@ class WebSocketUtility {
 	 * これによってユーザーイベントの受信ができるようになります。
 	 */
 	static addExtensionMethods(connection) {
-		events(connection);
+		events(connection, {
+			keys: {
+				eventName: 'type',
+				eventContent: 'data'
+			}
+		});
 
 		/**
 		 * 指定されたイベントが最初に受信されるまで待機します

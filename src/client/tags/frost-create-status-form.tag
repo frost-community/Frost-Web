@@ -70,17 +70,19 @@
 			this.createStatus();
 		}
 
-		this.webSocket.addEventListener('rest', event => {
-			const restData = event.data;
+		this.on('mount', () => {
+			this.webSocket.addEventListener('rest', event => {
+				const restData = event.data;
 
-			if (restData.request.endpoint == '/posts/post_status') {
-				if (restData.success) {
-					this.clear();
+				if (restData.request.endpoint == '/posts/post_status') {
+					if (restData.success) {
+						this.clear();
+					}
+					else {
+						alert('status creation error: ' + restData.response.message);
+					}
 				}
-				else {
-					alert('status creation error: ' + restData.response.message);
-				}
-			}
+			});
 		});
 	</script>
 </frost-create-status-form>

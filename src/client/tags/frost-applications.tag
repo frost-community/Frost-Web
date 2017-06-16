@@ -23,25 +23,27 @@
 			this.update();
 		});
 
-		this.webSocket.sendEvent('rest', {request: {
-			method: 'get', endpoint: '/applications',
-			headers: {'x-api-version': 1.0},
-		}});
+		this.on('mount', () => {
+			this.webSocket.sendEvent('rest', {request: {
+				method: 'get', endpoint: '/applications',
+				headers: {'x-api-version': 1.0},
+			}});
 
-		this.webSocket.addEventListener('rest', event => {
-			const data = event.data;
-			if (data.request.method == 'get' && data.request.endpoint == '/applications') {
-				if (data.response.applications == null) {
-					if (data.response.message == 'applications are empty') {
-						data.response.applications = [];
+			this.webSocket.addEventListener('rest', event => {
+				const data = event.data;
+				if (data.request.method == 'get' && data.request.endpoint == '/applications') {
+					if (data.response.applications == null) {
+						if (data.response.message == 'applications are empty') {
+							data.response.applications = [];
+						}
+						else {
+							return alert(`api error: faild to fetch list of appliations. ${data.response.message}`);
+						}
 					}
-					else {
-						return alert(`api error: faild to fetch list of appliations. ${data.response.message}`);
-					}
+					this.applications = data.response.applications;
+					this.update();
 				}
-				this.applications = data.response.applications;
-				this.update();
-			}
+			});
 		});
 	</script>
 </frost-applications>

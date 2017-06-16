@@ -6,9 +6,7 @@
   "main": "./built/index.js",
   "scripts": {
     "start": "node ./",
-    "build:copy:others": "cpx \"src/*\" \"built\" && cpx \"src/{helpers,views}/**/*\" \"built\"",
-    "build:copy:assets": "cpx \"src/assets/**/!(*.tag|*.scss|*.sass)\" \"built/assets\"",
-    "build:copy": "npm run build:copy:assets && npm run build:copy:others",
+    "build:copy": "cpx \"./src/{*.js,views/**/*.pug,helpers/*.js,assets/images/**}\" built",
     "build:sass": "node-sass --output-style compressed \"src/assets/styles\" -o \"built/assets/styles\"",
     "build:bundle": "webpack",
     "build": "npm run build:copy && npm run build:sass && npm run build:bundle",

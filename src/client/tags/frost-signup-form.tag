@@ -16,7 +16,7 @@
 	</div>
 	<button class='button orange-button' onclick={ showModal }>{ isShowModal ? '折りたたむ -' : '展開する +' }</button>
 	<script>
-		const fetchJson = require('../scripts/fetch-json');
+		const fetchJson = require('../helpers/fetch-json');
 
 		this.isShowModal = false;
 		showModal() {

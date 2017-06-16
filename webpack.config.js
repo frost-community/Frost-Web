@@ -4,10 +4,10 @@ const webpack = require('webpack');
 const absolutePath = relative => path.join(__dirname, relative);
 
 module.exports = {
-	context: absolutePath('src/assets/scripts'),
-	entry: './app.js',
+	context: absolutePath('src/client'),
+	entry: './index.js',
 	output: {
-		path: absolutePath('built/assets'),
+		path: absolutePath('built/client'),
 		filename: 'bundle.js'
 	},
 	module: {
@@ -19,9 +19,7 @@ module.exports = {
 				use: [
 					{
 						loader: 'riotjs-loader',
-						options: {
-							// template: 'pug'
-						}
+						options: {}
 					}
 				]
 			},

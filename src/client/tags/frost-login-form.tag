@@ -8,7 +8,7 @@
 		<button class='button-primary'>Login</button>
 	</form>
 	<script>
-		const fetchJson = require('../scripts/fetch-json');
+		const fetchJson = require('../helpers/fetch-json');
 
 		submit(e) {
 			e.preventDefault();

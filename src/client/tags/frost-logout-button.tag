@@ -2,7 +2,7 @@
 	<a href='javascript:void(0)' onclick={ signout }>Logout</a>
 
 	<script>
-		const fetchJson = require('../scripts/fetch-json');
+		const fetchJson = require('../helpers/fetch-json');
 
 		signout() {
 			fetchJson('DELETE', '/session', {

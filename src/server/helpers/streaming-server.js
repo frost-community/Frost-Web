@@ -1,9 +1,9 @@
 'use strict';
 
-const getSessionFromCookieAsync = require('./helpers/get-session-from-cookie-async');
+const getSessionFromCookieAsync = require('./get-session-from-cookie-async');
 const WebSocket = require('websocket');
-const WebSocketUtility = require('./helpers/websocket-utility');
-const StreamingProxy = require('./helpers/streaming-proxy');
+const WebSocketUtility = require('./websocket-utility');
+const StreamingProxy = require('./streaming-proxy');
 
 /**
  * Webクライアントのストリーミング接続をサポートします。

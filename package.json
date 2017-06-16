@@ -6,8 +6,8 @@
   "main": "./built/index.js",
   "scripts": {
     "start": "node ./",
-    "build:copy": "cpx \"./src/{*.js,views/**/*.pug,helpers/*.js,assets/images/**}\" built",
-    "build:sass": "node-sass --output-style compressed \"src/assets/styles\" -o \"built/assets/styles\"",
+    "build:copy": "cpx \"./src/{*.js,server/**/*.js,server/views/**/*.pug,client/images/**}\" built",
+    "build:sass": "node-sass --output-style compressed \"src/client/styles\" -o \"built/client/styles\"",
     "build:bundle": "webpack",
     "build": "npm run build:copy && npm run build:sass && npm run build:bundle",
     "clean": "rimraf \"./built\"",

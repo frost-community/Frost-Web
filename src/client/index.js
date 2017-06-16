@@ -1,15 +1,15 @@
 const riot = require('riot');
-const WebSocketEvents = require('./web-socket-events');
+const WebSocketEvents = require('./helpers/web-socket-events');
 
 // components
-require('../tags/frost-login-form.tag');
-require('../tags/frost-signup-form.tag');
-require('../tags/frost-logout-button.tag');
-require('../tags/frost-create-status-form.tag');
-require('../tags/frost-post-status.tag');
-require('../tags/frost-public-timeline.tag');
-require('../tags/frost-applications.tag');
-require('../tags/frost-create-application-form.tag');
+require('./tags/frost-login-form.tag');
+require('./tags/frost-signup-form.tag');
+require('./tags/frost-logout-button.tag');
+require('./tags/frost-create-status-form.tag');
+require('./tags/frost-post-status.tag');
+require('./tags/frost-public-timeline.tag');
+require('./tags/frost-applications.tag');
+require('./tags/frost-create-application-form.tag');
 
 (async () => {
 	try {

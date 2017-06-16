@@ -17,7 +17,7 @@ const path = require('path');
 const requestApiAsync = require('./helpers/request-api-async');
 const requestAsync = require('request-promise');
 const server = require('http').Server;
-const streamingServer = require('./streaming-server');
+const streamingServer = require('./helpers/streaming-server');
 
 const urlConfigFile = 'https://raw.githubusercontent.com/Frost-Dev/Frost/master/config.json';
 const questionResult = (ans) => (ans.toLowerCase()).indexOf('y') === 0;
@@ -101,7 +101,7 @@ module.exports = async () => {
 
 		// static files
 
-		app.use(express.static(path.join(__dirname, 'assets'), {
+		app.use(express.static(path.join(__dirname, 'client'), {
 			etag: false
 		}));
 
@@ -156,6 +156,11 @@ module.exports = async () => {
 			res.end();
 		});
 
+
+// post /session
+// delete /session
+// post /session/register
+
 		app.post('/session/register', (req, res) => {
 			(async () => {
 				try {
@@ -189,34 +194,6 @@ module.exports = async () => {
 			})();
 		});
 
-		app.post('/applications', checkLogin, (req, res) => {
-			(async () => {
-				try {
-					const verifyResult = await requestAsync('https://www.google.com/recaptcha/api/siteverify', {
-						method: 'POST',
-						json: true,
-						form: {secret: config.web.reCAPTCHA.secretKey, response: req.body.recaptchaToken}
-					});
-
-					if (verifyResult.success !== true) {
-						return res.status(400).json({message: 'faild to verify recaptcha'});
-					}
-
-					const result = await requestApiAsync('post', '/applications', req.body, {
-						'X-Api-Version': 1.0,
-						'X-Application-Key': config.web.applicationKey,
-						'X-Access-Key': req.session.accessKey
-					});
-
-					res.status(result.statusCode != null ? result.statusCode : 500).send(result);
-				}
-				catch(err) {
-					console.dir(err);
-					res.status(500).json({message: typeof(e) == 'string' ? err : 'faild'});
-				}
-			})();
-		});
-
 		// page middleware
 
 		app.use((req, res, next) => {
@@ -224,13 +201,13 @@ module.exports = async () => {
 				const authorized = req.session.accessKey != null;
 
 				req.isSmartPhone = isSmartPhone(req.header('User-Agent'));
-				if (req.isSmartPhone) {
-					// app.set('views', path.join(__dirname, 'views', 'sp'));
-					app.set('views', path.join(__dirname, 'views'));
+				/*if (req.isSmartPhone) {
+					app.set('views', path.join(__dirname, 'views', 'sp'));
 				}
 				else {
 					app.set('views', path.join(__dirname, 'views'));
-				}
+				}*/
+				app.set('views', path.join(__dirname, 'views'));
 
 				// default render params
 				req.renderParams = {
@@ -326,6 +303,10 @@ module.exports = async () => {
 
 		app.get('/dev', (req, res) => {
 			res.render('dev', Object.assign(req.renderParams, {siteKey: config.web.reCAPTCHA.siteKey}));
+		});
+
+		app.get('/test', (req, res) => {
+			res.render('test', Object.assign(req.renderParams));
 		});
 
 		// errors

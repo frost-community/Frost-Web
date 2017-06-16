@@ -1,6 +1,6 @@
 'use strict';
 
-const WebSocket = require('websocket');
+const WebSocketNode = require('websocket');
 const events = require('websocket-events');
 
 class WebSocketUtility {
@@ -9,7 +9,7 @@ class WebSocketUtility {
 	 */
 	static connectAsync(requestUrl, protocols, origin, headers) {
 		return new Promise((resolve, reject) => {
-			const client = new WebSocket.client();
+			const client = new WebSocketNode.client();
 			client.on('connect', (connection) => {
 				resolve(connection);
 			});

@@ -38,17 +38,12 @@
 		<button class='button orange-button' onclick={ showModal }>{ isShowModal ? '折りたたむ -' : '展開する +' }</button>
 	</div>
 	<script>
-		const socket = opts.socket;
-		const obs = opts.obs;
-
-		this.siteKey = document.getElementsByName('siteKey').item(0).content;
-
 		this.isShowModal = false;
-		this.showModal = () => {
+		showModal() {
 			this.isShowModal = !this.isShowModal;
-		};
+		}
 
-		this.submit = (e) => {
+		submit(e) {
 			e.preventDefault();
 
 			const permissions = [];
@@ -58,7 +53,7 @@
 				}
 			}
 
-			socket.emit('rest', {request: {
+			this.webSocket.sendEvent('rest', {request: {
 				method: 'post', endpoint: '/applications',
 				headers: {'x-api-version': 1.0},
 				body: {
@@ -68,17 +63,18 @@
 					recaptchaToken: grecaptcha.getResponse()
 				}
 			}});
-		};
+		}
 
-		socket.on('rest', (restData) => {
+		this.webSocket.addEventListener('rest', event => {
+			const restData = event.data;
 			if (restData.request.method == 'post' && restData.request.endpoint == '/applications') {
 				if (restData.success) {
 					if (restData.response.application != null) {
-						obs.trigger('add-application', {application: restData.response.application});
+						this.obs.trigger('add-application', {application: restData.response.application});
 						alert('created application.');
 					}
 					else {
-						alert(`api error: faild to create application. ${data.response.message}`);
+						alert(`api error: faild to create application. ${restData.response.message}`);
 					}
 				}
 				else {

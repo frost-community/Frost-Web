@@ -20,21 +20,21 @@
 	</style>
 
 	<script>
-		const socket = opts.socket;
-
 		this.timelinePosts = [];
 		this.loading = true;
 
-		this.reload = () => {
+		reload() {
 			this.update({loading: true});
 
-			socket.emit('rest', {request: {
+			this.webSocket.sendEvent('rest', {request: {
 				method: 'get', endpoint: '/general/timeline',
 				headers: {'x-api-version': 1.0},
 			}});
-		};
+		}
 
-		socket.on('rest', (restData) => {
+		this.webSocket.addEventListener('rest', event => {
+			const restData = event.data;
+
 			if (restData.request.endpoint == '/general/timeline') {
 				if (restData.success) {
 					if (restData.response.posts != null) {
@@ -42,30 +42,32 @@
 						this.timelinePosts.reverse();
 					}
 					else {
-						alert(`api error: failed to fetch general timeline posts. ${data.response.message}`);
+						alert(`api error: failed to fetch general timeline posts. ${restData.response.message}`);
 					}
 				}
 				else {
 					alert(`internal error: ${restData.message}`);
 				}
 
-				socket.emit('timeline-connect', {type: 'public'});
+				this.webSocket.sendEvent('timeline-connect', {type: 'public'});
 
 				this.update({loading: false});
 			}
 		});
 
-		socket.on('timeline-connect', (data) => {
-			console.log(data.message);
+		this.webSocket.addEventListener('timeline-connect', event => {
+			console.log(event.data.message);
 		});
 
-		socket.on('data:public:status', (statusData) => {
+		this.webSocket.addEventListener('data:public:status', event => {
+			const statusData = event.data;
+
 			console.log('status: ' + statusData);
 			this.timelinePosts.splice(0, 0, statusData);
 			this.update();
 		});
 
-		socket.on('ready', (readyData) => {
+		this.on('mount', () => {
 			// タイムラインのリロード
 			this.reload();
 		});

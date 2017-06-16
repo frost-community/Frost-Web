@@ -16,15 +16,14 @@
 	</div>
 	<button class='button orange-button' onclick={ showModal }>{ isShowModal ? '折りたたむ -' : '展開する +' }</button>
 	<script>
-		import fetchJson from '../scripts/fetch-json';
-
-		this.siteKey = document.getElementsByName ('siteKey').item(0).content;
+		const fetchJson = require('../scripts/fetch-json');
 
 		this.isShowModal = false;
-		this.showModal = () => {
+		showModal() {
 			this.isShowModal = !this.isShowModal;
-		};
-		this.submit = (e) => {
+		}
+
+		submit(e) {
 			e.preventDefault();
 
 			fetchJson('POST', '/session/register', {
@@ -39,6 +38,6 @@
 			}).catch((reason) => {
 				console.log('Sign up error: ' + reason);
 			});
-		};
+		}
 	</script>
 </frost-signup-form>

@@ -8,9 +8,9 @@
 		<button class='button-primary'>Login</button>
 	</form>
 	<script>
-		import fetchJson from '../scripts/fetch-json';
+		const fetchJson = require('../scripts/fetch-json');
 
-		this.submit = (e) => {
+		submit(e) {
 			e.preventDefault();
 
 			fetchJson('POST', '/session', {
@@ -23,6 +23,6 @@
 			.catch(reason => {
 				console.log('Sign in error: ' + reason);
 			});
-		};
+		}
 	</script>
 </frost-login-form>

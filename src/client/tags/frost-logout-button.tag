@@ -2,10 +2,9 @@
 	<a href='javascript:void(0)' onclick={ signout }>Logout</a>
 
 	<script>
-		import fetchJson from '../scripts/fetch-json';
-		this.csrfToken = document.getElementsByName('_csrf').item(0).content;
+		const fetchJson = require('../helpers/fetch-json');
 
-		this.signout = () => {
+		signout() {
 			fetchJson('DELETE', '/session', {
 				_csrf: this.csrfToken
 			}).then((res) => {
@@ -14,6 +13,6 @@
 			.catch(reason => {
 				console.log('Sign out error: ' + reason);
 			});
-		};
+		}
 	</script>
 </frost-logout-button>

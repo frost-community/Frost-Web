@@ -7,12 +7,12 @@ const requestAsync = require('request-promise');
  * ストリーミングREST APIへのリクエストを代理します。
  */
 class StreamingProxy {
-	constructor(frontManager, apiManager, debugDetail, config) {
+	constructor(frontConnection, apiConnection, debugDetail, config) {
 		// 利用可能なエンドポイント一覧
 		this.endpointWhiteList = [
 			{method: 'get', path: '/general/timeline'},
 			{method: 'get', path: '/users/:id'},
-			{method: 'post', path: '/applications', before: async (data, frontManager, apiManager, config) => {
+			{method: 'post', path: '/applications', before: async (data, frontConnection, apiConnection, config) => {
 				const verifyResult = await requestAsync('https://www.google.com/recaptcha/api/siteverify', {
 					method: 'POST',
 					json: true,
@@ -20,10 +20,10 @@ class StreamingProxy {
 				});
 
 				if (verifyResult.success !== true) {
-					frontManager.stream('rest', {success: false, request: data.request, message: 'faild to verify recaptcha'});
-				}
+					frontConnection.send('rest', {success: false, request: data.request, message: 'faild to verify recaptcha'});
 
-				return verifyResult.success === true;
+					throw new Error('faild to verify recaptcha');
+				}
 			}},
 			{method: 'get', path: '/applications'},
 			{method: 'get', path: '/applications/:id'},
@@ -40,8 +40,8 @@ class StreamingProxy {
 			'data:home:status'
 		];
 
-		this.frontManager = frontManager;
-		this.apiManager = apiManager;
+		this.frontConnection = frontConnection;
+		this.apiConnection = apiConnection;
 		this.debugDetail = debugDetail != null ? debugDetail : false;
 		this.config = config;
 	}
@@ -50,10 +50,10 @@ class StreamingProxy {
 	 * クライアントに返却する必要のあるイベントを追加します。
 	 */
 	addNeedReturnEvent (eventName) {
-		this.apiManager.on(eventName, data => {
+		this.apiConnection.on(eventName, data => {
 			if (this.debugDetail)
 				console.log(`[front<] ${eventName}`);
-			this.frontManager.stream(eventName, data);
+			this.frontConnection.send(eventName, data);
 		});
 	}
 
@@ -64,7 +64,7 @@ class StreamingProxy {
 
 		// front -> api
 
-		this.frontManager.on('rest', data => {
+		this.frontConnection.on('rest', data => {
 			(async () => {
 				const {request} = data;
 				const {method, endpoint} = request;
@@ -74,7 +74,7 @@ class StreamingProxy {
 				});
 
 				if (endpointInfo == null) {
-					this.frontManager.stream('rest', {success: false, request: request, message: `'${endpoint}' endpoint is not access allowed on 'rest' event.`});
+					this.frontConnection.send('rest', {success: false, request: request, message: `'${endpoint}' endpoint is not access allowed on 'rest' event.`});
 					return;
 				}
 
@@ -83,25 +83,29 @@ class StreamingProxy {
 
 				// 前処理
 				if (endpointInfo.before != null) {
-					if (await endpointInfo.before(data, this.frontManager, this.apiManager, this.config) !== true) {
+					try {
+						await endpointInfo.before(data, this.frontConnection, this.apiConnection, this.config);
+					}
+					catch (err) {
+						console.dir(err);
 						return;
 					}
 				}
 
-				this.apiManager.stream('rest', data);
+				this.apiConnection.send('rest', data);
 			})();
 		});
 
-		this.frontManager.on('timeline-connect', data => {
+		this.frontConnection.on('timeline-connect', data => {
 			if (this.debugDetail)
 				console.log('[>api] timeline-connect');
-			this.apiManager.stream('timeline-connect', data);
+			this.apiConnection.send('timeline-connect', data);
 		});
 
-		this.frontManager.on('timeline-disconnect', data => {
+		this.frontConnection.on('timeline-disconnect', data => {
 			if (this.debugDetail)
 				console.log('[>api] timeline-disconnect');
-			this.apiManager.stream('timeline-disconnect', data);
+			this.apiConnection.send('timeline-disconnect', data);
 		});
 
 		// front <- api

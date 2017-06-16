@@ -33,31 +33,31 @@
 	</style>
 
 	<script>
-		import moment from 'moment';
-		import 'moment/';
+		const moment = require('moment');
+
 		this.moment = moment;
 		this.status = opts.status;
 
-		this.getTime = () => {
+		getTime() {
 			return this.moment.unix(this.status.createdAt);
-		};
+		}
 
-		this.compileText = (text) => {
+		compileText(text) {
 			text = text
 				.replace(/</g, '&lt;')
 				.replace(/>/g, '&gt;')
 				.replace(/\n/g, '<br />');
 
 			return text;
-		};
+		}
 
 		this.on('mount', () => {
 			this.refs.text.innerHTML = this.compileText(this.status.text);
-		});
 
-		// 定期的に画面を更新
-		setInterval(() => {
-			this.update();
-		}, 60 * 1000);
+			// 定期的に画面を更新
+			setInterval(() => {
+				this.update();
+			}, 60 * 1000);
+		});
 	</script>
 </frost-post-status>

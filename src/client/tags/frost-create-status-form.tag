@@ -34,7 +34,6 @@
 	</style>
 
 	<script>
-		this.socket = opts.socket;
 		this.textMax = 256;
 		this.text = '';
 
@@ -49,7 +48,7 @@
 		}
 
 		createStatus() {
-			this.socket.emit('rest', {request: {
+			this.webSocket.sendEvent('rest', {request: {
 				method: 'post', endpoint: '/posts/post_status',
 				headers: {'x-api-version': 1.0},
 				body: {text: this.text}
@@ -71,16 +70,19 @@
 			this.createStatus();
 		}
 
-		this.socket.on('rest', (restData) => {
-			if (restData.request.endpoint == '/posts/post_status') {
-				if (restData.success) {
-					this.clear();
-				}
-				else {
-					alert('status creation error: ' + restData.response.message);
-				}
-			}
-		});
+		this.on('mount', () => {
+			this.webSocket.addEventListener('rest', event => {
+				const restData = event.data;
 
+				if (restData.request.endpoint == '/posts/post_status') {
+					if (restData.success) {
+						this.clear();
+					}
+					else {
+						alert('status creation error: ' + restData.response.message);
+					}
+				}
+			});
+		});
 	</script>
 </frost-create-status-form>

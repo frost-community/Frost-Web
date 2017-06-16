@@ -5,11 +5,11 @@ class WebSocketEvents {
 				return reject(new Error('missing argumets'));
 
 			const ws = new WebSocket(url);
-			ws.onerror = errorEvent => { reject(errorEvent); };
-			ws.onclose = closeEvent => { reject(closeEvent); };
-			ws.onopen = () => {
+			ws.addEventListener('error', errorEvent => { reject(errorEvent); });
+			ws.addEventListener('close', closeEvent => { reject(closeEvent); });
+			ws.addEventListener('open', () => {
 				resolve(ws);
-			};
+			});
 		});
 	}
 
@@ -23,6 +23,7 @@ class WebSocketEvents {
 			userEv.data = data;
 			ws.dispatchEvent(userEv);
 		});
+
 		ws.sendEvent = (type, data) => {
 			ws.send(WebSocketEvents.serialize(type, data));
 		};

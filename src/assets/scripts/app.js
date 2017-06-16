@@ -67,10 +67,11 @@ require('../tags/frost-create-application-form.tag');
 		});
 
 		await readyAsync();
-		riot.mount('*');
 	}
 	catch (err) {
 		console.log('何かがおかしいよ');
 		console.dir(err);
 	}
+
+	riot.mount('*');
 })();

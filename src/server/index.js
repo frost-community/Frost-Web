@@ -101,7 +101,7 @@ module.exports = async () => {
 
 		// static files
 
-		app.use(express.static(path.join(__dirname, 'client'), {
+		app.use(express.static(path.join(__dirname, '../client'), {
 			etag: false
 		}));
 

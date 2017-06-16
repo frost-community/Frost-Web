@@ -5,10 +5,12 @@ const absolutePath = relative => path.join(__dirname, relative);
 
 module.exports = {
 	context: absolutePath('src/client'),
-	entry: './index.js',
+	entry: {
+		bundle: './index.js'
+	},
 	output: {
 		path: absolutePath('built/client'),
-		filename: 'bundle.js'
+		filename: '[name].js'
 	},
 	module: {
 		rules: [
@@ -19,7 +21,9 @@ module.exports = {
 				use: [
 					{
 						loader: 'riotjs-loader',
-						options: {}
+						options: {
+							style: 'scss'
+						}
 					}
 				]
 			},

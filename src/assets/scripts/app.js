@@ -13,15 +13,23 @@ require('../tags/frost-create-application-form.tag');
 
 (async () => {
 	try {
-		const obs = riot.observable();
+		// mixin
+		const mixinGlobal = {};
+		riot.mixin(mixinGlobal);
 
+		// WebSocket
 		const webSocket = await WebSocketEvents.connectAsync(`ws://${location.host}`);
 		webSocket.addEventListener('close', ev => { console.log('close:'); console.dir(ev); });
 		webSocket.addEventListener('error', ev => { console.log('error:'); console.dir(ev); });
 		WebSocketEvents.init(webSocket);
+		mixinGlobal.webSocket = webSocket;
 
-		const mixinGlobal = {obs: obs, webSocket: webSocket};
-		riot.mixin(mixinGlobal);
+		// observable
+		mixinGlobal.obs = riot.observable();
+
+		// others
+		mixinGlobal.siteKey = document.getElementsByName('siteKey').item(0).content;
+		mixinGlobal.csrfToken = document.getElementsByName('_csrf').item(0).content;
 
 		const readyAsync = () => new Promise((resolve, reject) => {
 			webSocket.addEventListener('ready', readyEvent => {

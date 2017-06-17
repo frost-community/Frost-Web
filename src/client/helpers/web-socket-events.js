@@ -1,10 +1,14 @@
+'use strict';
+
+const WebSocket2 = require('reconnecting-websocket');
+
 class WebSocketEvents {
 	static connectAsync(url) {
 		return new Promise((resolve, reject) => {
 			if (url == null)
 				return reject(new Error('missing argumets'));
 
-			const ws = new WebSocket(url);
+			const ws = new WebSocket2(url);
 			ws.addEventListener('error', errorEvent => { reject(errorEvent); });
 			ws.addEventListener('close', closeEvent => { reject(closeEvent); });
 			ws.addEventListener('open', () => {
@@ -19,9 +23,8 @@ class WebSocketEvents {
 
 		ws.addEventListener('message', messageEvent => {
 			const {type, data} = WebSocketEvents.parse(messageEvent.data);
-			const userEv = new Event(type);
-			userEv.data = data;
-			ws.dispatchEvent(userEv);
+			const userEv = new CustomEvent(type, {detail: data});
+			ws.dispatchEvent(userEv); // TODO: (error)Illegal invocation
 		});
 
 		ws.sendEvent = (type, data) => {

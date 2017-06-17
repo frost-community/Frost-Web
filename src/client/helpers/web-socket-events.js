@@ -9,7 +9,7 @@ class WebSocketEvents {
 			if (url == null)
 				return reject(new Error('missing argumets'));
 
-			const ws = new WebSocket2(url);
+			const ws = new WebSocket2(url, [], {reconnectInterval: 3000});
 			riot.observable(ws);
 			ws.addEventListener('error', errorEvent => { reject(errorEvent); });
 			ws.addEventListener('close', closeEvent => { reject(closeEvent); });

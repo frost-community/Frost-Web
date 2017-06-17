@@ -71,15 +71,13 @@
 		}
 
 		this.on('mount', () => {
-			this.webSocket.addEventListener('rest', event => {
-				const restData = event.data;
-
-				if (restData.request.endpoint == '/posts/post_status') {
-					if (restData.success) {
+			this.webSocket.on('rest', rest => {
+				if (rest.request.endpoint == '/posts/post_status') {
+					if (rest.success) {
 						this.clear();
 					}
 					else {
-						alert('status creation error: ' + restData.response.message);
+						alert('status creation error: ' + rest.response.message);
 					}
 				}
 			});

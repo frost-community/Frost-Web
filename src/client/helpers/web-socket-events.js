@@ -1,6 +1,7 @@
 'use strict';
 
 const WebSocket2 = require('reconnecting-websocket');
+const riot = require('riot');
 
 class WebSocketEvents {
 	static connectAsync(url) {
@@ -9,6 +10,7 @@ class WebSocketEvents {
 				return reject(new Error('missing argumets'));
 
 			const ws = new WebSocket2(url);
+			riot.observable(ws);
 			ws.addEventListener('error', errorEvent => { reject(errorEvent); });
 			ws.addEventListener('close', closeEvent => { reject(closeEvent); });
 			ws.addEventListener('open', () => {
@@ -23,8 +25,7 @@ class WebSocketEvents {
 
 		ws.addEventListener('message', messageEvent => {
 			const {type, data} = WebSocketEvents.parse(messageEvent.data);
-			const userEv = new CustomEvent(type, {detail: data});
-			ws.dispatchEvent(userEv); // TODO: (error)Illegal invocation
+			ws.trigger(type, data);
 		});
 
 		ws.sendEvent = (type, data) => {

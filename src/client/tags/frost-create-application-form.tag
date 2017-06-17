@@ -66,20 +66,19 @@
 		}
 
 		this.on('mount', () => {
-			this.webSocket.addEventListener('rest', event => {
-				const restData = event.data;
-				if (restData.request.method == 'post' && restData.request.endpoint == '/applications') {
-					if (restData.success) {
-						if (restData.response.application != null) {
-							this.obs.trigger('add-application', {application: restData.response.application});
+			this.webSocket.on('rest', rest => {
+				if (rest.request.method == 'post' && rest.request.endpoint == '/applications') {
+					if (rest.success) {
+						if (rest.response.application != null) {
+							this.obs.trigger('add-application', {application: rest.response.application});
 							alert('created application.');
 						}
 						else {
-							alert(`api error: faild to create application. ${restData.response.message}`);
+							alert(`api error: faild to create application. ${rest.response.message}`);
 						}
 					}
 					else {
-						alert(`internal error: ${restData.message}`);
+						alert(`internal error: ${rest.message}`);
 					}
 				}
 			});

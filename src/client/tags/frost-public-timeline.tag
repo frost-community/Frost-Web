@@ -36,21 +36,19 @@
 			// タイムラインのリロード
 			this.reload();
 
-			this.webSocket.addEventListener('rest', event => {
-				const restData = event.data;
-
-				if (restData.request.endpoint == '/general/timeline') {
-					if (restData.success) {
-						if (restData.response.posts != null) {
-							this.timelinePosts = restData.response.posts;
+			this.webSocket.on('rest', rest => {
+				if (rest.request.endpoint == '/general/timeline') {
+					if (rest.success) {
+						if (rest.response.posts != null) {
+							this.timelinePosts = rest.response.posts;
 							this.timelinePosts.reverse();
 						}
 						else {
-							alert(`api error: failed to fetch general timeline posts. ${restData.response.message}`);
+							alert(`api error: failed to fetch general timeline posts. ${rest.response.message}`);
 						}
 					}
 					else {
-						alert(`internal error: ${restData.message}`);
+						alert(`internal error: ${rest.message}`);
 					}
 
 					this.webSocket.sendEvent('timeline-connect', {type: 'public'});
@@ -59,15 +57,18 @@
 				}
 			});
 
-			this.webSocket.addEventListener('timeline-connect', event => {
-				console.log(event.data.message);
+			this.webSocket.addEventListener('open', () => {
+				console.log('reconnecting timeline...');
+				this.webSocket.sendEvent('timeline-connect', {type: 'public'});
 			});
 
-			this.webSocket.addEventListener('data:public:status', event => {
-				const statusData = event.data;
+			this.webSocket.on('timeline-connect', data => {
+				console.log(data.message);
+			});
 
-				console.log('status: ' + statusData);
-				this.timelinePosts.splice(0, 0, statusData);
+			this.webSocket.on('data:public:status', status => {
+				console.log('status: ' + status);
+				this.timelinePosts.splice(0, 0, status);
 				this.update();
 			});
 		});

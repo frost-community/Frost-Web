@@ -18,7 +18,7 @@
 	<script>
 		this.applications = [];
 
-		this.obs.on('add-application', (data) => {
+		this.obs.on('add-application', data => {
 			this.applications.push(data.application);
 			this.update();
 		});
@@ -29,18 +29,17 @@
 				headers: {'x-api-version': 1.0},
 			}});
 
-			this.webSocket.addEventListener('rest', event => {
-				const data = event.data;
-				if (data.request.method == 'get' && data.request.endpoint == '/applications') {
-					if (data.response.applications == null) {
-						if (data.response.message == 'applications are empty') {
-							data.response.applications = [];
+			this.webSocket.on('rest', rest => {
+				if (rest.request.method == 'get' && rest.request.endpoint == '/applications') {
+					if (rest.response.applications == null) {
+						if (rest.response.message == 'applications are empty') {
+							rest.response.applications = [];
 						}
 						else {
-							return alert(`api error: faild to fetch list of appliations. ${data.response.message}`);
+							return alert(`api error: faild to fetch list of appliations. ${rest.response.message}`);
 						}
 					}
-					this.applications = data.response.applications;
+					this.applications = rest.response.applications;
 					this.update();
 				}
 			});

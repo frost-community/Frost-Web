@@ -34,8 +34,7 @@ const mixinGlobal = {};
 			mixinGlobal.csrfToken = csrfElement.content;
 
 		const readyAsync = () => new Promise((resolve, reject) => {
-			webSocket.addEventListener('ready', readyEvent => {
-				const ready = readyEvent.data;
+			webSocket.on('ready', ready => {
 				const userId = ready.userId;
 
 				if (userId != null)
@@ -48,9 +47,7 @@ const mixinGlobal = {};
 					}
 				});
 
-				webSocket.addEventListener('rest', restEvent => {
-					const rest = restEvent.data;
-
+				webSocket.on('rest', rest => {
 					if (rest.request.endpoint == `/users/${userId}`) {
 						if (rest.success) {
 							if (rest.response.user != null) {

@@ -52,9 +52,11 @@ module.exports = (http, sessionStore, config) => {
 				console.log('front error:', err);
 			});
 
+			/*
 			frontConnection.on('close', data => {
 				console.log('front close:', data.reasonCode, data.description);
 			});
+			*/
 
 			// 認証チェック
 			const authorization = await apiConnection.onceAsync('authorization');

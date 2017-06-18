@@ -28,17 +28,21 @@ const mixinGlobal = {};
 		// others
 		const siteKeyElement = document.getElementsByName('siteKey').item(0);
 		const csrfElement = document.getElementsByName('_csrf').item(0);
-		if (siteKeyElement != null)
+		if (siteKeyElement != null) {
 			mixinGlobal.siteKey = siteKeyElement.content;
-		if (csrfElement != null)
+		}
+
+		if (csrfElement != null) {
 			mixinGlobal.csrfToken = csrfElement.content;
+		}
 
 		const readyAsync = () => new Promise((resolve, reject) => {
 			webSocket.on('ready', ready => {
 				const userId = ready.userId;
 
-				if (userId != null)
+				if (userId != null) {
 					mixinGlobal.userId = userId;
+				}
 
 				webSocket.sendEvent('rest', {
 					request: {

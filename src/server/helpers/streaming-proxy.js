@@ -51,8 +51,10 @@ class StreamingProxy {
 	 */
 	addNeedReturnEvent (eventName) {
 		this.apiConnection.on(eventName, data => {
-			if (this.debugDetail)
+			if (this.debugDetail) {
 				console.log(`[front<] ${eventName}`);
+			}
+
 			this.frontConnection.send(eventName, data);
 		});
 	}
@@ -78,8 +80,9 @@ class StreamingProxy {
 					return;
 				}
 
-				if (this.debugDetail)
+				if (this.debugDetail) {
 					console.log('[>api] rest');
+				}
 
 				// 前処理
 				if (endpointInfo.before != null) {
@@ -97,14 +100,18 @@ class StreamingProxy {
 		});
 
 		this.frontConnection.on('timeline-connect', data => {
-			if (this.debugDetail)
+			if (this.debugDetail) {
 				console.log('[>api] timeline-connect');
+			}
+
 			this.apiConnection.send('timeline-connect', data);
 		});
 
 		this.frontConnection.on('timeline-disconnect', data => {
-			if (this.debugDetail)
+			if (this.debugDetail) {
 				console.log('[>api] timeline-disconnect');
+			}
+
 			this.apiConnection.send('timeline-disconnect', data);
 		});
 

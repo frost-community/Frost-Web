@@ -68,34 +68,40 @@ class StreamingProxy {
 
 		this.frontConnection.on('rest', data => {
 			(async () => {
-				const {request} = data;
-				const {method, endpoint} = request;
+				try {
+					const {request} = data;
+					const {method, endpoint} = request;
 
-				const endpointInfo = this.endpointWhiteList.find(e => {
-					return e.method == method && pathToRegexp(e.path).test(endpoint);
-				});
+					const endpointInfo = this.endpointWhiteList.find(e => {
+						return e.method == method && pathToRegexp(e.path).test(endpoint);
+					});
 
-				if (endpointInfo == null) {
-					this.frontConnection.send('rest', {success: false, request: request, message: `'${endpoint}' endpoint is not access allowed on 'rest' event.`});
-					return;
-				}
-
-				if (this.debugDetail) {
-					console.log('[>api] rest');
-				}
-
-				// 前処理
-				if (endpointInfo.before != null) {
-					try {
-						await endpointInfo.before(data, this.frontConnection, this.apiConnection, this.config);
-					}
-					catch (err) {
-						console.dir(err);
+					if (endpointInfo == null) {
+						this.frontConnection.send('rest', {success: false, request: request, message: `'${endpoint}' endpoint is not access allowed on 'rest' event.`});
 						return;
 					}
-				}
 
-				this.apiConnection.send('rest', data);
+					if (this.debugDetail) {
+						console.log('[>api] rest');
+					}
+
+					// 前処理
+					if (endpointInfo.before != null) {
+						try {
+							await endpointInfo.before(data, this.frontConnection, this.apiConnection, this.config);
+						}
+						catch (err) {
+							console.dir(err);
+							return;
+						}
+					}
+
+					this.apiConnection.send('rest', data);
+				}
+				catch(err) {
+					console.log('error on: rest event in streaming proxy');
+					console.dir(err);
+				}
 			})();
 		});
 

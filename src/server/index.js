@@ -12,7 +12,6 @@ const helmet = require('helmet');
 const i = require('./helpers/input-async');
 const isSmartPhone = require('./helpers/is-smart-phone');
 const loadConfig = require('./helpers/load-config');
-const moment = require('moment');
 const path = require('path');
 const requestApiAsync = require('./helpers/request-api-async');
 const requestAsync = require('request-promise');
@@ -83,7 +82,7 @@ module.exports = async () => {
 			secret: config.web.session.SecretToken,
 			cookie: {
 				httpOnly: false,
-				maxAge: 1 * 60 * 1000
+				maxAge: 7 * 24 * 60 * 60 * 1000 // 7days
 			},
 			resave: true,
 			saveUninitialized: true,
@@ -118,18 +117,23 @@ module.exports = async () => {
 			});
 
 			if (!result.iceAuthKey) {
-				throw new Error(`error: ${result.message}`);
+				throw new Error(`session creation error: ${result.message}`);
 			}
 
-			result = await requestApiAsync('post', '/ice_auth/authorize_basic', {
-				screenName: req.body.screenName,
-				password: req.body.password
-			}, {
-				'X-Api-Version': 1.0,
-				'X-Application-Key': config.web.applicationKey,
-				'X-Access-Key': config.web.hostAccessKey,
-				'X-Ice-Auth-Key': result.iceAuthKey
-			});
+			try {
+				result = await requestApiAsync('post', '/ice_auth/authorize_basic', {
+					screenName: req.body.screenName,
+					password: req.body.password
+				}, {
+					'X-Api-Version': 1.0,
+					'X-Application-Key': config.web.applicationKey,
+					'X-Access-Key': config.web.hostAccessKey,
+					'X-Ice-Auth-Key': result.iceAuthKey
+				});
+			}
+			catch(err) {
+				throw new Error(`session creation authorize error: ${err.name}`);
+			}
 
 			if (!result.accessKey) {
 				throw new Error(`error: ${result.message}`);
@@ -146,7 +150,6 @@ module.exports = async () => {
 					res.end();
 				}
 				catch(err) {
-					console.log('faild');
 					console.dir(err);
 					res.status(400).json({message: 'faild'});
 				}
@@ -199,40 +202,46 @@ module.exports = async () => {
 
 		app.use((req, res, next) => {
 			(async () => {
-				const authorized = req.session.accessKey != null;
+				try {
+					const authorized = req.session.accessKey != null;
 
-				req.isSmartPhone = isSmartPhone(req.header('User-Agent'));
-				/*if (req.isSmartPhone) {
-					app.set('views', path.join(__dirname, 'views', 'sp'));
-				}
-				else {
-					app.set('views', path.join(__dirname, 'views'));
-				}*/
-				app.set('views', path.join(__dirname, 'views'));
-
-				// default render params
-				req.renderParams = {
-					authorized: authorized,
-					csrfToken: req.csrfToken(),
-					isSmartPhone: req.isSmartPhone
-				};
-
-				if (authorized) {
-					const userId = req.session.accessKey.split('-')[0];
-					req.renderParams.userId = userId;
-
-					if (req.session.user == null) {
-						const result = await requestApiAsync('get', '/users/' + userId, {}, {
-							'X-Api-Version': 1.0,
-							'X-Application-Key': config.web.applicationKey,
-							'X-Access-Key': req.session.accessKey
-						});
-						req.session.user = result.user;
+					req.isSmartPhone = isSmartPhone(req.header('User-Agent'));
+					/*if (req.isSmartPhone) {
+						app.set('views', path.join(__dirname, 'views', 'sp'));
 					}
-					req.renderParams.account = req.session.user;
-				}
+					else {
+						app.set('views', path.join(__dirname, 'views'));
+					}*/
+					app.set('views', path.join(__dirname, 'views'));
 
-				next();
+					// default render params
+					req.renderParams = {
+						authorized: authorized,
+						csrfToken: req.csrfToken(),
+						isSmartPhone: req.isSmartPhone
+					};
+
+					if (authorized) {
+						const userId = req.session.accessKey.split('-')[0];
+						req.renderParams.userId = userId;
+
+						if (req.session.user == null) {
+							const result = await requestApiAsync('get', '/users/' + userId, {}, {
+								'X-Api-Version': 1.0,
+								'X-Application-Key': config.web.applicationKey,
+								'X-Access-Key': req.session.accessKey
+							});
+							req.session.user = result.user;
+						}
+						req.renderParams.account = req.session.user;
+					}
+
+					next();
+				}
+				catch(err) {
+					console.dir(err);
+					res.status(500).json({message: typeof(err) == 'string' ? err : 'faild'});
+				}
 			})();
 		});
 
@@ -267,7 +276,7 @@ module.exports = async () => {
 				}
 				catch(err) {
 					console.dir(err);
-					res.status(500).send(err);
+					res.status(500).json({message: typeof(err) == 'string' ? err : 'faild'});
 				}
 			})();
 		});
@@ -297,7 +306,7 @@ module.exports = async () => {
 				}
 				catch(err) {
 					console.dir(err);
-					res.status(500).send(err);
+					res.status(500).json({message: typeof(err) == 'string' ? err : 'faild'});
 				}
 			})();
 		});

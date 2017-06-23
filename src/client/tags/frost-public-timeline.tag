@@ -28,6 +28,7 @@
 
 			this.webSocket.sendEvent('rest', {request: {
 				method: 'get', endpoint: '/general/timeline',
+				query: {limit: 100},
 				headers: {'x-api-version': 1.0},
 			}});
 		}

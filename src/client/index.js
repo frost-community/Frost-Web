@@ -15,8 +15,10 @@ const mixinGlobal = {};
 
 (async () => {
 	try {
+		const secure = location.protocol == 'https:';
+
 		// WebSocket
-		const webSocket = await WebSocketEvents.connectAsync(`ws://${location.host}`);
+		const webSocket = await WebSocketEvents.connectAsync(`${secure ? 'wss' : 'ws'}://${location.host}`);
 		webSocket.addEventListener('close', ev => { console.log('close:'); console.dir(ev); });
 		webSocket.addEventListener('error', ev => { console.log('error:'); console.dir(ev); });
 		WebSocketEvents.init(webSocket);

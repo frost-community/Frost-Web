@@ -83,10 +83,11 @@ module.exports = async () => {
 			secret: config.web.session.SecretToken,
 			cookie: {
 				httpOnly: false,
-				maxAge: moment().add(7, 'days').toDate()
+				maxAge: 1 * 60 * 1000
 			},
 			resave: true,
-			saveUninitialized: true
+			saveUninitialized: true,
+			rolling: true
 		}));
 
 		// securities

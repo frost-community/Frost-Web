@@ -326,7 +326,7 @@ module.exports = async () => {
 			console.log(`listen on port: ${config.web.port}`);
 		});
 
-		streamingServer(http, sessionStore, config);
+		streamingServer(http, sessionStore, false, config);
 
 		console.log('Initialization complete.');
 	}

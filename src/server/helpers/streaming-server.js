@@ -10,7 +10,7 @@ const StreamingProxy = require('./streaming-proxy');
  * セッション経由でAPIにアクセスできる機能が含まれます。
  */
 
-module.exports = (http, sessionStore, config) => {
+module.exports = (http, sessionStore, debugDetail, config) => {
 	const server = new WebSocket.server({httpServer: http});
 	server.on('request', request => {
 		(async () => {
@@ -41,7 +41,9 @@ module.exports = (http, sessionStore, config) => {
 			});
 
 			apiConnection.on('close', data => {
-				console.log('api close:', data.reasonCode, data.description);
+				if (debugDetail) {
+					console.log('[api close]:', data.reasonCode, data.description);
+				}
 			});
 
 			// リクエストを受理
@@ -52,11 +54,13 @@ module.exports = (http, sessionStore, config) => {
 				console.log('front error:', err);
 			});
 
-			/*
 			frontConnection.on('close', data => {
-				console.log('front close:', data.reasonCode, data.description);
+				if (debugDetail) {
+					console.log('[front close]:', data.reasonCode, data.description);
+				}
+
+				apiConnection.close();
 			});
-			*/
 
 			// 認証チェック
 			const authorization = await apiConnection.onceAsync('authorization');
@@ -67,7 +71,7 @@ module.exports = (http, sessionStore, config) => {
 			}
 
 			// API代理
-			const streamingProxy = new StreamingProxy(frontConnection, apiConnection, false, config);
+			const streamingProxy = new StreamingProxy(frontConnection, apiConnection, debugDetail, config);
 			streamingProxy.start();
 
 			const userId = session.accessKey.split('-')[0];

@@ -31,10 +31,10 @@ module.exports = (http, sessionStore, debugDetail, config) => {
 					WebSocketUtility.addExtensionMethods(apiConnection);
 				}
 				catch (err) {
-					console.log('faild to connect api:');
+					console.log('failed to connect api:');
 					console.dir(err);
 
-					return request.reject(500, 'faild to connect api');
+					return request.reject(500, 'failed to connect api');
 				}
 
 				apiConnection.on('error', err => {

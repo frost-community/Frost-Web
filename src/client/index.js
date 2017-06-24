@@ -62,10 +62,10 @@ const mixinGlobal = {};
 								return resolve();
 							}
 
-							return reject(new Error(`api error: faild to fetch user data. ${rest.response.message}`));
+							return reject(new Error(`api error: failed to fetch user data. ${rest.response.message}`));
 						}
 
-						return reject(new Error(`internal error: faild to fetch user data. ${rest.message}`));
+						return reject(new Error(`internal error: failed to fetch user data. ${rest.message}`));
 					}
 				});
 			});

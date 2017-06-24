@@ -36,7 +36,7 @@
 							rest.response.applications = [];
 						}
 						else {
-							return alert(`api error: faild to fetch list of appliations. ${rest.response.message}`);
+							return alert(`api error: failed to fetch list of appliations. ${rest.response.message}`);
 						}
 					}
 					this.applications = rest.response.applications;

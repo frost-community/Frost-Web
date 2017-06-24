@@ -151,7 +151,7 @@ module.exports = async () => {
 				}
 				catch(err) {
 					console.dir(err);
-					res.status(400).json({message: 'faild'});
+					res.status(400).json({message: 'failed'});
 				}
 			})();
 		})
@@ -175,7 +175,7 @@ module.exports = async () => {
 					});
 
 					if (verifyResult.success !== true) {
-						return res.status(400).json({message: 'faild to verify recaptcha'});
+						return res.status(400).json({message: 'failed to verify recaptcha'});
 					}
 
 					const result = await requestApiAsync('post', '/account', req.body, {
@@ -193,7 +193,7 @@ module.exports = async () => {
 				}
 				catch(err) {
 					console.dir(err);
-					res.status(500).json({message: typeof(err) == 'string' ? err : 'faild'});
+					res.status(500).json({message: typeof(err) == 'string' ? err : 'failed'});
 				}
 			})();
 		});
@@ -240,7 +240,7 @@ module.exports = async () => {
 				}
 				catch(err) {
 					console.dir(err);
-					res.status(500).json({message: typeof(err) == 'string' ? err : 'faild'});
+					res.status(500).json({message: typeof(err) == 'string' ? err : 'failed'});
 				}
 			})();
 		});
@@ -276,7 +276,7 @@ module.exports = async () => {
 				}
 				catch(err) {
 					console.dir(err);
-					res.status(500).json({message: typeof(err) == 'string' ? err : 'faild'});
+					res.status(500).json({message: typeof(err) == 'string' ? err : 'failed'});
 				}
 			})();
 		});
@@ -306,7 +306,7 @@ module.exports = async () => {
 				}
 				catch(err) {
 					console.dir(err);
-					res.status(500).json({message: typeof(err) == 'string' ? err : 'faild'});
+					res.status(500).json({message: typeof(err) == 'string' ? err : 'failed'});
 				}
 			})();
 		});

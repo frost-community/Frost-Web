@@ -74,7 +74,7 @@
 							alert('created application.');
 						}
 						else {
-							alert(`api error: faild to create application. ${rest.response.message}`);
+							alert(`api error: failed to create application. ${rest.response.message}`);
 						}
 					}
 					else {

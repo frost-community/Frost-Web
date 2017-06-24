@@ -20,9 +20,9 @@ class StreamingProxy {
 				});
 
 				if (verifyResult.success !== true) {
-					frontConnection.send('rest', {success: false, request: data.request, message: 'faild to verify recaptcha'});
+					frontConnection.send('rest', {success: false, request: data.request, message: 'failed to verify recaptcha'});
 
-					throw new Error('faild to verify recaptcha');
+					throw new Error('failed to verify recaptcha');
 				}
 			}},
 			{method: 'get', path: '/applications'},

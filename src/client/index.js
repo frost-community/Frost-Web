@@ -23,71 +23,82 @@ const mixinGlobal = {};
 
 (async () => {
 	try {
-		const secure = location.protocol == 'https:';
+		// siteKey
+		const siteKeyElement = document.getElementsByName('siteKey').item(0);
+		const siteKey = siteKeyElement != null ? siteKeyElement.content : null;
+		mixinGlobal.siteKey = siteKey;
 
-		riot.mount('frost-header, frost-footer');
+		// userId
+		const userIdElement = document.getElementsByName('frost-userId').item(0);
+		const userId = userIdElement != null ? userIdElement.content : null;
+		mixinGlobal.userId = userId;
 
-		// WebSocket
-		let webSocket;
-		try {
-			webSocket = await WebSocketEvents.connectAsync(`${secure ? 'wss' : 'ws'}://${location.host}`);
-			webSocket.addEventListener('close', ev => { console.log('close:'); console.dir(ev); });
-			webSocket.addEventListener('error', ev => { console.log('error:'); console.dir(ev); });
-			WebSocketEvents.init(webSocket);
-			mixinGlobal.webSocket = webSocket;
-		}
-		catch (err) {
-			// noop
-		}
+		// csrf
+		const csrfTokenElement = document.getElementsByName('_csrf').item(0);
+		const csrfToken = csrfTokenElement != null ? csrfTokenElement.content : null;
+		mixinGlobal.csrfToken = csrfToken;
 
 		// observable
 		mixinGlobal.obs = riot.observable();
 
-		// others
-		const siteKeyElement = document.getElementsByName('siteKey').item(0);
-		const csrfElement = document.getElementsByName('_csrf').item(0);
-		if (siteKeyElement != null) {
-			mixinGlobal.siteKey = siteKeyElement.content;
-		}
+		riot.mount('frost-header, frost-footer');
 
-		if (csrfElement != null) {
-			mixinGlobal.csrfToken = csrfElement.content;
-		}
-
-		const readyAsync = () => new Promise((resolve, reject) => {
-			webSocket.on('ready', ready => {
-				const userId = ready.userId;
-
-				if (userId != null) {
-					mixinGlobal.userId = userId;
+		const recaptchaAsync = () => new Promise((resolve) => {
+			const t = setInterval(() => {
+				if (siteKey == null || typeof grecaptcha != 'undefined') {
+					clearInterval(t);
+					resolve();
 				}
-
-				webSocket.sendEvent('rest', {
-					request: {
-						method: 'get', endpoint: `/users/${userId}`,
-						headers: {'x-api-version': 1.0},
-					}
-				});
-
-				webSocket.on('rest', rest => {
-					if (rest.request.endpoint == `/users/${userId}`) {
-						if (rest.success) {
-							if (rest.response.user != null) {
-								mixinGlobal.user = rest.response.user;
-
-								return resolve();
-							}
-
-							return reject(new Error(`api error: failed to fetch user data. ${rest.response.message}`));
-						}
-
-						return reject(new Error(`internal error: failed to fetch user data. ${rest.message}`));
-					}
-				});
-			});
+			}, 50);
 		});
 
-		await readyAsync();
+		await recaptchaAsync();
+
+		// WebSocket (ログインされている時のみ)
+		if (userId != null) {
+			const secure = location.protocol == 'https:';
+
+			let webSocket;
+			try {
+				webSocket = await WebSocketEvents.connectAsync(`${secure ? 'wss' : 'ws'}://${location.host}`);
+				webSocket.addEventListener('close', ev => { console.log('close:'); console.dir(ev); });
+				webSocket.addEventListener('error', ev => { console.log('error:'); console.dir(ev); });
+				WebSocketEvents.init(webSocket);
+				mixinGlobal.webSocket = webSocket;
+			}
+			catch (err) {
+				// noop
+			}
+
+			const readyAsync = () => new Promise((resolve, reject) => {
+				webSocket.on('ready', ready => {
+					webSocket.sendEvent('rest', {
+						request: {
+							method: 'get', endpoint: `/users/${userId}`,
+							headers: {'x-api-version': 1.0},
+						}
+					});
+
+					webSocket.on('rest', rest => {
+						if (rest.request.endpoint == `/users/${userId}`) {
+							if (rest.success) {
+								if (rest.response.user != null) {
+									mixinGlobal.user = rest.response.user;
+
+									return resolve();
+								}
+
+								return reject(new Error(`api error: failed to fetch user data. ${rest.response.message}`));
+							}
+
+							return reject(new Error(`internal error: failed to fetch user data. ${rest.message}`));
+						}
+					});
+				});
+			});
+
+			await readyAsync();
+		}
 	}
 	catch (err) {
 		console.log('何かがおかしいよ');

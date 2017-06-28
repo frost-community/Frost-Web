@@ -84,7 +84,7 @@
 			});
 
 			grecaptcha.render('recaptcha', {
-				'sitekey' : this.siteKey
+				sitekey: this.siteKey
 			});
 		});
 	</script>

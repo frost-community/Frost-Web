@@ -215,8 +215,14 @@ module.exports = async () => {
 					// default render params
 					req.renderParams = {
 						isSmartPhone: req.isSmartPhone,
-						csrfToken: req.csrfToken()
+						csrfToken: req.csrfToken(),
 					};
+
+					// memo: クライアントサイドでは、パラメータ中にuserIdが存在するかどうかでWebSocketへの接続が必要かどうかを判断します。以下のコードはそのために必要です。
+					const accessKey = req.session.accessKey;
+					if (accessKey != null) {
+						req.renderParams.userId = accessKey.split('-')[0];
+					}
 
 					next();
 				}

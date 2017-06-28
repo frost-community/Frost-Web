@@ -203,8 +203,6 @@ module.exports = async () => {
 		app.use((req, res, next) => {
 			(async () => {
 				try {
-					const authorized = req.session.accessKey != null;
-
 					req.isSmartPhone = isSmartPhone(req.header('User-Agent'));
 					/*if (req.isSmartPhone) {
 						app.set('views', path.join(__dirname, 'views', 'sp'));
@@ -216,25 +214,8 @@ module.exports = async () => {
 
 					// default render params
 					req.renderParams = {
-						authorized: authorized,
-						csrfToken: req.csrfToken(),
 						isSmartPhone: req.isSmartPhone
 					};
-
-					if (authorized) {
-						const userId = req.session.accessKey.split('-')[0];
-						req.renderParams.userId = userId;
-
-						if (req.session.user == null) {
-							const result = await requestApiAsync('get', '/users/' + userId, {}, {
-								'X-Api-Version': 1.0,
-								'X-Application-Key': config.web.applicationKey,
-								'X-Access-Key': req.session.accessKey
-							});
-							req.session.user = result.user;
-						}
-						req.renderParams.account = req.session.user;
-					}
 
 					next();
 				}

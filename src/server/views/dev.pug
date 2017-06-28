@@ -8,7 +8,7 @@ html(lang='ja')
 		link(rel='stylesheet', href='/styles/dev.css')
 
 	body.container
-		include includes/header
+		frost-header
 
 		header
 			h3 Frost Developers Center
@@ -21,6 +21,6 @@ html(lang='ja')
 			.row(style='margin-top: 30px')
 				frost-create-application-form
 
-		include includes/footer
+		frost-footer
 
 		script(src='/bundle.js')

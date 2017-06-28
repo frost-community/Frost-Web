@@ -214,7 +214,8 @@ module.exports = async () => {
 
 					// default render params
 					req.renderParams = {
-						isSmartPhone: req.isSmartPhone
+						isSmartPhone: req.isSmartPhone,
+						csrfToken: req.csrfToken()
 					};
 
 					next();

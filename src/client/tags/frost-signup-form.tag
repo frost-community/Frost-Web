@@ -10,7 +10,7 @@
 			<input class='name-box' type='text' name='name' placeholder='froster' style='width: 100%' maxlength='32' />
 			<label for='description'>Description</label>
 			<input class='description-box' type='text' name='description' style='width: 100%' maxlength='256' />
-			<div class='g-recaptcha' data-sitekey={ siteKey }></div>
+			<div id='recaptcha'></div>
 			<button class='button-primary'>Sign up</button>
 		</form>
 	</div>
@@ -39,5 +39,11 @@
 				console.log('Sign up error: ' + reason);
 			});
 		}
+
+		this.on('mount', () => {
+			grecaptcha.render('recaptcha', {
+				'sitekey' : this.siteKey
+			});
+		});
 	</script>
 </frost-signup-form>

@@ -31,7 +31,7 @@
 						<input type='checkbox' id='permissions-application' name='permissions' value='application'>application - Accessing about your applications</input>
 					</label>
 				</fieldset>
-				<div class='g-recaptcha' data-sitekey={ siteKey }></div>
+				<div id='recaptcha'></div>
 				<button class='button-primary'>Create application</button>
 			</form>
 		</div>
@@ -81,6 +81,10 @@
 						alert(`internal error: ${rest.message}`);
 					}
 				}
+			});
+
+			grecaptcha.render('recaptcha', {
+				'sitekey' : this.siteKey
 			});
 		});
 	</script>

@@ -4,6 +4,8 @@
 /* 全般 */
 
 .content {
+	@include responsive(row);
+
 	> .side {
 		@media (max-width: $tablet - 1px) {
 			display: none;

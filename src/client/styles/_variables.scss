@@ -22,8 +22,9 @@ $textbox-back-color: transparent;
 
 /* mixins */
 
-@mixin responsive($minWidth: 300px) {
+@mixin responsive($direction: column, $minWidth: 300px) {
 	display: flex;
+	flex-direction: $direction;
 	min-width: $minWidth;
 	margin: 0 auto;
 	padding: 0 .5rem;

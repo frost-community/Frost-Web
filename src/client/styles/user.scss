@@ -2,6 +2,8 @@
 @import "main";
 
 .content {
+	@include responsive(row);
+
 	> .side {
 		width: 250px;
 

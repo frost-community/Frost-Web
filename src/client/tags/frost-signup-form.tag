@@ -2,14 +2,15 @@
 	<h3>Signup</h3>
 	<div show={ isShowModal }>
 		<form onsubmit={ submit }>
-			<label for='screenName'>Username *</label>
-			<input class='screen-name-box' type='text' name='screenName' placeholder='example: frost_abc' style='width: 100%' pattern='^[a-zA-Z0-9_-]+$' minlength='4' maxlength='15' required />
-			<label for='password'>Password *</label>
-			<input class='password-box' type='password' name='password' style='width: 100%' pattern='^[!-~]+$' minlength='6' required />
-			<label for='name'>Name</label>
-			<input class='name-box' type='text' name='name' placeholder='froster' style='width: 100%' maxlength='32' />
-			<label for='description'>Description</label>
-			<input class='description-box' type='text' name='description' style='width: 100%' maxlength='256' />
+			<label for='screen-name-box'>Username *</label>
+			<input id='screen-name-box' type='text' placeholder='example: frost_abc' style='width: 100%' pattern='^[a-zA-Z0-9_-]+$' minlength='4' maxlength='15' required />
+			<label for='password-box'>Password *</label>
+			<input id='password-box' type='password' style='width: 100%' pattern='^[!-~]+$' minlength='6' required />
+			<label for='name-box'>Name</label>
+			<input id='name-box' type='text' placeholder='froster' style='width: 100%' maxlength='32' />
+			<label for='description-box'>Description</label>
+			<input id='description-box' type='text' style='width: 100%' maxlength='256' />
+			<label for='recaptcha'>reCAPTCHA</label>
 			<div id='recaptcha'></div>
 			<button class='button-primary'>Sign up</button>
 		</form>

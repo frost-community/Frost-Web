@@ -1,0 +1,13 @@
+@import "variables";
+@import "main";
+
+.content {
+	> .side {
+		width: 250px;
+	}
+
+	> .main {
+		flex: 1;
+		min-width: 300px;
+	}
+}

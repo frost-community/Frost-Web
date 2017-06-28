@@ -2,14 +2,20 @@ const riot = require('riot');
 const WebSocketEvents = require('./helpers/web-socket-events');
 
 // components
+
+// general
 require('./tags/frost-header.tag');
 require('./tags/frost-footer.tag');
+require('./tags/frost-logout-button.tag');
+// entrance
 require('./tags/frost-login-form.tag');
 require('./tags/frost-signup-form.tag');
-require('./tags/frost-logout-button.tag');
+// home
+require('./tags/frost-home-logo.tag');
 require('./tags/frost-create-status-form.tag');
-require('./tags/frost-post-status.tag');
 require('./tags/frost-public-timeline.tag');
+require('./tags/frost-post-status.tag');
+// dev
 require('./tags/frost-applications.tag');
 require('./tags/frost-create-application-form.tag');
 
@@ -19,9 +25,12 @@ const mixinGlobal = {};
 	try {
 		const secure = location.protocol == 'https:';
 
+		riot.mount('frost-header, frost-footer');
+
+		// WebSocket
+		let webSocket;
 		try {
-			// WebSocket
-			const webSocket = await WebSocketEvents.connectAsync(`${secure ? 'wss' : 'ws'}://${location.host}`);
+			webSocket = await WebSocketEvents.connectAsync(`${secure ? 'wss' : 'ws'}://${location.host}`);
 			webSocket.addEventListener('close', ev => { console.log('close:'); console.dir(ev); });
 			webSocket.addEventListener('error', ev => { console.log('error:'); console.dir(ev); });
 			WebSocketEvents.init(webSocket);

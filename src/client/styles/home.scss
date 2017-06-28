@@ -3,22 +3,8 @@
 
 /* 全般 */
 
-.logo {
-	font-size: 4.5rem;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	padding: 0.5rem 0;
-
-	.icon {
-		height: 5rem;
-	}
-}
-
 .content {
 	> .side {
-		width: 250px;
-
 		@media (max-width: $tablet - 1px) {
 			display: none;
 		}
@@ -26,6 +12,10 @@
 		.box {
 			margin: 10px 0;
 		}
+	}
+
+	> .side {
+		width: 250px;
 	}
 
 	> .main {
@@ -39,9 +29,5 @@
 			font-size: 18px;
 			margin-bottom: 10px;
 		}
-	}
-
-	> :not(:last-child) {
-		margin-right: 2rem;
 	}
 }

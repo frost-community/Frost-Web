@@ -15,6 +15,7 @@ html(lang='ja')
 				h1 #{user.name} @#{user.screenName}
 				h2 Description:
 				p #{user.description}
+				frost-follow-button(data-target-id=user.id)
 			.main
 				p not implemented yet.
 

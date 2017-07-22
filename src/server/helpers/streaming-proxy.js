@@ -11,7 +11,6 @@ class StreamingProxy {
 		// 利用可能なエンドポイント一覧
 		this.endpointWhiteList = [
 			{method: 'get', path: '/general/timeline'},
-
 			{method: 'get', path: '/users/:id'},
 			{method: 'get', path: '/users/:id/followings/:target_id'},
 			{method: 'put', path: '/users/:id/followings/:target_id'},

@@ -269,6 +269,22 @@ module.exports = async () => {
 			})();
 		});
 
+		app.get('/userlist', (req, res) => {
+			(async () => {
+				if (req.session.accessKey == null) {
+					return res.status(403).json({message: 'Forbidden'});
+				}
+
+				const result = await requestApiAsync('get', '/users', {}, {
+					'X-Api-Version': 1.0,
+					'X-Application-Key': config.web.applicationKey,
+					'X-Access-Key': req.session.accessKey != null ? req.session.accessKey : config.web.hostAccessKey,
+				});
+
+				res.render('userlist', Object.assign(req.renderParams, {users: result.users}));
+			})();
+		});
+
 		app.get('/posts/:postId', (req, res, next) => {
 			(async () => {
 				try {

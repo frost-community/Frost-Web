@@ -53,7 +53,7 @@
 						alert(`internal error: ${rest.message}`);
 					}
 
-					this.webSocket.sendEvent('timeline-connect', {type: 'public'});
+					this.webSocket.sendEvent('timeline-connect', {type: 'home'});
 
 					this.update({loading: false});
 				}
@@ -61,14 +61,14 @@
 
 			this.webSocket.addEventListener('open', () => {
 				console.log('reconnecting timeline...');
-				this.webSocket.sendEvent('timeline-connect', {type: 'public'});
+				this.webSocket.sendEvent('timeline-connect', {type: 'home'});
 			});
 
 			this.webSocket.on('timeline-connect', data => {
 				console.log(data.message);
 			});
 
-			this.webSocket.on('data:public:status', status => {
+			this.webSocket.on('data:home:status', status => {
 				console.log('status: ' + status);
 				this.timelinePosts.splice(0, 0, status);
 				this.update();

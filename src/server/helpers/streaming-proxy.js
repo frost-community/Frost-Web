@@ -11,6 +11,7 @@ class StreamingProxy {
 		// 利用可能なエンドポイント一覧
 		this.endpointWhiteList = [
 			{method: 'get', path: '/general/timeline'},
+			{method: 'get', path: '/users/:id/timelines/home'},
 			{method: 'get', path: '/users/:id'},
 			{method: 'post', path: '/applications', before: async (data, frontConnection, apiConnection, config) => {
 				const verifyResult = await requestAsync('https://www.google.com/recaptcha/api/siteverify', {

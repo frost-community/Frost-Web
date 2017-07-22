@@ -13,6 +13,7 @@ require('./tags/frost-signup-form.tag');
 // home
 require('./tags/frost-home-logo.tag');
 require('./tags/frost-create-status-form.tag');
+require('./tags/frost-home-timeline.tag');
 require('./tags/frost-public-timeline.tag');
 require('./tags/frost-post-status.tag');
 // dev

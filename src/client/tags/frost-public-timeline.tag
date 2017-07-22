@@ -43,7 +43,7 @@
 						if (rest.response.posts != null) {
 							this.timelinePosts = rest.response.posts;
 						}
-						else {
+						else if (rest.statusCode != 204) {
 							alert(`api error: failed to fetch general timeline posts. ${rest.response.message}`);
 						}
 					}

@@ -32,7 +32,7 @@
 			this.webSocket.on('rest', rest => {
 				if (rest.request.method == 'get' && rest.request.endpoint == '/applications') {
 					if (rest.response.applications == null) {
-						if (rest.response.message == 'applications are empty') {
+						if (rest.statusCode == 204) {
 							rest.response.applications = [];
 						}
 						else {

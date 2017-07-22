@@ -83,6 +83,8 @@ class StreamingProxy {
 
 					if (this.debugDetail) {
 						console.log('[>api] rest');
+						console.dir(data);
+						console.log('----');
 					}
 
 					// 前処理

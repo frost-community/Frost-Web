@@ -7,7 +7,7 @@
 	</div>
 	<ul if={ !loading && timelinePosts.length != 0 }>
 		<li each={ post in timelinePosts }>
-			<frost-post-status status={ post } />
+			<frost-post-status data-post-id={ post.id } status={ post } />
 		</li>
 	</ul>
 
@@ -42,7 +42,6 @@
 					if (rest.success) {
 						if (rest.response.posts != null) {
 							this.timelinePosts = rest.response.posts;
-							this.timelinePosts.reverse();
 						}
 						else {
 							alert(`api error: failed to fetch general timeline posts. ${rest.response.message}`);

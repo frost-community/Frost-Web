@@ -26,9 +26,16 @@ module.exports = (http, sessionStore, debugDetail, config) => {
 				// APIに接続
 				let apiConnection;
 				try {
+					if (debugDetail) {
+						console.log('connecting streaming api server...');
+					}
 					const wsUrl = `${config.web.apiBaseUrl}?application_key=${config.web.applicationKey}&access_key=${session.accessKey}`;
 					apiConnection = await WebSocketUtility.connectAsync(wsUrl);
 					WebSocketUtility.addExtensionMethods(apiConnection);
+
+					if (debugDetail) {
+						console.log('connected.');
+					}
 				}
 				catch (err) {
 					console.log('failed to connect api:');
@@ -76,6 +83,9 @@ module.exports = (http, sessionStore, debugDetail, config) => {
 
 				const userId = session.accessKey.split('-')[0];
 				frontConnection.send('ready', {userId: userId});
+				if (debugDetail) {
+					console.log('[front<] ready');
+				}
 			}
 			catch(err) {
 				if (frontConnection != null) {

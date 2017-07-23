@@ -17,7 +17,8 @@ html(lang='ja')
 				p #{user.description}
 				frost-follow-button(data-target-id=user.id)
 			.main
-				p not implemented yet.
+				h1 #{user.name}さんの投稿
+				frost-user-timeline(data-user-id=user.id)
 
 		frost-footer
 

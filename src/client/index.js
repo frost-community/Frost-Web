@@ -18,6 +18,7 @@ require('./tags/frost-public-timeline.tag');
 require('./tags/frost-post-status.tag');
 // user
 require('./tags/frost-follow-button.tag');
+require('./tags/frost-user-timeline.tag');
 // dev
 require('./tags/frost-applications.tag');
 require('./tags/frost-create-application-form.tag');

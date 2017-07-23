@@ -5,15 +5,14 @@
 			<a href={ '/users/' + opts.status.user.screenName } target='_blank'>{ opts.status.user.name } @{ opts.status.user.screenName }</a>
 			<time datetime={ getTime().format() } title={ getTime().format() }>{ getTime().fromNow() }</time>
 		</div>
-		<p ref='text'></p>
-
+		<div class='text' ref='text'></div>
 	</div>
 
 	<style>
 		:scope {
 			display: flex;
 			flex-direction: row;
-			margin: 10px 0;
+			margin: 2.5rem 0;
 
 			.side {
 				min-width: 72px;
@@ -27,6 +26,17 @@
 					display: flex;
 					flex-direction: row;
 					justify-content: space-between;
+					margin-bottom: 0.3rem;
+
+					a {
+						text-decoration-line: none;
+					}
+				}
+
+				.text {
+					p {
+						margin-bottom: 0;
+					}
 				}
 			}
 		}
@@ -40,12 +50,21 @@
 		}
 
 		compileText(text) {
-			text = text
+			let compiledText = '<p>';
+
+			compiledText += text
+				.replace(/&/g, '&amp;')
 				.replace(/</g, '&lt;')
 				.replace(/>/g, '&gt;')
-				.replace(/\n/g, '<br />');
+				.replace(/'/g, '&#039;')
+				.replace(/"/g, '&quot;')
+				.replace(/`/g, '&#x60;')
+				.replace(/((https?|ftp):\/\/[^\s/$.?#].[^\s]*)/ig, '<a href=\'$1\' target=\'_blank\'>$1</a>') // url
+				.replace(/\n/g, '</p><p>'); // 改行
 
-			return text;
+			compiledText += '</p>';
+
+			return compiledText;
 		}
 
 		this.on('mount', () => {

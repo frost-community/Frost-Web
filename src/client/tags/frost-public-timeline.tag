@@ -23,22 +23,24 @@
 		this.timelinePosts = [];
 		this.loading = true;
 
-		reload() {
-			this.update({loading: true});
-
-			this.webSocket.sendEvent('rest', {request: {
-				method: 'get', endpoint: '/general/timeline',
-				query: {limit: 100},
-				headers: {'x-api-version': 1.0},
-			}});
-		}
-
 		this.on('mount', () => {
+			const endpoint = '/general/timeline';
+
+			this.reload = () => {
+				this.update({loading: true});
+
+				this.webSocket.sendEvent('rest', {request: {
+					method: 'get', endpoint: endpoint,
+					query: {limit: 100},
+					headers: {'x-api-version': 1.0},
+				}});
+			};
+
 			// タイムラインのリロード
 			this.reload();
 
 			this.webSocket.on('rest', rest => {
-				if (rest.request.endpoint == '/general/timeline') {
+				if (rest.request.endpoint == endpoint) {
 					if (rest.success) {
 						if (rest.response.posts != null) {
 							this.timelinePosts = rest.response.posts;

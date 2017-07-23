@@ -2,7 +2,7 @@
 	<div class='side'></div>
 	<div class='main'>
 		<div class='info'>
-			<a href={ '/users/' + status.user.screenName } target='_blank'>{ status.user.name } @{ status.user.screenName }</a>
+			<a href={ '/users/' + opts.status.user.screenName } target='_blank'>{ opts.status.user.name } @{ opts.status.user.screenName }</a>
 			<time datetime={ getTime().format() } title={ getTime().format() }>{ getTime().fromNow() }</time>
 		</div>
 		<p ref='text'></p>
@@ -33,13 +33,10 @@
 	</style>
 
 	<script>
-		const moment = require('moment');
-
-		this.moment = moment;
-		this.status = opts.status;
+		this.moment = require('moment');
 
 		getTime() {
-			return this.moment.unix(this.status.createdAt);
+			return this.moment.unix(this.opts.status.createdAt);
 		}
 
 		compileText(text) {
@@ -52,7 +49,7 @@
 		}
 
 		this.on('mount', () => {
-			this.refs.text.innerHTML = this.compileText(this.status.text);
+			this.refs.text.innerHTML = this.compileText(this.opts.status.text);
 
 			// 定期的に画面を更新
 			setInterval(() => {

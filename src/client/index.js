@@ -9,6 +9,7 @@ require('./tags/frost-footer.tag');
 require('./tags/frost-logout-button.tag');
 require('./tags/frost-post-status.tag');
 require('./tags/frost-timeline.tag');
+require('./tags/frost-hint.tag');
 // entrance
 require('./tags/frost-login-form.tag');
 require('./tags/frost-signup-form.tag');

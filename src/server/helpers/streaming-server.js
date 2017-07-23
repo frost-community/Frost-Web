@@ -52,6 +52,10 @@ module.exports = (http, sessionStore, debugDetail, config) => {
 					if (debugDetail) {
 						console.log('[api close]:', data.reasonCode, data.description);
 					}
+
+					if (frontConnection != null) {
+						frontConnection.close();
+					}
 				});
 
 				// リクエストを受理

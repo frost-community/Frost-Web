@@ -1,5 +1,5 @@
 <frost-create-status-form>
-	<form onsubmit={ submit }>
+	<form onsubmit={ submit } onkeydown={ keydown } onkeyup={ keyup }>
 		<h1>投稿する</h1>
 		<textarea ref='text' placeholder='ねえ今どんな気持ち？' oninput={ input } required>{ text }</textarea>
 		<span>{ textMax - getTextCount() }</span>
@@ -36,26 +36,74 @@
 	<script>
 		this.textMax = 256;
 		this.text = '';
+		this.keyBuffer = [];
+
+		// methods
 
 		this.getTextCount = () => {
 			return this.text.length;
-		}
+		};
 
 		this.getValidTextCount = () => {
 			return this.getTextCount() != 0 && this.textMax - this.getTextCount() >= 0;
-		}
+		};
+
+		this.getNeedSubmit = () => {
+			return (this.keyBuffer[13] && this.keyBuffer[17]) == true; // Ctrl + Enter
+		};
 
 		this.clear = () => {
-			this.update({text: ''});
-		}
+			this.text = '';
+			this.update();
+		};
+
+		this.checkShortcut = () => {
+			if (this.getNeedSubmit()) {
+				if (this.createStatus) {
+					this.createStatus();
+				}
+			}
+		};
 
 		// events
 
-		this.input = () => {
-			this.update({text: this.refs.text.value});
-		}
+		this.submit = (e) => {
+			e.preventDefault();
+
+			if (this.createStatus) {
+				this.createStatus();
+			}
+		};
+
+		this.input = (e) => {
+			this.text = this.refs.text.value;
+			this.update();
+		};
+
+		this.keydown = (e) => {
+			this.keyBuffer[e.which] = true;
+		};
+
+		this.keyup = (e) => {
+			this.checkShortcut();
+
+			this.keyBuffer[e.which] = false;
+		};
 
 		this.on('mount', () => {
+
+			// methods
+
+			this.createStatus = () => {
+				this.webSocket.sendEvent('rest', {request: {
+					method: 'post', endpoint: '/posts/post_status',
+					headers: {'x-api-version': 1.0},
+					body: {text: this.text}
+				}});
+			};
+
+			// events
+
 			this.webSocket.on('rest', rest => {
 				if (rest.request.endpoint == '/posts/post_status') {
 					if (rest.success) {
@@ -66,19 +114,6 @@
 					}
 				}
 			});
-
-			this.createStatus = () => {
-				this.webSocket.sendEvent('rest', {request: {
-					method: 'post', endpoint: '/posts/post_status',
-					headers: {'x-api-version': 1.0},
-					body: {text: this.text}
-				}});
-			};
-
-			this.submit = (e) => {
-				e.preventDefault();
-				this.createStatus();
-			}
 		});
 	</script>
 </frost-create-status-form>

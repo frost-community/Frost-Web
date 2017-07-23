@@ -8,17 +8,15 @@ require('./tags/frost-header.tag');
 require('./tags/frost-footer.tag');
 require('./tags/frost-logout-button.tag');
 require('./tags/frost-post-status.tag');
-require('./tags/frost-general-timeline.tag');
+require('./tags/frost-timeline.tag');
 // entrance
 require('./tags/frost-login-form.tag');
 require('./tags/frost-signup-form.tag');
 // home
 require('./tags/frost-home-logo.tag');
 require('./tags/frost-create-status-form.tag');
-require('./tags/frost-home-timeline.tag');
 // user
 require('./tags/frost-follow-button.tag');
-require('./tags/frost-user-timeline.tag');
 // dev
 require('./tags/frost-applications.tag');
 require('./tags/frost-create-application-form.tag');

@@ -7,6 +7,8 @@ const WebSocketEvents = require('./helpers/web-socket-events');
 require('./tags/frost-header.tag');
 require('./tags/frost-footer.tag');
 require('./tags/frost-logout-button.tag');
+require('./tags/frost-post-status.tag');
+require('./tags/frost-general-timeline.tag');
 // entrance
 require('./tags/frost-login-form.tag');
 require('./tags/frost-signup-form.tag');
@@ -14,8 +16,6 @@ require('./tags/frost-signup-form.tag');
 require('./tags/frost-home-logo.tag');
 require('./tags/frost-create-status-form.tag');
 require('./tags/frost-home-timeline.tag');
-require('./tags/frost-public-timeline.tag');
-require('./tags/frost-post-status.tag');
 // user
 require('./tags/frost-follow-button.tag');
 require('./tags/frost-user-timeline.tag');

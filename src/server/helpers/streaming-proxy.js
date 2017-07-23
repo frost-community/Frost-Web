@@ -41,7 +41,7 @@ class StreamingProxy {
 			'rest',
 			'timeline-connect',
 			'timeline-disconnect',
-			'data:public:status',
+			'data:general:status',
 			'data:home:status'
 		];
 

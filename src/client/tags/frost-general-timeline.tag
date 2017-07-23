@@ -1,4 +1,4 @@
-<frost-public-timeline>
+<frost-general-timeline>
 	<div style='margin: 5rem auto' if={ loading }>
 		<p>取得しています...</p>
 	</div>
@@ -53,7 +53,7 @@
 						alert(`internal error: ${rest.message}`);
 					}
 
-					this.webSocket.sendEvent('timeline-connect', {type: 'public'});
+					this.webSocket.sendEvent('timeline-connect', {type: 'general'});
 
 					this.update({loading: false});
 				}
@@ -61,18 +61,18 @@
 
 			this.webSocket.addEventListener('open', () => {
 				console.log('reconnecting timeline...');
-				this.webSocket.sendEvent('timeline-connect', {type: 'public'});
+				this.webSocket.sendEvent('timeline-connect', {type: 'general'});
 			});
 
 			this.webSocket.on('timeline-connect', data => {
 				console.log(data.message);
 			});
 
-			this.webSocket.on('data:public:status', status => {
+			this.webSocket.on('data:general:status', status => {
 				console.log('status: ' + status);
 				this.timelinePosts.splice(0, 0, status);
 				this.update();
 			});
 		});
 	</script>
-</frost-public-timeline>
+</frost-general-timeline>

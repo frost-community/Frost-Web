@@ -39,31 +39,10 @@
 	</div>
 	<script>
 		this.isShowModal = false;
-		showModal() {
+
+		this.showModal = () => {
 			this.isShowModal = !this.isShowModal;
-		}
-
-		submit(e) {
-			e.preventDefault();
-
-			const permissions = [];
-			for (let permission of document.querySelectorAll('frost-create-application-form .permissions *')) {
-				if (permission.checked) {
-					permissions.push(permission.value);
-				}
-			}
-
-			this.webSocket.sendEvent('rest', {request: {
-				method: 'post', endpoint: '/applications',
-				headers: {'x-api-version': 1.0},
-				body: {
-					name: document.querySelector('frost-create-application-form .name-box').value,
-					description: document.querySelector('frost-create-application-form .description-box').value,
-					permissions: permissions,
-					recaptchaToken: grecaptcha.getResponse()
-				}
-			}});
-		}
+		};
 
 		this.on('mount', () => {
 			this.webSocket.on('rest', rest => {
@@ -82,6 +61,28 @@
 					}
 				}
 			});
+
+			this.submit = (e) => {
+				e.preventDefault();
+
+				const permissions = [];
+				for (let permission of document.querySelectorAll('frost-create-application-form .permissions *')) {
+					if (permission.checked) {
+						permissions.push(permission.value);
+					}
+				}
+
+				this.webSocket.sendEvent('rest', {request: {
+					method: 'post', endpoint: '/applications',
+					headers: {'x-api-version': 1.0},
+					body: {
+						name: document.querySelector('frost-create-application-form .name-box').value,
+						description: document.querySelector('frost-create-application-form .description-box').value,
+						permissions: permissions,
+						recaptchaToken: grecaptcha.getResponse()
+					}
+				}});
+			};
 
 			grecaptcha.render('recaptcha', {
 				sitekey: this.siteKey

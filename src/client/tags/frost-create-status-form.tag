@@ -37,37 +37,22 @@
 		this.textMax = 256;
 		this.text = '';
 
-		// methods
-
-		getTextCount() {
+		this.getTextCount = () => {
 			return this.text.length;
 		}
 
-		getValidTextCount() {
+		this.getValidTextCount = () => {
 			return this.getTextCount() != 0 && this.textMax - this.getTextCount() >= 0;
 		}
 
-		createStatus() {
-			this.webSocket.sendEvent('rest', {request: {
-				method: 'post', endpoint: '/posts/post_status',
-				headers: {'x-api-version': 1.0},
-				body: {text: this.text}
-			}});
-		}
-
-		clear() {
+		this.clear = () => {
 			this.update({text: ''});
 		}
 
 		// events
 
-		input() {
+		this.input = () => {
 			this.update({text: this.refs.text.value});
-		}
-
-		submit(e) {
-			e.preventDefault();
-			this.createStatus();
 		}
 
 		this.on('mount', () => {
@@ -81,6 +66,19 @@
 					}
 				}
 			});
+
+			this.createStatus = () => {
+				this.webSocket.sendEvent('rest', {request: {
+					method: 'post', endpoint: '/posts/post_status',
+					headers: {'x-api-version': 1.0},
+					body: {text: this.text}
+				}});
+			};
+
+			this.submit = (e) => {
+				e.preventDefault();
+				this.createStatus();
+			}
 		});
 	</script>
 </frost-create-status-form>

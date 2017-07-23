@@ -24,11 +24,6 @@
 		});
 
 		this.on('mount', () => {
-			this.webSocket.sendEvent('rest', {request: {
-				method: 'get', endpoint: '/applications',
-				headers: {'x-api-version': 1.0},
-			}});
-
 			this.webSocket.on('rest', rest => {
 				if (rest.request.method == 'get' && rest.request.endpoint == '/applications') {
 					if (rest.response.applications == null) {
@@ -43,6 +38,11 @@
 					this.update();
 				}
 			});
+
+			this.webSocket.sendEvent('rest', {request: {
+				method: 'get', endpoint: '/applications',
+				headers: {'x-api-version': 1.0},
+			}});
 		});
 	</script>
 </frost-applications>

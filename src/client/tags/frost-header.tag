@@ -4,7 +4,7 @@
 		<li><a href='/dev' target='_blank'>DevCenter</a></li>
 		<virtual if={ userId != null }>
 			<li><a href={ '/users/' + user.screenName } target='_blank'>@{ user.screenName }</a></li>
-			<li><a href='/userlist/' target='_blank'>UserList</a></li>
+			<li><a href='/userlist' target='_blank'>UserList</a></li>
 			<li><frost-logout-button /></li>
 		</virtual>
 	</ul>

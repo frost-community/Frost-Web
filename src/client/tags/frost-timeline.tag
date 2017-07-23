@@ -23,29 +23,29 @@
 		this.timelinePosts = [];
 		this.loading = true;
 
-		if (this.opts.dataTimelineType == null) {
-			throw new Error('data-timeline-type is required');
+		if (this.opts.dataName == null) {
+			throw new Error('data-name property is required');
 		}
 
 		let endpoint, streaming;
-		if (this.opts.dataTimelineType == 'home') {
+		if (this.opts.dataName == 'home') {
 			endpoint = `/users/${this.user.id}/timelines/home`;
 			streaming = true;
 		}
-		else if (this.opts.dataTimelineType == 'user') {
+		else if (this.opts.dataName == 'user') {
 			if (this.opts.dataUserId == null) {
-				throw new Error('data-user-id is required');
+				throw new Error('data-user-id property is required');
 			}
 
 			endpoint = `/users/${this.opts.dataUserId}/timelines/user`;
 			streaming = false;
 		}
-		else if (this.opts.dataTimelineType == 'general') {
+		else if (this.opts.dataName == 'general') {
 			endpoint = '/general/timeline';
 			streaming = true;
 		}
 		else {
-			throw new Error('data-timeline-type is invalid');
+			throw new Error('data-name property is invalid');
 		}
 
 		console.log(endpoint);
@@ -71,7 +71,7 @@
 							this.timelinePosts = rest.response.posts;
 						}
 						else if (rest.statusCode != 204) {
-							alert(`api error: failed to fetch ${this.opts.dataTimelineType} timeline posts. ${rest.response.message}`);
+							alert(`api error: failed to fetch ${this.opts.dataName} timeline posts. ${rest.response.message}`);
 						}
 					}
 					else {
@@ -79,7 +79,7 @@
 					}
 
 					if (streaming) {
-						this.webSocket.sendEvent('timeline-connect', {type: this.opts.dataTimelineType});
+						this.webSocket.sendEvent('timeline-connect', {type: this.opts.dataName});
 					}
 
 					this.update({loading: false});
@@ -89,14 +89,14 @@
 			if (streaming) {
 				this.webSocket.addEventListener('open', () => {
 					console.log('reconnecting timeline...');
-					this.webSocket.sendEvent('timeline-connect', {type: this.opts.dataTimelineType});
+					this.webSocket.sendEvent('timeline-connect', {type: this.opts.dataName});
 				});
 
 				this.webSocket.on('timeline-connect', data => {
 					console.log(data.message);
 				});
 
-				this.webSocket.on(`data:${this.opts.dataTimelineType}:status`, status => {
+				this.webSocket.on(`data:${this.opts.dataName}:status`, status => {
 					console.log('status: ' + status);
 					this.timelinePosts.splice(0, 0, status);
 					this.update();

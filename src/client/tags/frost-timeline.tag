@@ -48,8 +48,6 @@
 			throw new Error('data-name property is invalid');
 		}
 
-		console.log(endpoint);
-
 		this.on('mount', () => {
 			this.reload = () => {
 				this.update({loading: true});

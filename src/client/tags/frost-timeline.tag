@@ -73,7 +73,7 @@
 						}
 					}
 					else {
-						alert(`internal error: ${rest.message}`);
+						alert(`internal error: ${rest.response.message}`);
 					}
 
 					if (streaming) {
@@ -91,7 +91,7 @@
 				});
 
 				this.webSocket.on('timeline-connect', data => {
-					console.log(data.message);
+					console.log(data.response.message);
 				});
 
 				this.webSocket.on(`data:${this.opts.dataName}:status`, status => {

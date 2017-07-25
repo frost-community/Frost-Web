@@ -117,7 +117,7 @@ module.exports = async () => {
 			});
 
 			if (!result.iceAuthKey) {
-				throw new Error(`session creation error: ${result.message}`);
+				throw new Error(`session creation error: ${result.response.message}`);
 			}
 
 			try {
@@ -136,11 +136,15 @@ module.exports = async () => {
 			}
 
 			if (!result.accessKey) {
-				throw new Error(`error: ${result.message}`);
+				throw new Error(`error: ${result.response.message}`);
 			}
 
 			req.session.accessKey = result.accessKey;
 		};
+
+// post /session
+// delete /session
+// post /session/register
 
 		app.route('/session')
 		.post((req, res) => {
@@ -159,11 +163,6 @@ module.exports = async () => {
 			req.session.destroy();
 			res.end();
 		});
-
-
-// post /session
-// delete /session
-// post /session/register
 
 		app.post('/session/register', (req, res) => {
 			(async () => {
@@ -204,12 +203,6 @@ module.exports = async () => {
 			(async () => {
 				try {
 					req.isSmartPhone = isSmartPhone(req.header('User-Agent'));
-					/*if (req.isSmartPhone) {
-						app.set('views', path.join(__dirname, 'views', 'sp'));
-					}
-					else {
-						app.set('views', path.join(__dirname, 'views'));
-					}*/
 					app.set('views', path.join(__dirname, 'views'));
 
 					// default render params
@@ -301,7 +294,7 @@ module.exports = async () => {
 							next();
 						}
 						else {
-							throw new Error(result.message);
+							throw new Error(result.response.message);
 						}
 					}
 					else {

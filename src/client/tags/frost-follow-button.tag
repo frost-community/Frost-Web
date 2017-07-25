@@ -1,23 +1,25 @@
 <frost-follow-button>
-	<button onclick={ follow }>{ following ? 'フォローしています' : 'フォロー' }</button>
+	<button if={ showing } onclick={ follow }>{ following ? 'フォローしています' : 'フォロー' }</button>
 
 	<script>
-		this.following = false;
-
 		this.on('mount', () => {
 			this.webSocket.on('rest', rest => {
 				if (rest.request.endpoint == `/users/${this.user.id}/followings/${this.opts.dataTargetId}` && rest.request.method == 'get') {
 					if (rest.success) {
 						if (rest.statusCode == 204 || rest.statusCode == 404) {
 							this.following = (rest.statusCode == 204);
+							this.showing = true;
 							this.update();
 						}
+						else if (rest.response.message == 'source user and target user is same') {
+							// noop
+						}
 						else {
-							alert(`api error: ${rest.message}`);
+							alert(`api error: ${rest.response.message}`);
 						}
 					}
 					else {
-						alert(`internal error: ${rest.message}`);
+						alert(`internal error: ${rest.response.message}`);
 					}
 				}
 			});

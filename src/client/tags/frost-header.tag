@@ -15,7 +15,6 @@
 		:scope {
 			position: fixed;
 			width: 100%;
-			top: 0;
 			background-color: hsla(216, 100%, 98%, 0.85);
 			box-shadow: 0px 0px 6px 0px hsla(0, 0%, 0%, 0.5);
 			overflow: hidden;
@@ -28,17 +27,21 @@
 				align-items: center;
 				height: 50px;
 				margin: 0 auto;
+
 				@media (max-width: $tablet - 1px) {
 					overflow-x: auto;
 					overflow-y: hidden;
 				}
 
 				> li {
-					padding: 0 5px;
 					margin-bottom: 0;
+					height: 100%;
 
-					button {
-						margin-bottom: 0;
+					a {
+						height: 100%;
+						display: flex;
+						align-items: center;
+						padding: 0 0.5rem;
 					}
 				}
 			}

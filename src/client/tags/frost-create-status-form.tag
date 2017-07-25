@@ -49,7 +49,7 @@
 		};
 
 		this.getNeedSubmit = () => {
-			return (this.keyBuffer[13] && this.keyBuffer[17]) == true; // Ctrl + Enter
+			return ((this.keyBuffer[17] || this.keyBuffer[91]) && this.keyBuffer[13]) == true; // Ctrl + Enter
 		};
 
 		this.clear = () => {

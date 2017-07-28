@@ -44,7 +44,7 @@ const mixinGlobal = {};
 		// observable
 		mixinGlobal.obs = riot.observable();
 
-		riot.mount('frost-header, frost-footer');
+		//riot.mount('frost-header, frost-footer');
 
 		const recaptchaAsync = () => new Promise((resolve) => {
 			const t = setInterval(() => {
@@ -75,13 +75,6 @@ const mixinGlobal = {};
 
 			const readyAsync = () => new Promise((resolve, reject) => {
 				webSocket.on('ready', ready => {
-					webSocket.sendEvent('rest', {
-						request: {
-							method: 'get', endpoint: `/users/${userId}`,
-							headers: {'x-api-version': 1.0},
-						}
-					});
-
 					webSocket.on('rest', rest => {
 						if (rest.request.endpoint == `/users/${userId}`) {
 							if (rest.success) {
@@ -95,6 +88,13 @@ const mixinGlobal = {};
 							}
 
 							return reject(new Error(`internal error: failed to fetch user data. ${rest.response.message}`));
+						}
+					});
+
+					webSocket.sendEvent('rest', {
+						request: {
+							method: 'get', endpoint: `/users/${userId}`,
+							headers: {'x-api-version': 1.0},
 						}
 					});
 				});

@@ -41,7 +41,7 @@ form :last-child {
 .content {
 	@include responsive();
 
-	padding-top: 6rem !important;
+	padding-top: 6.5rem !important;
 
 	> :not(:last-child) {
 		margin-right: 2rem;

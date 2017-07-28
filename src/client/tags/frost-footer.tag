@@ -1,4 +1,4 @@
-<frost-footer>
+<frost-footer role='contentinfo'>
 	<hr />
 	<div class='container'>
 		<footer class='container' style='text-align: center; margin-bottom: 10%'>

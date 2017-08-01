@@ -4,6 +4,9 @@
   "description": "Frost Web Server",
   "private": true,
   "main": "./built/index.js",
+  "engines": {
+    "node": ">= 7.0.0"
+  },
   "scripts": {
     "start": "node ./",
     "build:copy": "cpx \"./src/{*.js,server/**/*.js,server/views/**/*.pug,client/images/**}\" built",

@@ -10,8 +10,8 @@
 			<input ref='name' id='name-box' type='text' placeholder='froster' style='width: 100%' maxlength='32' />
 			<label for='description-box'>Description</label>
 			<input ref='description' id='description-box' type='text' style='width: 100%' maxlength='256' />
-			<label for='recaptcha'>reCAPTCHA</label>
-			<div id='recaptcha'></div>
+			<label for='recaptcha-signup'>reCAPTCHA</label>
+			<div id='recaptcha-signup'></div>
 			<button class='button-primary'>Sign up</button>
 		</form>
 	</div>
@@ -42,7 +42,7 @@
 		}
 
 		this.on('mount', () => {
-			grecaptcha.render('recaptcha', {
+			grecaptcha.render('recaptcha-signup', {
 				sitekey: this.siteKey
 			});
 		});

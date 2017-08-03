@@ -25,11 +25,11 @@
 
 	<script>
 		this.on('mount', () => {
-			this.change = () => {
-				this.refs.text.innerHTML = '<a href=\'/userlist\' target=\'_blank\'>ユーザーリスト</a>からユーザーを探してフォローしてみましょう';
+			this.change = (html) => {
+				this.refs.text.innerHTML = html;
 			};
 
-			this.change();
+			this.change('<a href=\'/userlist\' target=\'_blank\'>ユーザーリスト</a>からユーザーを探してフォローしてみましょう');
 		});
 	</script>
 </frost-hint>

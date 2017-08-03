@@ -1,7 +1,7 @@
 @import "variables";
 @import "main";
 
-.content {
+body > .content {
 	@include responsive(row);
 
 	> .side {

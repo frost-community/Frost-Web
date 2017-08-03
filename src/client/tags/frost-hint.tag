@@ -14,7 +14,7 @@
 					margin: 0;
 				}
 				> i {
-					margin-right: 0.8rem;
+					margin-right: 0.75rem;
 				}
 				> p {
 					font-size: 1.2rem;

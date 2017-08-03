@@ -36,7 +36,7 @@ $textbox-back-color: transparent;
 
 	// 携帯端末の幅以上の端末
 	@media (min-width: $phone) {
-		padding: 0 1.5rem;
+		padding: 0 1rem;
 	}
 
 	// タブレットの幅以上の端末

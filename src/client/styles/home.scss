@@ -3,7 +3,7 @@
 
 /* 全般 */
 
-.content {
+body > .content {
 	@include responsive(row);
 
 	> .side {

@@ -13,9 +13,19 @@ body {
 	word-wrap: break-word;
 	background-color: $back-color;
 	color: $fore-color;
+
+	> .content {
+		@include responsive();
+
+		padding-top: 6.5rem !important;
+
+		> :not(:last-child) {
+			margin-right: 2rem;
+		}
+	}
 }
 
-label {
+button, .button, label {
 	user-select: none;
 }
 
@@ -36,16 +46,6 @@ textarea {
 
 form :last-child {
 	margin-bottom: 0;
-}
-
-.content {
-	@include responsive();
-
-	padding-top: 6.5rem !important;
-
-	> :not(:last-child) {
-		margin-right: 2rem;
-	}
 }
 
 .box {

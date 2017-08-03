@@ -26,7 +26,7 @@
 					display: flex;
 					flex-direction: row;
 					justify-content: space-between;
-					margin-bottom: 0.3rem;
+					margin-bottom: 0.5rem;
 
 					a {
 						text-decoration-line: none;

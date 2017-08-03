@@ -21,6 +21,8 @@ require('./tags/frost-follow-button.tag');
 // dev
 require('./tags/frost-applications.tag');
 require('./tags/frost-create-application-form.tag');
+// authorize
+require('./tags/frost-appauth-form.tag');
 
 const mixinGlobal = {};
 

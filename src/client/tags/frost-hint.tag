@@ -29,7 +29,7 @@
 				this.refs.text.innerHTML = html;
 			};
 
-			this.change('<a href=\'/userlist\' target=\'_blank\'>ユーザーリスト</a>からユーザーを探してフォローしてみましょう');
+			this.change('<a href=\'/userlist\'>ユーザーリスト</a>からユーザーを探してフォローしてみましょう');
 		});
 	</script>
 </frost-hint>

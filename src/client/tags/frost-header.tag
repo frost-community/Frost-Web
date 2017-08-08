@@ -2,9 +2,9 @@
 	<nav>
 		<ul>
 			<li ref='home'><a href='/'>Home</a></li>
-			<li ref='dev'><a href='/dev' target='_blank'>DevCenter</a></li>
+			<li ref='dev'><a href='/dev'>DevCenter</a></li>
 			<virtual if={ userId != null }>
-				<li ref='userlist'><a href='/userlist' target='_blank'>UserList</a></li>
+				<li ref='userlist'><a href='/userlist'>UserList</a></li>
 				<li style='margin-left: auto'><a href={ '/users/' + user.screenName } target='_blank'>@{ user.screenName }</a></li>
 				<li><frost-logout-button /></li>
 			</virtual>

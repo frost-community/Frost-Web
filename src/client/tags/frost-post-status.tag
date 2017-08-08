@@ -2,7 +2,7 @@
 	<div class='side'></div>
 	<div class='main'>
 		<div class='info'>
-			<a href={ '/users/' + opts.status.user.screenName } target='_blank'>{ opts.status.user.name } @{ opts.status.user.screenName }</a>
+			<a href={ '/users/' + opts.status.user.screenName }>{ opts.status.user.name } @{ opts.status.user.screenName }</a>
 			<time datetime={ getTime().format() } title={ getTime().format() }>{ getTime().fromNow() }</time>
 		</div>
 		<div class='text' ref='text'></div>

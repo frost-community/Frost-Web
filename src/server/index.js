@@ -197,6 +197,10 @@ module.exports = async () => {
 			})();
 		});
 
+		app.post('/auth', (req, res) => {
+
+		});
+
 		// page middleware
 
 		app.use((req, res, next) => {

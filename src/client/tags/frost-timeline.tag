@@ -91,7 +91,7 @@
 				});
 
 				this.webSocket.on('timeline-connect', data => {
-					console.log(data.response.message);
+					console.log(data.message);
 				});
 
 				this.webSocket.on(`data:${this.opts.dataName}:status`, status => {

@@ -41,14 +41,14 @@
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-standard": "^2.1.1",
     "express": "^4.15.2",
-    "express-session": "^1.15.2",
-    "helmet": "^3.5.0",
-    "mocha": "^3.2.0",
+    "express-session": "^1.15.5",
+    "helmet": "^3.8.1",
+    "mocha": "^3.5.0",
     "moment": "^2.18.1",
     "node-sass": "^4.5.2",
     "path-to-regexp": "^1.7.0",
     "prominence": "^0.2.0",
-    "pug": "^2.0.0-beta11",
+    "pug": "^2.0.0-rc.3",
     "reconnecting-websocket": "^3.0.5",
     "request": "^2.81.0",
     "request-promise": "^4.2.1",
@@ -57,7 +57,7 @@
     "riot-tag-loader": "^1.0.0",
     "webpack": "^2.6.1",
     "websocket": "^1.0.24",
-    "websocket-events": "0.0.2"
+    "websocket-events": "^0.0.3"
   },
   "files": [
     "*"

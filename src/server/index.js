@@ -312,10 +312,6 @@ module.exports = async () => {
 			res.render('dev', Object.assign(req.renderParams, {siteKey: config.web.reCAPTCHA.siteKey}));
 		});
 
-		app.get('/test', (req, res) => {
-			res.render('test', Object.assign(req.renderParams));
-		});
-
 		// errors
 
 		app.use((req, res, next) => {

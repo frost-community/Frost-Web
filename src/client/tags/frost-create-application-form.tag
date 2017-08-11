@@ -49,7 +49,7 @@
 				if (rest.request.method == 'post' && rest.request.endpoint == '/applications') {
 					if (rest.success) {
 						if (rest.response.application != null) {
-							this.obs.trigger('add-application', {application: rest.response.application});
+							this.central.trigger('add-application', {application: rest.response.application});
 							alert('created application.');
 						}
 						else {

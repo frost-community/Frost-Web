@@ -10,7 +10,7 @@
 	<script>
 		this.pageId = opts.dataPageId;
 
-		this.obs.on('change-page', (pageId) => {
+		this.on('change-page', (pageId) => {
 			this.pageId = pageId;
 			this.update();
 		});

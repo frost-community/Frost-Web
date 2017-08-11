@@ -97,8 +97,8 @@ const mixinGlobal = {};
 		const csrfToken = csrfTokenElement != null ? csrfTokenElement.content : null;
 		mixinGlobal.csrfToken = csrfToken;
 
-		// observable
-		mixinGlobal.obs = riot.observable();
+		// central observer
+		mixinGlobal.central = riot.observable();
 
 		// routing
 

@@ -18,7 +18,7 @@
 	<script>
 		this.applications = [];
 
-		this.obs.on('add-application', data => {
+		this.central.on('add-application', data => {
 			this.applications.push(data.application);
 			this.update();
 		});

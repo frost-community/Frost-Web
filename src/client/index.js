@@ -1,7 +1,17 @@
 const riot = require('riot');
+const route = require('riot-route').default;
 const WebSocketEvents = require('./helpers/web-socket-events');
 
 // components
+
+require('./tags/frost-page-selector.tag');
+require('./tags/frost-page-dev.tag');
+require('./tags/frost-page-entrance.tag');
+require('./tags/frost-page-error.tag');
+require('./tags/frost-page-home.tag');
+require('./tags/frost-page-post.tag');
+require('./tags/frost-page-user.tag');
+require('./tags/frost-page-userlist.tag');
 
 // general
 require('./tags/frost-header.tag');
@@ -26,36 +36,10 @@ const mixinGlobal = {};
 
 (async () => {
 	try {
-		// siteKey
-		const siteKeyElement = document.getElementsByName('siteKey').item(0);
-		const siteKey = siteKeyElement != null ? siteKeyElement.content : null;
-		mixinGlobal.siteKey = siteKey;
-
 		// userId
 		const userIdElement = document.getElementsByName('frost-userId').item(0);
 		const userId = userIdElement != null ? userIdElement.content : null;
 		mixinGlobal.userId = userId;
-
-		// csrf
-		const csrfTokenElement = document.getElementsByName('_csrf').item(0);
-		const csrfToken = csrfTokenElement != null ? csrfTokenElement.content : null;
-		mixinGlobal.csrfToken = csrfToken;
-
-		// observable
-		mixinGlobal.obs = riot.observable();
-
-		//riot.mount('frost-header, frost-footer');
-
-		const recaptchaAsync = () => new Promise((resolve) => {
-			const t = setInterval(() => {
-				if (siteKey == null || typeof grecaptcha != 'undefined') {
-					clearInterval(t);
-					resolve();
-				}
-			}, 50);
-		});
-
-		await recaptchaAsync();
 
 		// WebSocket (ログインされている時のみ)
 		if (userId != null) {
@@ -102,6 +86,48 @@ const mixinGlobal = {};
 
 			await readyAsync();
 		}
+
+		// siteKey
+		const siteKeyElement = document.getElementsByName('siteKey').item(0);
+		const siteKey = siteKeyElement != null ? siteKeyElement.content : null;
+		mixinGlobal.siteKey = siteKey;
+
+		// csrf
+		const csrfTokenElement = document.getElementsByName('_csrf').item(0);
+		const csrfToken = csrfTokenElement != null ? csrfTokenElement.content : null;
+		mixinGlobal.csrfToken = csrfToken;
+
+		// observable
+		mixinGlobal.obs = riot.observable();
+
+		// routing
+
+		route.base('/');
+		route('', () => {
+			console.log('entrance/home');
+
+		});
+		route('dev', () => {
+			console.log('dev');
+		});
+		route('userlist', () => {
+			console.log('userlist');
+		});
+
+		route.start(true);
+
+		// recaptcha
+
+		const recaptchaAsync = () => new Promise((resolve) => {
+			const t = setInterval(() => {
+				if (siteKey == null || typeof grecaptcha != 'undefined') {
+					clearInterval(t);
+					resolve();
+				}
+			}, 50);
+		});
+
+		await recaptchaAsync();
 	}
 	catch (err) {
 		console.log('何かがおかしいよ');

@@ -21,10 +21,11 @@
 
 	<script>
 		this.on('mount', () => {
-			this.central.on('change-page', (pageId) => {
+			this.central.on('change-page', (pageId, params) => {
+				console.log(pageId);
 				this.pageId = pageId;
 				this.update();
-				this.central.trigger('ev:changed-page', pageId);
+				this.central.trigger('ev:changed-page', pageId, params);
 			});
 		});
 	</script>

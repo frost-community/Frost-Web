@@ -1,7 +1,7 @@
 <frost-page-post>
 	<div class='content'>
 		<div class='main'>
-			post
+			<p>ポストが表示されるページです。</p>
 		</div>
 	</div>
 
@@ -16,9 +16,12 @@
 	</style>
 
 	<script>
-		const changedPageHandler = (pageId) => {
+		const changedPageHandler = (pageId, params) => {
 			if (pageId == 'post') {
-				window.document.title = 'Frost';
+				const postId = params[0];
+				// TODO: ポストとその投稿者をフェッチ
+				const screenName = 'hoge';
+				window.document.title = `Frost - @${screenName}さんの投稿`;
 				console.log('title changed');
 			}
 			this.update();

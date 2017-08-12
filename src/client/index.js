@@ -46,7 +46,7 @@ const mixinGlobal = {};
 								return reject(new Error(`api error: failed to fetch user data. ${rest.response.message}`));
 							}
 
-							return reject(new Error(`internal error: failed to fetch user data. ${rest.response.message}`));
+							return reject(new Error(`internal error: failed to fetch user data. ${rest.message}`));
 						}
 					});
 
@@ -112,27 +112,29 @@ const mixinGlobal = {};
 
 		// routing
 
+		const changePage = (pageId, params) => {
+			params = params || [];
+			central.trigger('change-page', pageId, params);
+		};
+
 		route.base('/');
 		route('', () => {
-			const pageId = getLogin() ? 'home' : 'entrance';
-			central.trigger('change-page', pageId);
-			console.log(pageId);
+			changePage(getLogin() ? 'home' : 'entrance');
 		});
 		route('dev', () => {
-			const pageId = 'dev';
-			central.trigger('change-page', pageId);
-			console.log(pageId);
+			changePage('dev');
 		});
 		route('userlist', () => {
-			const pageId = 'userlist';
-			central.trigger('change-page', pageId);
-			console.log(pageId);
+			changePage('userlist');
 		});
-		route
+		route('users/*', (screenName) => {
+			changePage('user', [screenName]);
+		});
+		route('posts/*', (postId) => {
+			changePage('post', [postId]);
+		});
 		route('*', () => {
-			const pageId = 'error';
-			central.trigger('change-page', pageId);
-			console.log(pageId);
+			changePage('error', ['page not found']);
 		});
 
 		// recaptcha

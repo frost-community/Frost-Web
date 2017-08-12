@@ -1,4 +1,4 @@
-<frost-page-selector>
+<frost-page-switcher>
 	<frost-page-dev if={ pageId == 'dev' } />
 	<frost-page-entrance if={ pageId == 'entrance' } />
 	<frost-page-error if={ pageId == 'error' } />
@@ -7,12 +7,24 @@
 	<frost-page-user if={ pageId == 'user' } />
 	<frost-page-userlist if={ pageId == 'userlist' } />
 
-	<script>
-		this.pageId = opts.dataPageId;
+	<style>
+		:scope {
+			> * > .content {
+				padding-top: 6.5rem !important;
 
-		this.on('change-page', (pageId) => {
-			this.pageId = pageId;
-			this.update();
+				> :not(:last-child) {
+					margin-right: 2rem;
+				}
+			}
+		}
+	</style>
+
+	<script>
+		this.on('mount', () => {
+			this.central.on('change-page', (pageId) => {
+				this.pageId = pageId;
+				this.update();
+			});
 		});
 	</script>
-</frost-page-selector>
+</frost-page-switcher>

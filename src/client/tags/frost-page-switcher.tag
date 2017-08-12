@@ -24,6 +24,7 @@
 			this.central.on('change-page', (pageId) => {
 				this.pageId = pageId;
 				this.update();
+				this.central.trigger('ev:changed-page', pageId);
 			});
 		});
 	</script>

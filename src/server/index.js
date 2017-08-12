@@ -200,7 +200,7 @@ module.exports = async () => {
 				req.isSmartPhone = isSmartPhone(req.header('User-Agent'));
 				app.set('views', path.join(__dirname, 'views'));
 
-				res.renderPage = (pageId, title, pageParams, renderParams) => {
+				res.renderPage = (pageId, pageParams, renderParams) => {
 					pageParams = Object.assign(pageParams || {}, {
 						csrf: req.csrfToken(),
 						isSmartPhone: req.isSmartPhone,
@@ -215,7 +215,6 @@ module.exports = async () => {
 
 					let pageRenderParams = {
 						id: pageId,
-						title: title,
 						scriptFile: '/bundle.js',
 						params: pageParams
 					};
@@ -237,10 +236,10 @@ module.exports = async () => {
 
 		app.get('/', (req, res) => {
 			if (req.session.accessKey != null) {
-				res.renderPage('home', 'Frost');
+				res.renderPage('home');
 			}
 			else {
-				res.renderPage('entrance', 'Frost');
+				res.renderPage('entrance');
 			}
 		});
 
@@ -259,7 +258,7 @@ module.exports = async () => {
 						next();
 					}
 					else {
-						res.renderPage('user', `Frost - ${result.users[0].name}さんのページ`);
+						res.renderPage('user');
 					}
 				}
 				catch(err) {
@@ -282,7 +281,7 @@ module.exports = async () => {
 						'X-Access-Key': req.session.accessKey != null ? req.session.accessKey : config.web.hostAccessKey,
 					});
 
-					res.renderPage('userlist', 'Frost - ユーザーの一覧');
+					res.renderPage('userlist');
 				}
 				catch(err) {
 					console.dir(err);
@@ -311,7 +310,7 @@ module.exports = async () => {
 						}
 					}
 					else {
-						res.renderPage('post', `Frost - @${result.post.user.screenName}さんの投稿`);
+						res.renderPage('post');
 					}
 				}
 				catch(err) {
@@ -322,7 +321,7 @@ module.exports = async () => {
 		});
 
 		app.get('/dev', (req, res) => {
-			res.renderPage('dev', 'Frost Developers Center');
+			res.renderPage('dev');
 		});
 
 		// errors
@@ -333,7 +332,7 @@ module.exports = async () => {
 
 		app.use((err, req, res, next) => {
 			err.status = err.status || 500;
-			res.status(err.status).renderPage('error', `Frost - Error ${err.status}`, {error: err.message});
+			res.status(err.status).renderPage('error', {error: err.message, errorCode: err.status});
 		});
 
 		// == start listening ==

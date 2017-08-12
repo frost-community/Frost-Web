@@ -16,7 +16,7 @@
 			fetchJson('POST', '/session', {
 				screenName: this.refs.screenName.value,
 				password: this.refs.password.value,
-				_csrf: this.csrfToken
+				_csrf: this.csrf
 			}).then((res) => {
 				location.reload();
 			})

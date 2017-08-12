@@ -36,13 +36,7 @@
 			> .content {
 				@include responsive();
 
-				padding-top: 6.5rem !important;
-				flex-direction: column;
 				align-items: flex-start;
-
-				> :not(:last-child) {
-					margin-right: 2rem;
-				}
 
 				@media (min-width: $phone) {
 					align-items: center;
@@ -67,4 +61,7 @@
 			}
 		}
 	</style>
+
+	<script>
+	</script>
 </frost-page-entrance>

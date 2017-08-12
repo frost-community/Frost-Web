@@ -13,14 +13,6 @@ body {
 	word-wrap: break-word;
 	background-color: $back-color;
 	color: $fore-color;
-
-	> frost-page-selector > * > .content {
-		padding-top: 6.5rem !important;
-
-		> :not(:last-child) {
-			margin-right: 2rem;
-		}
-	}
 }
 
 button, .button, label {

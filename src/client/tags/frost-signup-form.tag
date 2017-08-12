@@ -32,7 +32,7 @@
 				password: this.refs.password.value,
 				name: this.refs.name.value,
 				description: this.refs.description.value,
-				_csrf: this.csrfToken,
+				_csrf: this.csrf,
 				recaptchaToken: grecaptcha.getResponse()
 			}).then(() => {
 				location.reload();

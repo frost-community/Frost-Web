@@ -1,7 +1,7 @@
 <frost-page-home>
 	<div class='content'>
 		<div class='side'>
-			<frost-home-logo/>
+			<frost-home-logo />
 			<hr />
 			<frost-create-status-form />
 			<frost-hint />
@@ -48,4 +48,7 @@
 			}
 		}
 	</style>
+
+	<script>
+	</script>
 </frost-page-home>

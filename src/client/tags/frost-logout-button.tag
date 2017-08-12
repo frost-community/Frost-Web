@@ -6,7 +6,7 @@
 
 		signout() {
 			fetchJson('DELETE', '/session', {
-				_csrf: this.csrfToken
+				_csrf: this.csrf
 			}).then((res) => {
 				location.reload();
 			})

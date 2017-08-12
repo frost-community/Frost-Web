@@ -1,10 +1,11 @@
 <frost-header role='banner'>
 	<nav>
 		<ul>
-			<li ref='home'><a href='/'>Home</a></li>
-			<li ref='dev'><a href='/dev'>DevCenter</a></li>
+			<li if={ !login } class={ active: activeId == 'entrance' }><a href='/'>Entrance</a></li>
+			<li if={ login } class={ active: activeId == 'home' }><a href='/'>Home</a></li>
+			<li class={ active: activeId == 'dev' }><a href='/dev'>DevCenter</a></li>
 			<virtual if={ userId != null }>
-				<li ref='userlist'><a href='/userlist'>UserList</a></li>
+				<li class={ active: activeId == 'userlist'}><a href='/userlist'>UserList</a></li>
 				<li style='margin-left: auto'><a href={ '/users/' + user.screenName } target='_blank'>@{ user.screenName }</a></li>
 				<li><frost-logout-button /></li>
 			</virtual>
@@ -64,12 +65,17 @@
 
 	<script>
 		this.on('mount', () => {
-			const activeItemName = this.opts.dataActive;
-			const activatables = ['home', 'dev', 'userlist'];
+			this.login = this.getLogin();
 
-			if (activatables.indexOf(activeItemName) != -1) {
-				this.refs[activeItemName].classList.add('active');
-			}
+			this.central.on('ev:changed-login-status', (login) => {
+				this.login = login;
+				this.update();
+			});
+
+			this.central.on('change-page', (pageId) => {
+				this.activeId = pageId;
+				this.update();
+			});
 		});
 	</script>
 </frost-header>

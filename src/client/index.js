@@ -2,36 +2,7 @@ const riot = require('riot');
 const route = require('riot-route').default;
 const WebSocketEvents = require('./helpers/web-socket-events');
 
-// components
-
-require('./tags/frost-page-selector.tag');
-require('./tags/frost-page-dev.tag');
-require('./tags/frost-page-entrance.tag');
-require('./tags/frost-page-error.tag');
-require('./tags/frost-page-home.tag');
-require('./tags/frost-page-post.tag');
-require('./tags/frost-page-user.tag');
-require('./tags/frost-page-userlist.tag');
-
-// general
-require('./tags/frost-header.tag');
-require('./tags/frost-footer.tag');
-require('./tags/frost-logout-button.tag');
-require('./tags/frost-post-status.tag');
-require('./tags/frost-timeline.tag');
-require('./tags/frost-hint.tag');
-// entrance
-require('./tags/frost-login-form.tag');
-require('./tags/frost-signup-form.tag');
-// home
-require('./tags/frost-home-logo.tag');
-require('./tags/frost-create-status-form.tag');
-// user
-require('./tags/frost-follow-button.tag');
-// dev
-require('./tags/frost-applications.tag');
-require('./tags/frost-create-application-form.tag');
-
+// mixin
 const mixinGlobal = {};
 
 (async () => {
@@ -41,8 +12,12 @@ const mixinGlobal = {};
 		const userId = userIdElement != null ? userIdElement.content : null;
 		mixinGlobal.userId = userId;
 
+		// login status func
+		const getLogin = () => userId != null;
+		mixinGlobal.getLogin = getLogin;
+
 		// WebSocket (ログインされている時のみ)
-		if (userId != null) {
+		if (getLogin()) {
 			const secure = location.protocol == 'https:';
 
 			let webSocket;
@@ -87,34 +62,78 @@ const mixinGlobal = {};
 			await readyAsync();
 		}
 
+		// loading components
+
+		// - general
+		require('./tags/frost-logout-button.tag');
+		require('./tags/frost-post-status.tag');
+		require('./tags/frost-timeline.tag');
+		require('./tags/frost-hint.tag');
+		// - app
+		require('./tags/frost-app.tag');
+		require('./tags/frost-header.tag');
+		require('./tags/frost-page-switcher.tag');
+		require('./tags/frost-footer.tag');
+		// - entrance
+		require('./tags/frost-page-entrance.tag');
+		require('./tags/frost-login-form.tag');
+		require('./tags/frost-signup-form.tag');
+		// - home
+		require('./tags/frost-page-home.tag');
+		require('./tags/frost-home-logo.tag');
+		require('./tags/frost-create-status-form.tag');
+		// - user
+		require('./tags/frost-page-user.tag');
+		require('./tags/frost-follow-button.tag');
+		// - userlist
+		require('./tags/frost-page-userlist.tag');
+		// - post
+		require('./tags/frost-page-post.tag');
+		// - dev
+		require('./tags/frost-page-dev.tag');
+		require('./tags/frost-applications.tag');
+		require('./tags/frost-create-application-form.tag');
+		// - error
+		require('./tags/frost-page-error.tag');
+
 		// siteKey
-		const siteKeyElement = document.getElementsByName('siteKey').item(0);
+		const siteKeyElement = document.getElementsByName('frost-siteKey').item(0);
 		const siteKey = siteKeyElement != null ? siteKeyElement.content : null;
 		mixinGlobal.siteKey = siteKey;
 
 		// csrf
-		const csrfTokenElement = document.getElementsByName('_csrf').item(0);
-		const csrfToken = csrfTokenElement != null ? csrfTokenElement.content : null;
-		mixinGlobal.csrfToken = csrfToken;
+		const csrfElement = document.getElementsByName('frost-csrf').item(0);
+		const csrf = csrfElement != null ? csrfElement.content : null;
+		mixinGlobal.csrf = csrf;
 
 		// central observer
-		mixinGlobal.central = riot.observable();
+		const central = riot.observable();
+		mixinGlobal.central = central;
 
 		// routing
 
 		route.base('/');
 		route('', () => {
-			console.log('entrance/home');
-
+			const pageId = getLogin() ? 'home' : 'entrance';
+			central.trigger('change-page', pageId);
+			console.log(pageId);
 		});
 		route('dev', () => {
-			console.log('dev');
+			const pageId = 'dev';
+			central.trigger('change-page', pageId);
+			console.log(pageId);
 		});
 		route('userlist', () => {
-			console.log('userlist');
+			const pageId = 'userlist';
+			central.trigger('change-page', pageId);
+			console.log(pageId);
 		});
-
-		route.start(true);
+		route
+		route('*', () => {
+			const pageId = 'error';
+			central.trigger('change-page', pageId);
+			console.log(pageId);
+		});
 
 		// recaptcha
 
@@ -134,6 +153,15 @@ const mixinGlobal = {};
 		console.dir(err);
 	}
 
+	// mount
 	riot.mixin(mixinGlobal);
-	riot.mount('*');
+	riot.mount('frost-app');
+
+	// start routing
+	route.start(true);
+
+	const hasError = document.getElementsByName('frost-error').item(0) != null;
+	if (hasError) {
+		mixinGlobal.central.trigger('change-page', 'error');
+	}
 })();

@@ -151,7 +151,7 @@ module.exports = async () => {
 				}
 				catch(err) {
 					console.dir(err);
-					res.status(400).json({message: 'failed'});
+					res.status(400).json({message: 'failed to execute session creation'});
 				}
 			})();
 		})
@@ -200,19 +200,19 @@ module.exports = async () => {
 				req.isSmartPhone = isSmartPhone(req.header('User-Agent'));
 				app.set('views', path.join(__dirname, 'views'));
 
-				// default render params
-				req.renderParams = {
-					isSmartPhone: req.isSmartPhone,
-					csrfToken: req.csrfToken(),
-				};
-
-				// memo: クライアントサイドでは、パラメータ中にuserIdが存在するかどうかでWebSocketへの接続が必要かどうかを判断します。以下のコードはそのために必要です。
-				const accessKey = req.session.accessKey;
-				if (accessKey != null) {
-					req.renderParams.userId = accessKey.split('-')[0];
-				}
-
 				res.renderPage = (pageId, title, pageParams, renderParams) => {
+					pageParams = Object.assign(pageParams || {}, {
+						csrf: req.csrfToken(),
+						isSmartPhone: req.isSmartPhone,
+						siteKey: config.web.reCAPTCHA.siteKey
+					});
+
+					// memo: クライアントサイドでは、パラメータ中にuserIdが存在するかどうかでWebSocketへの接続が必要かどうかを判断します。このコードはそのために必要です。
+					const accessKey = req.session.accessKey;
+					if (accessKey != null) {
+						pageParams.userId = accessKey.split('-')[0];
+					}
+
 					let pageRenderParams = {
 						id: pageId,
 						title: title,
@@ -220,16 +220,16 @@ module.exports = async () => {
 						params: pageParams
 					};
 					pageRenderParams = Object.assign(pageRenderParams, renderParams);
-					pageRenderParams = Object.assign(pageRenderParams, req.renderParams);
 
 					res.render('page', pageRenderParams);
+					console.log('render page:', pageId);
 				};
 
 				next();
 			}
 			catch(err) {
 				console.dir(err);
-				res.status(500).json({message: typeof(err) == 'string' ? err : 'failed'});
+				res.status(500).json({message: 'failed to execute page middleware'});
 			}
 		});
 
@@ -240,7 +240,7 @@ module.exports = async () => {
 				res.renderPage('home', 'Frost');
 			}
 			else {
-				res.renderPage('entrance', 'Frost', {}, {siteKey: config.web.reCAPTCHA.siteKey});
+				res.renderPage('entrance', 'Frost');
 			}
 		});
 
@@ -259,31 +259,35 @@ module.exports = async () => {
 						next();
 					}
 					else {
-						res.render('user', Object.assign(req.renderParams, {user: result.users[0]}));
-						// res.renderPage('user', `Frost - ${result.users[0].name}さんのページ`, {user: result.users[0]});
+						res.renderPage('user', `Frost - ${result.users[0].name}さんのページ`);
 					}
 				}
 				catch(err) {
 					console.dir(err);
-					res.status(500).json({message: typeof(err) == 'string' ? err : 'failed'});
+					next(err);
 				}
 			})();
 		});
 
-		app.get('/userlist', (req, res) => {
+		app.get('/userlist', (req, res, next) => {
 			(async () => {
-				if (req.session.accessKey == null) {
-					return res.status(403).json({message: 'Forbidden'});
+				try {
+					if (req.session.accessKey == null) {
+						return res.status(403).json({message: 'Forbidden'});
+					}
+
+					const result = await requestApiAsync('get', '/users', {}, {
+						'X-Api-Version': 1.0,
+						'X-Application-Key': config.web.applicationKey,
+						'X-Access-Key': req.session.accessKey != null ? req.session.accessKey : config.web.hostAccessKey,
+					});
+
+					res.renderPage('userlist', 'Frost - ユーザーの一覧');
 				}
-
-				const result = await requestApiAsync('get', '/users', {}, {
-					'X-Api-Version': 1.0,
-					'X-Application-Key': config.web.applicationKey,
-					'X-Access-Key': req.session.accessKey != null ? req.session.accessKey : config.web.hostAccessKey,
-				});
-
-				res.render('userlist', Object.assign(req.renderParams, {users: result.users}));
-				// res.renderPage('userlist', 'Frost - ユーザーの一覧', {users: result.users});
+				catch(err) {
+					console.dir(err);
+					next(err);
+				}
 			})();
 		});
 
@@ -307,8 +311,7 @@ module.exports = async () => {
 						}
 					}
 					else {
-						res.render('post', Object.assign(req.renderParams, {post: result.post}));
-						// res.renderPage('post', `Frost - @${result.post.user.screenName}さんの投稿`, {post: result.post});
+						res.renderPage('post', `Frost - @${result.post.user.screenName}さんの投稿`);
 					}
 				}
 				catch(err) {
@@ -319,8 +322,7 @@ module.exports = async () => {
 		});
 
 		app.get('/dev', (req, res) => {
-			res.render('dev', Object.assign(req.renderParams, {siteKey: config.web.reCAPTCHA.siteKey}));
-			// res.renderPage('dev', 'Frost Developers Center', {}, {siteKey: config.web.reCAPTCHA.siteKey});
+			res.renderPage('dev', 'Frost Developers Center');
 		});
 
 		// errors
@@ -330,8 +332,8 @@ module.exports = async () => {
 		});
 
 		app.use((err, req, res, next) => {
-			res.status(err.status || 500);
-			res.render('error', {error: err});
+			err.status = err.status || 500;
+			res.status(err.status).renderPage('error', `Frost - Error ${err.status}`, {error: err.message});
 		});
 
 		// == start listening ==

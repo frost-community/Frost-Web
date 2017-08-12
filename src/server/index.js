@@ -21,6 +21,8 @@ const streamingServer = require('./helpers/streaming-server');
 const urlConfigFile = 'https://raw.githubusercontent.com/Frost-Dev/Frost/master/config.json';
 const questionResult = (ans) => (ans.toLowerCase()).indexOf('y') === 0;
 
+const debug = false;
+
 /**
  * Webクライアント向けのWebサーバ。
  */
@@ -221,7 +223,9 @@ module.exports = async () => {
 					pageRenderParams = Object.assign(pageRenderParams, renderParams);
 
 					res.render('page', pageRenderParams);
-					console.log('render page:', pageId);
+					if (debug) {
+						console.log('render page:', pageId);
+					}
 				};
 
 				next();

@@ -57,7 +57,7 @@
 						}
 					}
 					else {
-						alert(`internal error: ${rest.response.message}`);
+						alert(`internal error: ${rest.message}`);
 					}
 				}
 			});

@@ -6,7 +6,7 @@
 			<li class={ active: activeId == 'dev' }><a href='/dev'>DevCenter</a></li>
 			<virtual if={ userId != null }>
 				<li class={ active: activeId == 'userlist'}><a href='/userlist'>UserList</a></li>
-				<li style='margin-left: auto'><a href={ '/users/' + user.screenName } target='_blank'>@{ user.screenName }</a></li>
+				<li style='margin-left: auto'><a href={ '/users/' + user.screenName }>@{ user.screenName }</a></li>
 				<li><frost-logout-button /></li>
 			</virtual>
 		</ul>
@@ -64,18 +64,26 @@
 	</style>
 
 	<script>
+		const changedLoginStatusEventHandler = login => {
+			this.login = login;
+			this.update();
+		};
+
+		const changePageHandler = pageId => {
+			this.activeId = pageId;
+			this.update();
+		};
+
 		this.on('mount', () => {
+			this.central.on('ev:changed-login-status', changedLoginStatusEventHandler);
+			this.central.on('change-page', changePageHandler);
+
 			this.login = this.getLogin();
+		});
 
-			this.central.on('ev:changed-login-status', (login) => {
-				this.login = login;
-				this.update();
-			});
-
-			this.central.on('change-page', (pageId) => {
-				this.activeId = pageId;
-				this.update();
-			});
+		this.on('unmount', () => {
+			this.central.off('ev:changed-login-status', changedLoginStatusEventHandler);
+			this.central.off('change-page', changePageHandler);
 		});
 	</script>
 </frost-header>

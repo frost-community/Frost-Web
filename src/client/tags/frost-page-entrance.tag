@@ -66,7 +66,6 @@
 		const changedPageHandler = (pageId) => {
 			if (pageId == 'entrance') {
 				window.document.title = 'Frost';
-				console.log('title changed');
 			}
 			this.update();
 		};

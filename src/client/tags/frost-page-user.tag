@@ -53,7 +53,6 @@
 				// TODO: ユーザー情報をフェッチ
 				this.user.screenName = screenName;
 				window.document.title = `Frost - @${screenName}さんのページ`;
-				console.log('title changed');
 			}
 			this.update();
 		};

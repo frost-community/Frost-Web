@@ -48,8 +48,7 @@
 			throw new Error('data-name property is invalid');
 		}
 
-		const restHandler = rest => {
-			console.log('restHandler');
+		this.restHandler = rest => {
 			if (rest.request.endpoint == endpoint) {
 				if (rest.success) {
 					if (rest.response.posts != null) {
@@ -72,16 +71,16 @@
 			}
 		};
 
-		const reconnectHandler = () => {
+		this.reconnectHandler = () => {
 			console.log('reconnecting timeline...');
 			this.webSocket.sendEvent('timeline-connect', {type: this.opts.dataName});
 		};
 
-		const timelineConnectHandler = data => {
+		this.timelineConnectHandler = data => {
 			console.log(data.message);
 		};
 
-		const receiveStatusHandler = status => {
+		this.receiveStatusHandler = status => {
 			console.log('status: ', status);
 			this.timelinePosts.splice(0, 0, status);
 			this.update();
@@ -99,22 +98,24 @@
 		};
 
 		this.on('mount', () => {
-			this.webSocket.on('rest', restHandler);
+			this.webSocket.on('rest', this.restHandler);
 			this.reload(); // タイムラインのリロード
 
 			if (streaming) {
-				this.webSocket.addEventListener('open', reconnectHandler); // hint: onではなくaddEventListenerを使っているのはプリミティブ(非ユーザー定義)なイベントだから
-				this.webSocket.on('timeline-connect', timelineConnectHandler);
-				this.webSocket.on(`data:${this.opts.dataName}:status`, receiveStatusHandler);
+				this.webSocket.addEventListener('open', this.reconnectHandler); // hint: onではなくaddEventListenerを使っているのはプリミティブ(非ユーザー定義)なイベントだから
+				this.webSocket.on('timeline-connect', this.timelineConnectHandler);
+				this.webSocket.on(`data:${this.opts.dataName}:status`, this.receiveStatusHandler);
 			}
 		});
 
 		this.on('unmount', () => {
-			this.webSocket.off('rest', restHandler);
+			this.webSocket.off('rest', this.restHandler);
+			console.log(streaming);
 			if (streaming) {
-				this.webSocket.removeEventListener('open', reconnectHandler);
-				this.webSocket.off('timeline-connect', timelineConnectHandler);
-				this.webSocket.off(`data:${this.opts.dataName}:status`, receiveStatusHandler);
+				this.webSocket.sendEvent('timeline-disconnect', {type: this.opts.dataName});
+				this.webSocket.removeEventListener('open', this.reconnectHandler);
+				this.webSocket.off('timeline-connect', this.timelineConnectHandler);
+				this.webSocket.off(`data:${this.opts.dataName}:status`, this.receiveStatusHandler);
 			}
 		});
 	</script>

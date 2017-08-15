@@ -40,17 +40,9 @@
 
 		// methods
 
-		this.getTextCount = () => {
-			return this.text.length;
-		};
-
-		this.getValidTextCount = () => {
-			return this.getTextCount() != 0 && this.textMax - this.getTextCount() >= 0;
-		};
-
-		this.getNeedSubmit = () => {
-			return ((this.keyBuffer[17] || this.keyBuffer[91]) && this.keyBuffer[13]) == true; // Ctrl + Enter
-		};
+		this.getTextCount = () => this.text.length;
+		this.getValidTextCount = () => this.getTextCount() != 0 && this.textMax - this.getTextCount() >= 0;
+		this.getNeedSubmit = () => ((this.keyBuffer[17] || this.keyBuffer[91]) && this.keyBuffer[13]) == true; // Ctrl + Enter
 
 		this.clear = () => {
 			this.text = '';
@@ -90,6 +82,17 @@
 			this.keyBuffer[e.which] = false;
 		};
 
+		const restHandler = rest => {
+			if (rest.request.endpoint == '/posts/post_status') {
+				if (rest.success) {
+					this.clear();
+				}
+				else {
+					alert('status creation error: ' + rest.response.message);
+				}
+			}
+		};
+
 		this.on('mount', () => {
 
 			// methods
@@ -104,16 +107,11 @@
 
 			// events
 
-			this.webSocket.on('rest', rest => {
-				if (rest.request.endpoint == '/posts/post_status') {
-					if (rest.success) {
-						this.clear();
-					}
-					else {
-						alert('status creation error: ' + rest.response.message);
-					}
-				}
-			});
+			this.webSocket.on('rest', restHandler);
+		});
+
+		this.on('unmount', () => {
+			this.webSocket.off('rest', restHandler);
 		});
 	</script>
 </frost-create-status-form>

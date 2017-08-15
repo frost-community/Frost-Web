@@ -44,23 +44,25 @@
 			this.isShowModal = !this.isShowModal;
 		};
 
-		this.on('mount', () => {
-			this.webSocket.on('rest', rest => {
-				if (rest.request.method == 'post' && rest.request.endpoint == '/applications') {
-					if (rest.success) {
-						if (rest.response.application != null) {
-							this.central.trigger('add-application', {application: rest.response.application});
-							alert('created application.');
-						}
-						else {
-							alert(`api error: failed to create application. ${rest.response.message}`);
-						}
+		const restHandler = rest => {
+			if (rest.request.method == 'post' && rest.request.endpoint == '/applications') {
+				if (rest.success) {
+					if (rest.response.application != null) {
+						this.central.trigger('add-application', {application: rest.response.application});
+						alert('created application.');
 					}
 					else {
-						alert(`internal error: ${rest.message}`);
+						alert(`api error: failed to create application. ${rest.response.message}`);
 					}
 				}
-			});
+				else {
+					alert(`internal error: ${rest.message}`);
+				}
+			}
+		};
+
+		this.on('mount', () => {
+			this.webSocket.on('rest', restHandler);
 
 			this.submit = (e) => {
 				e.preventDefault();
@@ -87,6 +89,10 @@
 			grecaptcha.render('recaptcha', {
 				sitekey: this.siteKey
 			});
+		});
+
+		this.on('unmount', () => {
+			this.webSocket.off('rest', restHandler);
 		});
 	</script>
 </frost-create-application-form>

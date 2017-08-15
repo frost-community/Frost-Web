@@ -19,7 +19,6 @@
 		const changedPageHandler = (pageId) => {
 			if (pageId == 'userlist') {
 				window.document.title = 'Frost - ユーザーの一覧';
-				console.log('title changed');
 			}
 			this.update();
 		};

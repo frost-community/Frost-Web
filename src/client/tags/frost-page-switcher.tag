@@ -20,13 +20,19 @@
 	</style>
 
 	<script>
+		const changePageHandler = (pageId, params) => {
+			console.log('page:', pageId);
+			this.pageId = pageId;
+			this.update();
+			this.central.trigger('ev:changed-page', pageId, params);
+		};
+
 		this.on('mount', () => {
-			this.central.on('change-page', (pageId, params) => {
-				console.log(pageId);
-				this.pageId = pageId;
-				this.update();
-				this.central.trigger('ev:changed-page', pageId, params);
-			});
+			this.central.on('change-page', changePageHandler);
+		});
+
+		this.on('unmount', () => {
+			this.central.off('change-page', changePageHandler);
 		});
 	</script>
 </frost-page-switcher>

@@ -53,7 +53,6 @@
 		const changedPageHandler = (pageId) => {
 			if (pageId == 'home') {
 				window.document.title = 'Frost';
-				console.log('title changed');
 			}
 			this.update();
 		};

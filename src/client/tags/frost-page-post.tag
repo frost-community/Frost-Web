@@ -22,7 +22,6 @@
 				// TODO: ポストとその投稿者をフェッチ
 				const screenName = 'hoge';
 				window.document.title = `Frost - @${screenName}さんの投稿`;
-				console.log('title changed');
 			}
 			this.update();
 		};

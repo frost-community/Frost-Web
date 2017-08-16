@@ -21,9 +21,12 @@
 
 	<script>
 		const changePageHandler = (pageId, params) => {
+			this.pageId = '';
+			this.update();
 			this.pageId = pageId;
 			this.update();
 			this.central.trigger('ev:changed-page', pageId, params);
+			console.log('page:', pageId);
 		};
 
 		this.on('mount', () => {

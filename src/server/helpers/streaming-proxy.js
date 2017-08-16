@@ -37,12 +37,11 @@ class StreamingProxy {
 
 		// クライアントに返却する必要のあるイベント一覧
 		this.needReturnEventNames = [
-			'authorization',
 			'rest',
 			'timeline-connect',
 			'timeline-disconnect',
-			'data:general:status',
-			'data:home:status'
+			'stream:general-timeline-status',
+			'stream:home-timeline-status'
 		];
 
 		this.frontConnection = frontConnection;
@@ -60,7 +59,12 @@ class StreamingProxy {
 				console.log(`[front<] ${eventName}`);
 			}
 
-			this.frontConnection.send(eventName, data);
+			if (this.frontConnection.connected) {
+				this.frontConnection.send(eventName, data);
+			}
+			else {
+				console.log('connection was disconnected before the result was returned');
+			}
 		});
 	}
 

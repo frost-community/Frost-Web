@@ -1,6 +1,7 @@
 const riot = require('riot');
 const route = require('riot-route').default;
 const WebSocketEvents = require('./helpers/web-socket-events');
+const StreamingRest = require('./helpers/StreamingRest');
 
 // mixin
 const mixinGlobal = {};
@@ -29,37 +30,22 @@ const mixinGlobal = {};
 				mixinGlobal.webSocket = webSocket;
 			}
 			catch (err) {
+				alert('WebSocketの接続に失敗しました');
+				console.dir(err);
+				return;
 				// noop
 			}
 
-			const readyAsync = () => new Promise((resolve, reject) => {
-				webSocket.on('ready', ready => {
-					webSocket.on('rest', rest => {
-						if (rest.request.endpoint == `/users/${userId}`) {
-							if (rest.success) {
-								if (rest.response.user != null) {
-									mixinGlobal.user = rest.response.user;
-
-									return resolve();
-								}
-
-								return reject(new Error(`api error: failed to fetch user data. ${rest.response.message}`));
-							}
-
-							return reject(new Error(`internal error: failed to fetch user data. ${rest.message}`));
-						}
-					});
-
-					webSocket.sendEvent('rest', {
-						request: {
-							method: 'get', endpoint: `/users/${userId}`,
-							headers: {'x-api-version': 1.0},
-						}
-					});
-				});
-			});
-
-			await readyAsync();
+			const streamingRest = new StreamingRest(webSocket);
+			try {
+				const rest = await streamingRest.requestAsync('get', `/users/${userId}`);
+				mixinGlobal.user = rest.response.user;
+			}
+			catch (err) {
+				alert('ユーザー情報の取得に失敗しました');
+				console.dir(err);
+				return;
+			}
 		}
 
 		// loading components

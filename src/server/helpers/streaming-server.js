@@ -38,10 +38,15 @@ module.exports = (http, sessionStore, debugDetail, config) => {
 					}
 				}
 				catch (err) {
-					console.log('failed to connect api:');
-					console.dir(err);
-
-					return request.reject(500, 'failed to connect api');
+					if (err.message.indexOf('ECONNREFUSED') != -1) {
+						console.log('error: could not connect to api server');
+						return request.reject(500, 'could not connect to api server');
+					}
+					else {
+						console.log('failed to connect api:');
+						console.dir(err);
+						return request.reject(500, 'an error occurred while connecting to api server');
+					}
 				}
 
 				apiConnection.on('error', err => {
@@ -53,7 +58,7 @@ module.exports = (http, sessionStore, debugDetail, config) => {
 						console.log('[api close]:', data.reasonCode, data.description);
 					}
 
-					if (frontConnection != null) {
+					if (frontConnection != null && frontConnection.connected) {
 						frontConnection.close();
 					}
 				});
@@ -63,7 +68,12 @@ module.exports = (http, sessionStore, debugDetail, config) => {
 				WebSocketUtility.addExtensionMethods(frontConnection);
 
 				frontConnection.on('error', err => {
-					console.log('front error:', err);
+					if (err.message.indexOf('ECONNRESET') != -1) {
+						// noop
+					}
+					else {
+						console.log('front error:', err);
+					}
 				});
 
 				frontConnection.on('close', data => {
@@ -71,28 +81,17 @@ module.exports = (http, sessionStore, debugDetail, config) => {
 						console.log('[front close]:', data.reasonCode, data.description);
 					}
 
-					apiConnection.close();
+					if (apiConnection.connected) {
+						apiConnection.close();
+					}
 				});
-
-				// 認証チェック
-				const authorization = await apiConnection.onceAsync('authorization');
-
-				if (authorization.success === false) {
-					throw new Error('failure authorization');
-				}
 
 				// API代理
 				const streamingProxy = new StreamingProxy(frontConnection, apiConnection, debugDetail, config);
 				streamingProxy.start();
-
-				const userId = session.accessKey.split('-')[0];
-				frontConnection.send('ready', {userId: userId});
-				if (debugDetail) {
-					console.log('[front<] ready');
-				}
 			}
 			catch(err) {
-				if (frontConnection != null) {
+				if (frontConnection != null && frontConnection.connected) {
 					frontConnection.close();
 				}
 				console.log('error on: request event in streaming server');

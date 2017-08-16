@@ -1,5 +1,8 @@
 class StreamingRest {
 	constructor(webSocketConnection) {
+		if (webSocketConnection == null) {
+			throw new ReferenceError('1st argument "webSocketConnection" is a null reference');
+		}
 		this.connection = webSocketConnection;
 	}
 

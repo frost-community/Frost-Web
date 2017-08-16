@@ -21,7 +21,6 @@
 
 	<script>
 		const changePageHandler = (pageId, params) => {
-			console.log('page:', pageId);
 			this.pageId = pageId;
 			this.update();
 			this.central.trigger('ev:changed-page', pageId, params);

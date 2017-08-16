@@ -53,16 +53,14 @@
 				// TODO: ユーザー情報をフェッチ
 				this.user.screenName = screenName;
 				window.document.title = `Frost - @${screenName}さんのページ`;
+
+				this.central.off('ev:changed-page', changedPageHandler);
 			}
 			this.update();
 		};
 
 		this.on('mount', () => {
 			this.central.on('ev:changed-page', changedPageHandler);
-		});
-
-		this.on('unmount', () => {
-			this.central.off('ev:changed-page', changedPageHandler);
 		});
 	</script>
 </frost-page-user>

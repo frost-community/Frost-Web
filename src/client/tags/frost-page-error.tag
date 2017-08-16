@@ -24,6 +24,8 @@
 			if (pageId == 'error') {
 				const code = document.getElementsByName('frost-errorCode').item(0).content;
 				window.document.title = `Frost - Error ${code}`;
+
+				this.central.off('ev:changed-page', changedPageEventHandler);
 			}
 			this.update();
 		};
@@ -39,7 +41,6 @@
 		});
 
 		this.on('unmount', () => {
-			this.central.off('ev:changed-page', changedPageEventHandler);
 			this.central.off('change-error', changeErrorHandler);
 		});
 	</script>

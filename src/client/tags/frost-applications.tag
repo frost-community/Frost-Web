@@ -36,6 +36,8 @@
 				}
 				this.applications = rest.response.applications;
 				this.update();
+
+				this.webSocket.off('rest', restHandler);
 			}
 		};
 
@@ -51,7 +53,6 @@
 
 		this.on('unmount', () => {
 			this.central.off('add-application', centralAddApplicationHandler);
-			this.webSocket.off('rest', restHandler);
 		});
 	</script>
 </frost-applications>

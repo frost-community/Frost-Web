@@ -20,6 +20,8 @@
 				else {
 					alert(`internal error: ${rest.message}`);
 				}
+
+				this.webSocket.off('rest', restGetHandler);
 			}
 		};
 
@@ -48,7 +50,6 @@
 		});
 
 		this.on('unmount', () => {
-			this.webSocket.off('rest', restGetHandler);
 			this.webSocket.off('rest', restPutDeleteHandler);
 		});
 	</script>

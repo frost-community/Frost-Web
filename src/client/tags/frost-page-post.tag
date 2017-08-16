@@ -22,16 +22,14 @@
 				// TODO: ポストとその投稿者をフェッチ
 				const screenName = 'hoge';
 				window.document.title = `Frost - @${screenName}さんの投稿`;
+
+				this.central.off('ev:changed-page', changedPageHandler);
 			}
 			this.update();
 		};
 
 		this.on('mount', () => {
 			this.central.on('ev:changed-page', changedPageHandler);
-		});
-
-		this.on('unmount', () => {
-			this.central.off('ev:changed-page', changedPageHandler);
 		});
 	</script>
 </frost-page-post>

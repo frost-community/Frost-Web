@@ -10,7 +10,8 @@ class StreamingProxy {
 	constructor(frontConnection, apiConnection, debugDetail, config) {
 		// 利用可能なエンドポイント一覧
 		this.endpointWhiteList = [
-			{method: 'get', path: '/general/timeline'},
+			//{method: 'get', path: '/general/timeline'},
+			{method: 'get', path: '/users'},
 			{method: 'get', path: '/users/:id'},
 			{method: 'get', path: '/users/:id/followings/:target_id'},
 			{method: 'put', path: '/users/:id/followings/:target_id'},
@@ -40,7 +41,7 @@ class StreamingProxy {
 			'rest',
 			'timeline-connect',
 			'timeline-disconnect',
-			'stream:general-timeline-status',
+			// 'stream:general-timeline-status',
 			'stream:home-timeline-status'
 		];
 

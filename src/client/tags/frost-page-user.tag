@@ -1,12 +1,12 @@
 <frost-page-user>
 	<div class='content'>
-		<div class='side'>
+		<div class='side' if={ user != null }>
 			<h1>{ user.name } @{ user.screenName }</h1>
 			<h2>Description:</h2>
 			<p>{ user.description }</p>
 			<frost-follow-button data-target-id={ user.id } />
 		</div>
-		<div class='main'>
+		<div class='main' if={ user != null }>
 			<h1>{ user.name }さんの投稿</h1>
 			<frost-timeline data-name='user', data-user-id={ user.id } />
 		</div>
@@ -45,18 +45,25 @@
 	</style>
 
 	<script>
-		this.user = {name: '', screenName: '', id: ''};
+		const StreamingRest = require('../helpers/StreamingRest');
+		this.user = null;
 
 		const changedPageHandler = (pageId, params) => {
 			if (pageId == 'user') {
-				const screenName = params[0];
-				// TODO: ユーザー情報をフェッチ
-				this.user.screenName = screenName;
-				window.document.title = `Frost - @${screenName}さんのページ`;
+				(async () => {
+					const screenName = params[0];
 
-				this.central.off('ev:changed-page', changedPageHandler);
+					// ユーザー情報をフェッチ
+					const streamingRest = new StreamingRest(this.webSocket);
+					const rest = await streamingRest.requestAsync('get', '/users', {query: {'screen_names': screenName}});
+					this.user = rest.response.users[0];
+
+					this.update();
+
+					window.document.title = `Frost - @${screenName}さんのページ`;
+					this.central.off('ev:changed-page', changedPageHandler);
+				})();
 			}
-			this.update();
 		};
 
 		this.on('mount', () => {

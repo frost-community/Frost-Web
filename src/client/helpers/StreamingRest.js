@@ -6,26 +6,43 @@ class StreamingRest {
 		this.connection = webSocketConnection;
 	}
 
-	requestAsync(method, endpoint, requestContent, apiVersion) {
+	requestAsync(method, endpoint, requestContent, apiVersion, timeoutInterval) {
 		return new Promise((resolve, reject) => {
+			if (method == null || endpoint == null) {
+				reject(new ReferenceError('missing arguments'));
+			}
 			requestContent = requestContent || {};
 			apiVersion = apiVersion || 1;
+			timeoutInterval = 3000;
 
-			const handler = rest => {
+			// request timeout
+			const timeout = setTimeout(() => {
+				reject(new Error('response timeout'));
+			}, timeoutInterval);
+
+			// handler
+			const rest = rest => {
 				if (rest.request.method == method && rest.request.endpoint == endpoint) {
 					if (rest.success) {
-						if (rest.response.user != null) {
+						if (rest.statusCode < 400) {
 							resolve(rest);
 						}
-						reject(new Error(`api error: failed to fetch user data. ${rest.response.message}`));
+						else {
+							reject(new Error(`api error: failed to fetch data. (Status: ${rest.statusCode}) ${rest.response.message}`));
+						}
 					}
-					reject(new Error(`internal error: failed to fetch user data. ${rest.message}`));
+					else {
+						reject(new Error(`internal error: failed to fetch data. ${rest.message}`));
+					}
 
-					this.connection.off('rest', handler);
+					// disposings
+					this.connection.off('rest', rest);
+					clearTimeout(timeout);
 				}
 			};
-			this.connection.on('rest', handler);
+			this.connection.on('rest', rest);
 
+			// build request
 			let request = {
 				method: method,
 				endpoint: endpoint,
@@ -34,6 +51,8 @@ class StreamingRest {
 				}
 			};
 			request = Object.assign(request, requestContent);
+
+			// send request
 			this.connection.sendEvent('rest', {request: request});
 		});
 	}

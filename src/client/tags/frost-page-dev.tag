@@ -1,7 +1,17 @@
 <frost-page-dev>
 	<div class='content'>
 		<div class='main'>
-			dev
+			<div class='row' style='margin-top: 30px'>
+				<h4>API Document</h4>
+				<a href='http://docs.snsfrost.apiary.io/' target='_blank'>Frost-API (日本語) - Apiary</a>
+			</div>
+			<div class='row' style='margin-top: 30px'>
+				<h4>あなたが登録したアプリケーション (Your registered applications)</h4>
+				<frost-applications />
+			</div>
+			<div class='row' style='margin-top: 30px'>
+				<frost-create-application-form />
+			</div>
 		</div>
 	</div>
 

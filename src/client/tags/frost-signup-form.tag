@@ -46,5 +46,10 @@
 				sitekey: this.siteKey
 			});
 		});
+
+		this.on('unmount', () => {
+			// reCAPTCHAから生成される要素を削除
+			document.querySelector('.g-recaptcha-bubble-arrow').parentNode.remove();
+		});
 	</script>
 </frost-signup-form>

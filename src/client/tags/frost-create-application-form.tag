@@ -31,7 +31,7 @@
 						<input type='checkbox' id='permissions-application' name='permissions' value='application'>application - Accessing about your applications</input>
 					</label>
 				</fieldset>
-				<div id='recaptcha'></div>
+				<div id='recaptcha-create-application'></div>
 				<button class='button-primary'>Create application</button>
 			</form>
 		</div>
@@ -86,13 +86,18 @@
 				}});
 			};
 
-			grecaptcha.render('recaptcha', {
+			grecaptcha.render('recaptcha-create-application', {
 				sitekey: this.siteKey
 			});
 		});
 
 		this.on('unmount', () => {
 			this.webSocket.off('rest', restHandler);
+		});
+
+		this.on('unmount', () => {
+			// reCAPTCHAから生成される要素を削除
+			document.querySelector('.g-recaptcha-bubble-arrow').parentNode.remove();
 		});
 	</script>
 </frost-create-application-form>

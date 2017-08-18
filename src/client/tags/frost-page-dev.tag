@@ -1,15 +1,15 @@
 <frost-page-dev>
 	<div class='content'>
 		<div class='main'>
-			<div class='row' style='margin-top: 30px'>
-				<h4>API Document</h4>
-				<a href='http://docs.snsfrost.apiary.io/' target='_blank'>Frost-API (日本語) - Apiary</a>
+			<div>
+				<h4>APIドキュメント</h4><!-- API document -->
+				<a href='http://docs.snsfrost.apiary.io/' target='_blank'>Apiary - Frost-API (日本語)</a>
 			</div>
-			<div class='row' style='margin-top: 30px'>
-				<h4>あなたが登録したアプリケーション (Your registered applications)</h4>
+			<div if={ login }>
+				<h4>登録済みの連携アプリケーション</h4> <!-- Your registered applications -->
 				<frost-applications />
 			</div>
-			<div class='row' style='margin-top: 30px'>
+			<div if={ login }>
 				<frost-create-application-form />
 			</div>
 		</div>
@@ -21,6 +21,12 @@
 		:scope {
 			> .content {
 				@include responsive();
+
+				flex-direction: column;
+
+				> .main > :not(:last-child) {
+					margin-bottom: 2rem;
+				}
 			}
 		}
 	</style>
@@ -37,6 +43,8 @@
 
 		this.on('mount', () => {
 			this.central.on('ev:changed-page', changedPageHandler);
+
+			this.login = this.getLogin();
 		});
 	</script>
 </frost-page-dev>

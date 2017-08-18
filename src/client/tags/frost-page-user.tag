@@ -2,7 +2,7 @@
 	<div class='content'>
 		<div class='side' if={ user != null }>
 			<h1>{ user.name } @{ user.screenName }</h1>
-			<h2>Description:</h2>
+			<h2>プロフィール:</h2><!-- Profile -->
 			<p>{ user.description }</p>
 			<frost-follow-button data-target-id={ user.id } />
 		</div>
@@ -17,10 +17,18 @@
 
 		:scope {
 			> .content {
-				@include responsive(row);
+				@include responsive();
+
+				@include less-than($tablet) {
+					flex-direction: column;
+				}
 
 				> .side {
 					width: 250px;
+
+					@include less-than($tablet) {
+						margin-bottom: 2rem;
+					}
 
 					> h1 {
 						font-size: 2.5rem;

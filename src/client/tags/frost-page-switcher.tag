@@ -10,7 +10,7 @@
 	<style>
 		:scope {
 			> * > .content {
-				padding-top: 6.5rem !important;
+				padding-top: 7rem !important;
 
 				> :not(:last-child) {
 					margin-right: 2rem;

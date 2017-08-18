@@ -2,10 +2,10 @@
 	<ul if={ applications.length != 0 }>
 		<li each={ applications } style='list-style-type: none;'>
 			<div class='box'>
-				<p>App name: { name }</p>
-				<p>Description: { description }</p>
-				<p>App Id: { id }</p>
-				<p>Permissions:</p>
+				<p>アプリケーション名: { name }</p>
+				<p>説明: { description }</p>
+				<p>アプリケーションID: { id }</p>
+				<p>権限:</p><!-- Permissions -->
 				<ul>
 				<li each={ permission ,i in permissions }>
 					{ permission }
@@ -14,7 +14,7 @@
 			</div>
 		</li>
 	</ul>
-	<p if={ applications.length == 0 }>You don't have any applications.</p>
+	<p if={ applications.length == 0 }>あなたはアプリケーションを持っていません。</p><!-- You don't have any applications -->
 
 	<script>
 		this.applications = [];

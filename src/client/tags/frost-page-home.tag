@@ -17,10 +17,10 @@
 
 		:scope {
 			> .content {
-				@include responsive(row);
+				@include responsive();
 
 				> .side {
-					@media (max-width: $tablet - 1px) {
+					@include less-than($tablet) {
 						display: none;
 					}
 

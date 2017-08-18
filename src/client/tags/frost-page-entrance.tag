@@ -28,7 +28,7 @@
 			.logo-icon {
 				height: 3rem;
 
-				@media (min-width: $phone) {
+				@include greater-than($phone) {
 					height: 4rem;
 				}
 			}
@@ -36,9 +36,10 @@
 			> .content {
 				@include responsive();
 
+				flex-direction: column;
 				align-items: flex-start;
 
-				@media (min-width: $phone) {
+				@include greater-than($phone) {
 					align-items: center;
 				}
 
@@ -46,7 +47,7 @@
 					padding: 3rem;
 					margin: 1rem;
 
-					@media (min-width: $phone) {
+					@include greater-than($phone) {
 						width: 370px;
 						border: 1px solid $border-color;
 						border-radius: 4px;

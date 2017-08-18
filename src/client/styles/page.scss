@@ -34,7 +34,7 @@ textarea {
 	background-color: $textbox-back-color;
 
 	&:focus:invalid {
-		border-color: red;
+		border-color: $textbox-invalid-value-color;
 	}
 }
 
@@ -43,16 +43,15 @@ form :last-child {
 }
 
 .box {
-	border: none;
-	border-color: $border-color;
-	border-radius: unset;
-	padding: 0;
+	border: 1px solid $border-color;
+	border-radius: 4px;
+	padding: 30px;
+	padding-bottom: 0px;
 
-	@media (min-width: $phone) {
-		border: 1px solid;
-		border-radius: 4px;
-		padding: 30px;
-		padding-bottom: 0px;
+	@include less-than($tablet) {
+		border: none;
+		border-radius: unset;
+		padding: 0;
 	}
 }
 

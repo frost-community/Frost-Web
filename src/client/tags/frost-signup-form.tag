@@ -1,21 +1,22 @@
 <frost-signup-form>
-	<h3>Signup</h3>
+	<h4>アカウント作成</h4><!-- Sign up -->
 	<div show={ isShowModal }>
 		<form onsubmit={ submit }>
-			<label for='signup-screen-name-box'>Username *</label>
+			<label for='signup-screen-name-box'>ユーザー名 *</label><!-- Screen name -->
 			<input ref='screenName'　id='signup-screen-name-box' type='text' placeholder='example: frost_abc' style='width: 100%' pattern='^[a-zA-Z0-9_-]+$' minlength='4' maxlength='15' required />
-			<label for='signup-password-box'>Password *</label>
+			<label for='signup-password-box'>パスワード *</label><!-- Password -->
 			<input ref='password' id='signup-password-box' type='password' style='width: 100%' pattern='^[!-~]+$' minlength='6' required />
-			<label for='name-box'>Name</label>
+			<label for='name-box'>名前</label><!-- Name -->
 			<input ref='name' id='name-box' type='text' placeholder='froster' style='width: 100%' maxlength='32' />
-			<label for='description-box'>Description</label>
+			<label for='description-box'>プロフィール</label><!-- Profile -->
 			<input ref='description' id='description-box' type='text' style='width: 100%' maxlength='256' />
 			<label for='recaptcha-signup'>reCAPTCHA</label>
 			<div id='recaptcha-signup'></div>
-			<button class='button-primary'>Sign up</button>
+			<button class='button-primary'>アカウント作成</button><!-- Sign up -->
 		</form>
 	</div>
 	<button class='button orange-button' onclick={ showModal }>{ isShowModal ? '折りたたむ -' : '展開する +' }</button>
+
 	<script>
 		const fetchJson = require('../helpers/fetch-json');
 

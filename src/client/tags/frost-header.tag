@@ -3,9 +3,11 @@
 		<ul>
 			<li if={ !login } class={ active: activeId == 'entrance' }><a href='/'>Entrance</a></li>
 			<li if={ login } class={ active: activeId == 'home' }><a href='/'>Home</a></li>
-			<li class={ active: activeId == 'dev' }><a href='/dev'>DevCenter</a></li>
 			<virtual if={ userId != null }>
 				<li class={ active: activeId == 'userlist'}><a href='/userlist'>UserList</a></li>
+			</virtual>
+			<li class={ active: activeId == 'dev' }><a href='/dev'>DevCenter</a></li>
+			<virtual if={ userId != null }>
 				<li style='margin-left: auto'><a href={ '/users/' + user.screenName }>@{ user.screenName }</a></li>
 				<li><frost-logout-button /></li>
 			</virtual>
@@ -23,14 +25,13 @@
 			overflow: hidden;
 
 			ul {
-				@include responsive(row);
+				@include responsive();
 
-				flex-direction: row;
 				list-style-type: none;
 				align-items: center;
 				height: 45px;
 
-				@media (max-width: $tablet - 1px) {
+				@include less-than($tablet) {
 					overflow-x: auto;
 					overflow-y: hidden;
 				}

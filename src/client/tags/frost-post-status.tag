@@ -11,7 +11,6 @@
 	<style>
 		:scope {
 			display: flex;
-			flex-direction: row;
 			margin: 2.5rem 0;
 
 			.side {
@@ -24,7 +23,6 @@
 
 				.info {
 					display: flex;
-					flex-direction: row;
 					justify-content: space-between;
 					margin-bottom: 0.5rem;
 

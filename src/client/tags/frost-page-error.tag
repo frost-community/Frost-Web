@@ -1,8 +1,8 @@
 <frost-page-error>
 	<div class='content'>
 		<div class='main'>
-			<h3>Sorry... An error has occurred.</h3>
-			<p>Message: { message }</p>
+			<h3>ごめんなさい... エラーが発生しました。</h3><!-- Sorry... An error has occurred. -->
+			<p>内容: { message }</p><!-- Message -->
 		</div>
 	</div>
 

@@ -55,8 +55,8 @@ const mixinGlobal = {};
 		require('./tags/frost-post-status.tag');
 		require('./tags/frost-timeline.tag');
 		require('./tags/frost-hint.tag');
-		// - app
-		require('./tags/frost-app.tag');
+		// - container
+		require('./tags/frost-container.tag');
 		require('./tags/frost-header.tag');
 		require('./tags/frost-page-switcher.tag');
 		require('./tags/frost-footer.tag');
@@ -143,7 +143,7 @@ const mixinGlobal = {};
 
 	// mount
 	riot.mixin(mixinGlobal);
-	riot.mount('frost-app');
+	riot.mount('frost-container');
 
 	// start routing
 	route.start(true);

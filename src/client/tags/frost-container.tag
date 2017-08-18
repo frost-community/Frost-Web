@@ -1,5 +1,5 @@
-<frost-app>
+<frost-container>
 	<frost-header />
 	<frost-page-switcher />
 	<frost-footer />
-</frost-app>
+</frost-container>

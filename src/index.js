@@ -1,7 +1,14 @@
 'use strict';
 
-const server = require('./server');
+const appServer = require('./server');
 
-process.on('unhandledRejection', console.dir); // † 最後の砦 †
+process.on('unhandledRejection', (err) => {
+	console.log('Unprocessed Promise Error:', err); // † Last Stand † (Promise)
+});
 
-server();
+try {
+	appServer();
+}
+catch(err) {
+	console.log('Unprocessed Error:', err); // † Last Stand †
+}

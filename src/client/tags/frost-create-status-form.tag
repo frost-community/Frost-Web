@@ -3,7 +3,7 @@
 		<h1>投稿する</h1>
 		<textarea ref='text' placeholder='ねえ今どんな気持ち？' oninput={ input } required>{ text }</textarea>
 		<span>{ textMax - getTextCount() }</span>
-		<button type='submit' disabled={ !getValidTextCount() }>post</button>
+		<button type='submit' disabled={ !getValidTextCount() }>投稿</button>
 	</form>
 
 	<style>
@@ -40,17 +40,9 @@
 
 		// methods
 
-		this.getTextCount = () => {
-			return this.text.length;
-		};
-
-		this.getValidTextCount = () => {
-			return this.getTextCount() != 0 && this.textMax - this.getTextCount() >= 0;
-		};
-
-		this.getNeedSubmit = () => {
-			return ((this.keyBuffer[17] || this.keyBuffer[91]) && this.keyBuffer[13]) == true; // Ctrl + Enter
-		};
+		this.getTextCount = () => this.text.length;
+		this.getValidTextCount = () => this.getTextCount() != 0 && this.textMax - this.getTextCount() >= 0;
+		this.getNeedSubmit = () => ((this.keyBuffer[17] || this.keyBuffer[91]) && this.keyBuffer[13]) == true; // Ctrl + Enter
 
 		this.clear = () => {
 			this.text = '';
@@ -65,7 +57,7 @@
 			}
 		};
 
-		// events
+		// input events
 
 		this.submit = (e) => {
 			e.preventDefault();
@@ -95,25 +87,19 @@
 			// methods
 
 			this.createStatus = () => {
-				this.webSocket.sendEvent('rest', {request: {
-					method: 'post', endpoint: '/posts/post_status',
-					headers: {'x-api-version': 1.0},
-					body: {text: this.text}
-				}});
-			};
-
-			// events
-
-			this.webSocket.on('rest', rest => {
-				if (rest.request.endpoint == '/posts/post_status') {
+				(async () => {
+					const streamingRest = new StreamingRest(this.webSocket);
+					const rest = await streamingRest.requestAsync('post', '/posts/post_status', {body: {text: this.text}});
 					if (rest.success) {
 						this.clear();
 					}
 					else {
-						alert('status creation error: ' + rest.response.message);
+						alert('internal error: ' + rest.message);
 					}
-				}
-			});
+				})().catch(err => {
+					console.error(err);
+				});
+			};
 		});
 	</script>
 </frost-create-status-form>

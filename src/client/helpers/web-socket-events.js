@@ -7,7 +7,7 @@ class WebSocketEvents {
 	static connectAsync(url) {
 		return new Promise((resolve, reject) => {
 			if (url == null) {
-				return reject(new Error('missing argumets'));
+				return reject(new ReferenceError('missing argumets'));
 			}
 
 			const ws = new WebSocket2(url, [], {reconnectInterval: 3000});
@@ -22,7 +22,7 @@ class WebSocketEvents {
 
 	static init(ws) {
 		if (ws == null) {
-			throw new Error('missing argumets');
+			throw new ReferenceError('missing argumets');
 		}
 
 		ws.addEventListener('message', messageEvent => {
@@ -37,7 +37,7 @@ class WebSocketEvents {
 
 	static serialize(type, data) {
 		if (type == null || data == null) {
-			throw new Error('missing argumets');
+			throw new ReferenceError('missing argumets');
 		}
 
 		return JSON.stringify({
@@ -48,13 +48,13 @@ class WebSocketEvents {
 
 	static parse(message) {
 		if (message == null) {
-			throw new Error('missing argumets');
+			throw new ReferenceError('missing argumets');
 		}
 
 		const event = JSON.parse(message);
 
 		if (event.type == null || event.data == null) {
-			throw new Error('invalid event message');
+			throw new ReferenceError('invalid event message');
 		}
 
 		return {

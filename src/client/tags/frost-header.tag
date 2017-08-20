@@ -1,12 +1,22 @@
 <frost-header role='banner'>
 	<nav>
 		<ul>
-			<li ref='home'><a href='/'>Home</a></li>
-			<li ref='dev'><a href='/dev'>DevCenter</a></li>
-			<virtual if={ userId != null }>
-				<li ref='userlist'><a href='/userlist'>UserList</a></li>
-				<li style='margin-left: auto'><a href={ '/users/' + user.screenName } target='_blank'>@{ user.screenName }</a></li>
-				<li><frost-logout-button /></li>
+			<li class={ active: activeId == (login ? 'home' : 'entrance') }>
+				<a href='/'>{ login ? 'Home' : 'Entrance' }</a>
+			</li>
+			<li if={ login } class={ active: activeId == 'userlist'}>
+				<a href='/userlist'>UserList</a>
+			</li>
+			<li class={ active: activeId == 'dev' }>
+				<a href='/dev'>DevCenter</a>
+			</li>
+			<virtual if={ login }>
+				<li style='margin-left: auto'>
+					<a href={ '/users/' + user.screenName }>@{ user.screenName }</a>
+				</li>
+				<li>
+					<frost-logout-button />
+				</li>
 			</virtual>
 		</ul>
 	</nav>
@@ -22,14 +32,13 @@
 			overflow: hidden;
 
 			ul {
-				@include responsive(row);
+				@include responsive();
 
-				flex-direction: row;
 				list-style-type: none;
 				align-items: center;
 				height: 45px;
 
-				@media (max-width: $tablet - 1px) {
+				@include less-than($tablet) {
 					overflow-x: auto;
 					overflow-y: hidden;
 				}
@@ -63,13 +72,26 @@
 	</style>
 
 	<script>
-		this.on('mount', () => {
-			const activeItemName = this.opts.dataActive;
-			const activatables = ['home', 'dev', 'userlist'];
+		const changedLoginStatusEventHandler = login => {
+			this.login = login;
+			this.update();
+		};
 
-			if (activatables.indexOf(activeItemName) != -1) {
-				this.refs[activeItemName].classList.add('active');
-			}
+		const changePageHandler = pageId => {
+			this.activeId = pageId;
+			this.update();
+		};
+
+		this.on('mount', () => {
+			this.central.on('ev:changed-login-status', changedLoginStatusEventHandler);
+			this.central.on('change-page', changePageHandler);
+
+			this.login = this.getLogin();
+		});
+
+		this.on('unmount', () => {
+			this.central.off('ev:changed-login-status', changedLoginStatusEventHandler);
+			this.central.off('change-page', changePageHandler);
 		});
 	</script>
 </frost-header>

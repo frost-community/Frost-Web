@@ -10,7 +10,8 @@ class StreamingProxy {
 	constructor(frontConnection, apiConnection, debugDetail, config) {
 		// 利用可能なエンドポイント一覧
 		this.endpointWhiteList = [
-			{method: 'get', path: '/general/timeline'},
+			//{method: 'get', path: '/general/timeline'},
+			{method: 'get', path: '/users'},
 			{method: 'get', path: '/users/:id'},
 			{method: 'get', path: '/users/:id/followings/:target_id'},
 			{method: 'put', path: '/users/:id/followings/:target_id'},
@@ -37,12 +38,11 @@ class StreamingProxy {
 
 		// クライアントに返却する必要のあるイベント一覧
 		this.needReturnEventNames = [
-			'authorization',
 			'rest',
 			'timeline-connect',
 			'timeline-disconnect',
-			'data:general:status',
-			'data:home:status'
+			// 'stream:general-timeline-status',
+			'stream:home-timeline-status'
 		];
 
 		this.frontConnection = frontConnection;
@@ -60,7 +60,12 @@ class StreamingProxy {
 				console.log(`[front<] ${eventName}`);
 			}
 
-			this.frontConnection.send(eventName, data);
+			if (this.frontConnection.connected) {
+				this.frontConnection.send(eventName, data);
+			}
+			else {
+				console.log('connection was disconnected before the result was returned');
+			}
 		});
 	}
 

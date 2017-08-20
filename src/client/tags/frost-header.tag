@@ -1,7 +1,7 @@
 <frost-header role='banner'>
 	<nav>
 		<ul>
-			<li class={ active: activeId == (login ? 'Home' : 'entrance') }>
+			<li class={ active: activeId == (login ? 'home' : 'entrance') }>
 				<a href='/'>{ login ? 'Home' : 'Entrance' }</a>
 			</li>
 			<li if={ login } class={ active: activeId == 'userlist'}>

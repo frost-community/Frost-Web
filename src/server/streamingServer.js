@@ -1,15 +1,14 @@
 'use strict';
 
-const getSessionFromCookieAsync = require('./get-session-from-cookie-async');
+const getSessionFromCookieAsync = require('./helpers/get-session-from-cookie-async');
 const WebSocket = require('websocket');
-const WebSocketUtility = require('./websocket-utility');
-const StreamingProxy = require('./streaming-proxy');
+const WebSocketUtility = require('./helpers/websocket-utility');
+const StreamingProxy = require('./helpers/streaming-proxy');
 
 /**
- * Webクライアントのストリーミング接続をサポートします。
+ * ストリーミング接続をサポートします。
  * セッション経由でAPIにアクセスできる機能が含まれます。
  */
-
 module.exports = (http, sessionStore, debugDetail, config) => {
 	const server = new WebSocket.server({httpServer: http});
 	server.on('request', request => {
@@ -27,14 +26,14 @@ module.exports = (http, sessionStore, debugDetail, config) => {
 				let apiConnection;
 				try {
 					if (debugDetail) {
-						console.log('connecting streaming api server...');
+						console.log('[streaming server]', 'connecting streaming api server...');
 					}
 					const wsUrl = `${config.web.apiBaseUrl}?application_key=${config.web.applicationKey}&access_key=${session.accessKey}`;
 					apiConnection = await WebSocketUtility.connectAsync(wsUrl);
 					WebSocketUtility.addExtensionMethods(apiConnection);
 
 					if (debugDetail) {
-						console.log('connected.');
+						console.log('[streaming server]', 'connected streaming api server');
 					}
 				}
 				catch (err) {
@@ -99,4 +98,6 @@ module.exports = (http, sessionStore, debugDetail, config) => {
 			}
 		})();
 	});
+
+	console.log('[streaming server]', 'initialized');
 };

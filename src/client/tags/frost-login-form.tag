@@ -14,7 +14,7 @@
 		submit(e) {
 			e.preventDefault();
 
-			fetchJson('POST', '/session', {
+			fetchJson('PUT', '/session', {
 				screenName: this.refs.screenName.value,
 				password: this.refs.password.value,
 				_csrf: this.csrf

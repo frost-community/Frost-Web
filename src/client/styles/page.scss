@@ -13,16 +13,6 @@ body {
 	word-wrap: break-word;
 	background-color: $back-color;
 	color: $fore-color;
-
-	> .content {
-		@include responsive();
-
-		padding-top: 6.5rem !important;
-
-		> :not(:last-child) {
-			margin-right: 2rem;
-		}
-	}
 }
 
 button, .button, label {
@@ -42,6 +32,10 @@ input[type=text],
 input[type=url],
 textarea {
 	background-color: $textbox-back-color;
+
+	&:focus:invalid {
+		border-color: $textbox-invalid-value-color;
+	}
 }
 
 form :last-child {
@@ -49,16 +43,15 @@ form :last-child {
 }
 
 .box {
-	border: none;
-	border-color: $border-color;
-	border-radius: unset;
-	padding: 0;
+	border: 1px solid $border-color;
+	border-radius: 4px;
+	padding: 30px;
+	padding-bottom: 0px;
 
-	@media (min-width: $phone) {
-		border: 1px solid;
-		border-radius: 4px;
-		padding: 30px;
-		padding-bottom: 0px;
+	@include less-than($tablet) {
+		border: none;
+		border-radius: unset;
+		padding: 0;
 	}
 }
 

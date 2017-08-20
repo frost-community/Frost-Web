@@ -6,6 +6,7 @@
 	<p>
 		ようこそ、{ user.name }さん。
 	</p>
+
 	<style>
 		:scope {
 			> h1 {
@@ -21,6 +22,7 @@
 			}
 		}
 	</style>
+
 	<script>
 		this.on('mount', () => {
 		});

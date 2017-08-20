@@ -34,6 +34,7 @@
 	</style>
 
 	<script>
+		const StreamingRest = require('../helpers/StreamingRest');
 		this.textMax = 256;
 		this.text = '';
 		this.keyBuffer = [];

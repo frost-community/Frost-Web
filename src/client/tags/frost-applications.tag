@@ -7,9 +7,9 @@
 				<p>アプリケーションID: { id }</p>
 				<p>権限:</p><!-- Permissions -->
 				<ul>
-				<li each={ permission ,i in permissions }>
-					{ permission }
-				</li>
+					<li each={ permission ,i in permissions }>
+						{ permission }
+					</li>
 				</ul>
 			</div>
 		</li>

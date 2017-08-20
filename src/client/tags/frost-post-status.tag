@@ -44,6 +44,7 @@
 		this.moment = require('moment');
 
 		getTime() {
+			this.moment.locale("ja");
 			return this.moment.unix(this.opts.status.createdAt);
 		}
 

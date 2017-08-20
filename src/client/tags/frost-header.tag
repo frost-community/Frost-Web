@@ -1,15 +1,22 @@
 <frost-header role='banner'>
 	<nav>
 		<ul>
-			<li if={ !login } class={ active: activeId == 'entrance' }><a href='/'>Entrance</a></li>
-			<li if={ login } class={ active: activeId == 'home' }><a href='/'>Home</a></li>
-			<virtual if={ userId != null }>
-				<li class={ active: activeId == 'userlist'}><a href='/userlist'>UserList</a></li>
-			</virtual>
-			<li class={ active: activeId == 'dev' }><a href='/dev'>DevCenter</a></li>
-			<virtual if={ userId != null }>
-				<li style='margin-left: auto'><a href={ '/users/' + user.screenName }>@{ user.screenName }</a></li>
-				<li><frost-logout-button /></li>
+			<li class={ active: activeId == (login ? 'Home' : 'entrance') }>
+				<a href='/'>{ login ? 'Home' : 'Entrance' }</a>
+			</li>
+			<li if={ login } class={ active: activeId == 'userlist'}>
+				<a href='/userlist'>UserList</a>
+			</li>
+			<li class={ active: activeId == 'dev' }>
+				<a href='/dev'>DevCenter</a>
+			</li>
+			<virtual if={ login }>
+				<li style='margin-left: auto'>
+					<a href={ '/users/' + user.screenName }>@{ user.screenName }</a>
+				</li>
+				<li>
+					<frost-logout-button />
+				</li>
 			</virtual>
 		</ul>
 	</nav>

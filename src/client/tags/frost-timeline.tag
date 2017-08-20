@@ -106,7 +106,7 @@
 			this.reload(); // タイムラインのリロード
 
 			if (streaming) {
-				this.webSocket.addEventListener('open', this.reconnectHandler); // hint: onではなくaddEventListenerを使っているのはプリミティブ(非ユーザー定義)なイベントだから
+				this.webSocket.addEventListener('open', this.reconnectHandler); // memo: onではなくaddEventListenerを使っているのはプリミティブ(非ユーザー定義)なイベントだから
 				this.webSocket.one('timeline-connect', this.timelineConnectHandler);
 				this.webSocket.one('timeline-disconnect', this.timelineDisconnectHandler);
 				this.webSocket.on(`stream:${this.opts.dataName}-timeline-status`, this.receiveStatusHandler);

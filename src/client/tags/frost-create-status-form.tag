@@ -3,7 +3,7 @@
 		<h1>投稿する</h1>
 		<textarea ref='text' placeholder='ねえ今どんな気持ち？' oninput={ input } required>{ text }</textarea>
 		<span>{ textMax - getTextCount() }</span>
-		<button type='submit' disabled={ !getValidTextCount() }>post</button>
+		<button type='submit' disabled={ !getValidTextCount() }>投稿</button>
 	</form>
 
 	<style>

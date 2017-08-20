@@ -14,41 +14,43 @@
 			</div>
 		</li>
 	</ul>
-	<p if={ applications.length == 0 }>あなたはアプリケーションを持っていません。</p><!-- You don't have any applications -->
+	<p if={ loading }>読み込み中...</p>
+	<p if={ error }>アプリケーションリストの取得に失敗しました。</p>
+	<p if={ !loading && applications.length == 0 }>あなたはアプリケーションを持っていません。</p><!-- You don't have any applications -->
 
 	<script>
+		const StreamingRest = require('../helpers/StreamingRest');
 		this.applications = [];
+		this.loading = true;
+		this.error = false;
 
 		const centralAddApplicationHandler = data => {
 			this.applications.push(data.application);
 			this.update();
 		};
 
-		const restHandler = rest => {
-			if (rest.request.method == 'get' && rest.request.endpoint == '/applications') {
-				if (rest.response.applications == null) {
-					if (rest.statusCode == 204) {
-						rest.response.applications = [];
-					}
-					else {
-						return alert(`api error: failed to fetch list of appliations. ${rest.response.message}`);
-					}
-				}
-				this.applications = rest.response.applications;
-				this.update();
-
-				this.webSocket.off('rest', restHandler);
-			}
-		};
-
 		this.on('mount', () => {
 			this.central.on('add-application', centralAddApplicationHandler);
-			this.webSocket.on('rest', restHandler);
 
-			this.webSocket.sendEvent('rest', {request: {
-				method: 'get', endpoint: '/applications',
-				headers: {'x-api-version': 1.0},
-			}});
+			(async () => {
+				const streamingRest = new StreamingRest(this.webSocket);
+				const rest = await streamingRest.requestAsync('get', '/applications');
+				if (rest.response.applications == null) {
+					if (rest.statusCode != 204) {
+						alert(`api error: failed to fetch list of appliations. ${rest.response.message}`);
+						return;
+					}
+					rest.response.applications = [];
+				}
+				this.applications = rest.response.applications;
+				this.loading = false;
+				this.update();
+			})().catch(err => {
+				console.error(err);
+				this.loading = false;
+				this.error = true;
+				this.update();
+			});
 		});
 
 		this.on('unmount', () => {

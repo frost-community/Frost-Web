@@ -77,6 +77,7 @@
 					window.document.title = `Frost - @${screenName}さんのページ`;
 					this.central.off('ev:changed-page', changedPageHandler);
 				})().catch(err => {
+					console.error(err);
 					this.loading = false;
 					this.update();
 				});

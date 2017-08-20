@@ -5,6 +5,9 @@
 	<div style='margin: 5rem auto' if={ !loading && timelinePosts.length == 0 }>
 		<p>投稿がありません。</p>
 	</div>
+	<div style='margin: 5rem auto' if={ !loading && timelinePosts.length == 0 && error }>
+		<p>タイムラインの取得中にエラーが発生しました。</p>
+	</div>
 	<ul if={ !loading && timelinePosts.length != 0 }>
 		<li each={ post in timelinePosts }>
 			<frost-post-status data-post-id={ post.id } status={ post } />
@@ -20,8 +23,10 @@
 	</style>
 
 	<script>
+		const StreamingRest = require('../helpers/StreamingRest');
 		this.timelinePosts = [];
-		this.loading = true;
+		this.loading = false;
+		this.error = false;
 
 		if (this.opts.dataName == null) {
 			throw new Error('data-name property is required');
@@ -48,29 +53,6 @@
 			throw new Error('data-name property is invalid');
 		}
 
-		this.restHandler = rest => {
-			if (rest.request.endpoint == endpoint) {
-				if (rest.success) {
-					if (rest.response.posts != null) {
-						this.timelinePosts = rest.response.posts;
-					}
-					else if (rest.statusCode != 204) {
-						alert(`api error: failed to fetch ${this.opts.dataName} timeline posts. ${rest.response.message}`);
-					}
-				}
-				else {
-					alert(`internal error: ${rest.message}`);
-				}
-
-				if (streaming) {
-					this.webSocket.sendEvent('timeline-connect', {type: this.opts.dataName});
-				}
-
-				this.loading = false;
-				this.update();
-			}
-		};
-
 		this.reconnectHandler = () => {
 			console.log('reconnecting timeline...');
 			this.webSocket.sendEvent('timeline-connect', {type: this.opts.dataName});
@@ -94,16 +76,40 @@
 			this.loading = true;
 			this.update();
 
-			this.webSocket.sendEvent('rest', {request: {
-				method: 'get', endpoint: endpoint,
-				query: {limit: 100},
-				headers: {'x-api-version': 1.0},
-			}});
+			(async () => {
+				const streamingRest = new StreamingRest(this.webSocket);
+				const rest = await streamingRest.requestAsync('get', endpoint, {query: {limit: 100}});
+
+				if (rest.success) {
+					if (rest.response.posts == null) {
+						if (rest.statusCode != 204) {
+							alert(`api error: failed to fetch ${this.opts.dataName} timeline posts. ${rest.response.message}`);
+						}
+						rest.response.posts = [];
+					}
+					this.timelinePosts = rest.response.posts;
+				}
+				else {
+					alert(`internal error: ${rest.message}`);
+				}
+
+				if (streaming) {
+					this.webSocket.sendEvent('timeline-connect', {type: this.opts.dataName});
+				}
+
+				this.error = false;
+				this.loading = false;
+				this.update();
+			})().catch(err => {
+				console.error(err);
+				this.error = true;
+				this.loading = false;
+				this.update();
+			});
 		};
 
 		this.on('mount', () => {
-			this.webSocket.on('rest', this.restHandler);
-			this.reload(); // タイムラインのリロード
+			this.reload(); // タイムラインの読み込み
 
 			if (streaming) {
 				this.webSocket.addEventListener('open', this.reconnectHandler); // memo: onではなくaddEventListenerを使っているのはプリミティブ(非ユーザー定義)なイベントだから
@@ -114,7 +120,6 @@
 		});
 
 		this.on('unmount', () => {
-			this.webSocket.off('rest', this.restHandler);
 			if (streaming) {
 				this.webSocket.sendEvent('timeline-disconnect', {type: this.opts.dataName});
 				this.webSocket.removeEventListener('open', this.reconnectHandler);

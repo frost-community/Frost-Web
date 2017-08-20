@@ -3,9 +3,9 @@
 	<div show={ isShowModal }>
 		<form onsubmit={ submit }>
 			<label for='application-name'>連携アプリケーション名 *</label><!-- Application name -->
-			<input class='name-box' type='text' id='application-name' name='name' placeholder='example: Frost Client' style='width: 100%' maxlength='32' required />
+			<input ref='name' class='name-box' type='text' id='application-name' name='name' placeholder='example: Frost Client' style='width: 100%' maxlength='32' required />
 			<label for='application-description'>説明</label><!-- Description -->
-			<textarea class='description-box' id='application-description' name='description' rows='3' style='width: 100%' maxlength='256' />
+			<textarea ref='description' class='description-box' id='application-description' name='description' rows='3' style='width: 100%' maxlength='256' />
 			<fieldset class='permissions'>
 				<label>権限</label><!-- Permissions -->
 				<label for='permissions-userRead'>
@@ -37,32 +37,14 @@
 	<button class='button orange-button' onclick={ showModal }>{ isShowModal ? '折りたたむ -' : '展開する +' }</button>
 
 	<script>
+		const StreamingRest = require('../helpers/StreamingRest');
 		this.isShowModal = false;
 
 		this.showModal = () => {
 			this.isShowModal = !this.isShowModal;
 		};
 
-		const restHandler = rest => {
-			if (rest.request.method == 'post' && rest.request.endpoint == '/applications') {
-				if (rest.success) {
-					if (rest.response.application != null) {
-						this.central.trigger('add-application', {application: rest.response.application});
-						alert('created application.');
-					}
-					else {
-						alert(`api error: failed to create application. ${rest.response.message}`);
-					}
-				}
-				else {
-					alert(`internal error: ${rest.message}`);
-				}
-			}
-		};
-
 		this.on('mount', () => {
-			this.webSocket.on('rest', restHandler);
-
 			this.submit = (e) => {
 				e.preventDefault();
 
@@ -73,25 +55,37 @@
 					}
 				}
 
-				this.webSocket.sendEvent('rest', {request: {
-					method: 'post', endpoint: '/applications',
-					headers: {'x-api-version': 1.0},
-					body: {
-						name: document.querySelector('frost-create-application-form .name-box').value,
-						description: document.querySelector('frost-create-application-form .description-box').value,
-						permissions: permissions,
-						recaptchaToken: grecaptcha.getResponse()
+				(async () => {
+					const streamingRest = new StreamingRest(this.webSocket);
+					const rest = await streamingRest.requestAsync('post', '/applications', {
+						body: {
+							name: this.refs.name.value,
+							description: this.refs.description.value,
+							permissions: permissions,
+							recaptchaToken: grecaptcha.getResponse()
+						}
+					});
+
+					if (rest.success) {
+						if (rest.response.application != null) {
+							this.central.trigger('add-application', {application: rest.response.application});
+							alert('created application.');
+						}
+						else {
+							alert(`api error: failed to create application. ${rest.response.message}`);
+						}
 					}
-				}});
+					else {
+						alert(`internal error: ${rest.message}`);
+					}
+				})().catch(err => {
+					console.error(err);
+				});
 			};
 
 			grecaptcha.render('recaptcha-create-application', {
 				sitekey: this.siteKey
 			});
-		});
-
-		this.on('unmount', () => {
-			this.webSocket.off('rest', restHandler);
 		});
 
 		this.on('unmount', () => {

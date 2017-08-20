@@ -22,7 +22,7 @@
 
 		const changedPageEventHandler = pageId => {
 			if (pageId == 'error') {
-				const code = document.getElementsByName('frost-errorCode').item(0).content;
+				const code = document.getElementsByName('frost-code').item(0).content;
 				window.document.title = `Frost - Error ${code}`;
 
 				this.central.off('ev:changed-page', changedPageEventHandler);

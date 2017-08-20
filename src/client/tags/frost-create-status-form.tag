@@ -57,7 +57,7 @@
 			}
 		};
 
-		// events
+		// input events
 
 		this.submit = (e) => {
 			e.preventDefault();
@@ -82,36 +82,24 @@
 			this.keyBuffer[e.which] = false;
 		};
 
-		const restHandler = rest => {
-			if (rest.request.endpoint == '/posts/post_status') {
-				if (rest.success) {
-					this.clear();
-				}
-				else {
-					alert('status creation error: ' + rest.response.message);
-				}
-			}
-		};
-
 		this.on('mount', () => {
 
 			// methods
 
 			this.createStatus = () => {
-				this.webSocket.sendEvent('rest', {request: {
-					method: 'post', endpoint: '/posts/post_status',
-					headers: {'x-api-version': 1.0},
-					body: {text: this.text}
-				}});
+				(async () => {
+					const streamingRest = new StreamingRest(this.webSocket);
+					const rest = await streamingRest.requestAsync('post', '/posts/post_status', {body: {text: this.text}});
+					if (rest.success) {
+						this.clear();
+					}
+					else {
+						alert('internal error: ' + rest.message);
+					}
+				})().catch(err => {
+					console.error(err);
+				});
 			};
-
-			// events
-
-			this.webSocket.on('rest', restHandler);
-		});
-
-		this.on('unmount', () => {
-			this.webSocket.off('rest', restHandler);
 		});
 	</script>
 </frost-create-status-form>

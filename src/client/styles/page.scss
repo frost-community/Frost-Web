@@ -9,7 +9,7 @@
 body {
 	margin: 0;
 	padding: 0;
-	font-family: Raleway, HelveticaNeue, 'Helvetica Neue', Helvetica, Arial, メイリオ, sans-serif;
+	font-family: $general-font-family;
 	word-wrap: break-word;
 	background-color: $back-color;
 	color: $fore-color;
@@ -31,11 +31,10 @@ input[type=tel],
 input[type=text],
 input[type=url],
 textarea {
+	font-size: 1.375rem;
+	font-family: $general-font-family;
 	background-color: $textbox-back-color;
-
-	&:focus:invalid {
-		border-color: $textbox-invalid-value-color;
-	}
+	transition: border 150ms ease-in-out;
 }
 
 form :last-child {
@@ -44,9 +43,8 @@ form :last-child {
 
 .box {
 	border: 1px solid $border-color;
-	border-radius: 4px;
-	padding: 30px;
-	padding-bottom: 0px;
+	border-radius: 0.4rem;
+	padding: 2rem 2rem 0.5rem;
 
 	@include less-than($tablet) {
 		border: none;

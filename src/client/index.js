@@ -99,13 +99,20 @@ const mixinGlobal = {};
 		// routing
 
 		const changePage = (pageId, params) => {
-			params = params || [];
+			params = params || {};
 			central.trigger('change-page', pageId, params);
 		};
 
 		route.base('/');
 		route('', () => {
 			changePage(getLogin() ? 'home' : 'entrance');
+		});
+		route('general', () => {
+			if (!getLogin()) {
+				changePage('error', {message: 'forbidden'});
+				return;
+			}
+			changePage('home', {timelineType: 'general'});
 		});
 		route('dev', () => {
 			changePage('dev');
@@ -114,13 +121,13 @@ const mixinGlobal = {};
 			changePage('userlist');
 		});
 		route('users/*', (screenName) => {
-			changePage('user', [screenName]);
+			changePage('user', {screenName: screenName});
 		});
 		route('posts/*', (postId) => {
-			changePage('post', [postId]);
+			changePage('post', {postId: postId});
 		});
 		route('*', () => {
-			changePage('error', ['page not found']);
+			changePage('error', {message: 'page not found'});
 		});
 
 		// recaptcha
@@ -147,9 +154,4 @@ const mixinGlobal = {};
 
 	// start routing
 	route.start(true);
-
-	const hasError = document.getElementsByName('frost-error').item(0) != null;
-	if (hasError) {
-		mixinGlobal.central.trigger('change-page', 'error');
-	}
 })();

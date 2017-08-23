@@ -1,29 +1,38 @@
 <frost-page-error>
-	<div class='content'>
-		<div class='main'>
-			<h3>ごめんなさい... エラーが発生しました。</h3><!-- Sorry... An error has occurred. -->
-			<p>内容: { message }</p><!-- Message -->
-		</div>
+	<div class='main'>
+		<h3>ごめんなさい... エラーが発生しました。</h3><!-- Sorry... An error has occurred. -->
+		<p>内容: { message }</p><!-- Message -->
 	</div>
 
 	<style>
 		@import "../styles/variables";
 
 		:scope {
-			> .content {
-				@include responsive();
-			}
+
 		}
 	</style>
 
 	<script>
-		const el = document.getElementsByName('frost-error').item(0);
-		this.message = el != null ? el.content : 'no message';
+		this.message = '';
 
-		const changedPageEventHandler = pageId => {
+		const changedPageEventHandler = (pageId, params) => {
 			if (pageId == 'error') {
-				const code = document.getElementsByName('frost-code').item(0).content;
-				window.document.title = `Frost - Error ${code}`;
+				const metaError = document.getElementsByName('frost-error').item(0);
+				const metaCode = document.getElementsByName('frost-code').item(0);
+
+				if (metaError != null) {
+					this.message = metaError.content;
+					const code = metaCode.content;
+					metaError.remove();
+					metaCode.remove();
+
+					window.document.title = `Frost - Error ${code}`;
+				}
+				else {
+					this.message = params.message || 'no message';
+
+					window.document.title = `Frost - Error`;
+				}
 
 				this.central.off('ev:changed-page', changedPageEventHandler);
 			}

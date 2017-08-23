@@ -28,7 +28,7 @@
 			position: fixed;
 			width: 100%;
 			background-color: hsla(216, 100%, 98%, 0.85);
-			box-shadow: 0px 0px 6px 0px hsla(0, 0%, 0%, 0.5);
+			box-shadow: 0 0 6px 0 hsla(0, 0%, 0%, 0.5);
 			overflow: hidden;
 
 			ul {

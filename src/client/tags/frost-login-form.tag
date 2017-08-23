@@ -8,6 +8,19 @@
 		<button class='button-primary'>ログイン</button><!-- Sign in -->
 	</form>
 
+	<style>
+		@import "../styles/variables";
+
+		:scope {
+			input[type=text],
+			input[type=password] {
+				&:focus:invalid {
+					border-color: $textbox-invalid-value-color;
+				}
+			}
+		}
+	</style>
+
 	<script>
 		const fetchJson = require('../helpers/fetch-json');
 

@@ -1,17 +1,15 @@
 <frost-page-dev>
-	<div class='content'>
-		<div class='main'>
-			<div>
-				<h4>APIドキュメント</h4><!-- API document -->
-				<a href='http://docs.snsfrost.apiary.io/' target='_blank'>Apiary - Frost-API (日本語)</a>
-			</div>
-			<div if={ login }>
-				<h4>登録済みの連携アプリケーション</h4> <!-- Your registered applications -->
-				<frost-applications />
-			</div>
-			<div if={ login }>
-				<frost-create-application-form />
-			</div>
+	<div class='main'>
+		<div>
+			<h4>APIドキュメント</h4><!-- API document -->
+			<a href='http://docs.snsfrost.apiary.io/' target='_blank'>Apiary - Frost-API (日本語)</a>
+		</div>
+		<div if={ login }>
+			<h4>登録済みの連携アプリケーション</h4> <!-- Your registered applications -->
+			<frost-applications />
+		</div>
+		<div if={ login }>
+			<frost-create-application-form />
 		</div>
 	</div>
 
@@ -19,15 +17,7 @@
 		@import "../styles/variables";
 
 		:scope {
-			> .content {
-				@include responsive();
-
-				flex-direction: column;
-
-				> .main > :not(:last-child) {
-					margin-bottom: 2rem;
-				}
-			}
+			flex-direction: column;
 		}
 	</style>
 

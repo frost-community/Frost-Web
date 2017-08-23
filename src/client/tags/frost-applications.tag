@@ -1,22 +1,36 @@
 <frost-applications>
 	<ul if={ applications.length != 0 }>
-		<li each={ applications } style='list-style-type: none;'>
-			<div class='box'>
-				<p>アプリケーション名: { name }</p>
-				<p>説明: { description }</p>
-				<p>アプリケーションID: { id }</p>
-				<p>権限:</p><!-- Permissions -->
-				<ul>
-					<li each={ permission ,i in permissions }>
-						{ permission }
-					</li>
-				</ul>
-			</div>
+		<li each={ applications }>
+			<p>アプリケーション名: { name }</p>
+			<p>説明: { description }</p>
+			<p>アプリケーションID: { id }</p>
+			<p>権限:</p><!-- Permissions -->
+			<ul>
+				<li each={ permission ,i in permissions }>
+					{ permission }
+				</li>
+			</ul>
 		</li>
 	</ul>
 	<p if={ loading }>読み込み中...</p>
 	<p if={ error }>アプリケーションリストの取得に失敗しました。</p>
 	<p if={ !loading && applications.length == 0 }>あなたはアプリケーションを持っていません。</p><!-- You don't have any applications -->
+
+	<style>
+		:scope {
+			> ul > li {
+				list-style-type: none;
+
+				&:not(:last-child) {
+					border-bottom: 1px solid hsl(0, 0%, 88%);
+				}
+
+				> p {
+					margin-bottom: 1.5rem;
+				}
+			}
+		}
+	</style>
 
 	<script>
 		const StreamingRest = require('../helpers/StreamingRest');

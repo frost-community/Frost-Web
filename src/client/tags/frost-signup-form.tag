@@ -17,6 +17,19 @@
 	</div>
 	<button class='button orange-button' onclick={ showModal }>{ isShowModal ? '折りたたむ -' : '展開する +' }</button>
 
+	<style>
+		@import "../styles/variables";
+
+		:scope {
+			input[type=text],
+			input[type=password] {
+				&:focus:invalid {
+					border-color: $textbox-invalid-value-color;
+				}
+			}
+		}
+	</style>
+
 	<script>
 		const fetchJson = require('../helpers/fetch-json');
 

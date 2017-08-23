@@ -8,9 +8,14 @@
 	<frost-page-userlist if={ pageId == 'userlist' } />
 
 	<style>
+		@import "../styles/variables";
+
 		:scope {
-			> * > .content {
-				padding-top: 7rem !important;
+			display: block;
+			padding-top: 7rem !important;
+
+			> * {
+				@include responsive();
 
 				> :not(:last-child) {
 					margin-right: 2rem;

@@ -200,6 +200,7 @@ module.exports = async (debug, config) => {
 
 	const pages = [
 		'/',
+		'/general',
 		'/users/:screenName',
 		'/userlist',
 		'/posts/:postId',

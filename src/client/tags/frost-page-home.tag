@@ -1,58 +1,60 @@
 <frost-page-home>
-	<div class='content'>
-		<div class='side'>
-			<frost-home-logo />
-			<hr />
-			<frost-create-status-form />
-			<frost-hint />
-		</div>
-		<div class='main'>
-			<h1>タイムライン</h1>
-			<frost-timeline data-name='home' />
-		</div>
+	<div class='side'>
+		<frost-home-logo />
+		<hr />
+		<frost-create-status-form />
+		<frost-hint />
+	</div>
+	<div class='main'>
+		<h1>{ this.timelineType == 'general' ? 'ジェネラル' : '' } タイムライン</h1>
+		<frost-timeline if={ mountTimeline } data-name={ timelineType } />
 	</div>
 
 	<style>
 		@import "../styles/variables";
 
 		:scope {
-			> .content {
-				@include responsive();
-
-				> .side {
-					@include less-than($tablet) {
-						display: none;
-					}
-
-					.box {
-						margin: 10px 0;
-					}
+			> .side {
+				@include less-than($tablet) {
+					display: none;
 				}
 
-				> .side {
-					width: 250px;
+				.box {
+					margin: 10px 0;
 				}
+			}
 
-				> .main {
-					min-width: 300px;
-					flex: 1;
-				}
+			> .side {
+				width: 250px;
+			}
 
-				> .side,
-				> .main {
-					h1 {
-						font-size: 18px;
-						margin-bottom: 10px;
-					}
+			> .main {
+				min-width: 300px;
+				flex: 1;
+			}
+
+			> .side,
+			> .main {
+				h1 {
+					font-size: 18px;
+					margin-bottom: 10px;
 				}
 			}
 		}
 	</style>
 
 	<script>
-		const changedPageHandler = (pageId) => {
+		this.mountTimeline = false;
+		this.timelineType = 'home';
+
+		const changedPageHandler = (pageId, params) => {
 			if (pageId == 'home') {
 				window.document.title = 'Frost';
+
+				if (params.timelineType == 'general') {
+					this.timelineType = 'general';
+				}
+				this.mountTimeline = true;
 
 				this.central.off('ev:changed-page', changedPageHandler);
 			}

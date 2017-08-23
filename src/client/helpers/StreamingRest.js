@@ -24,12 +24,7 @@ class StreamingRest {
 			const rest = rest => {
 				if (rest.request.method == method && rest.request.endpoint == endpoint) {
 					if (rest.success) {
-						if (rest.statusCode < 400) {
-							resolve(rest);
-						}
-						else {
-							reject(new Error(`api error: failed to fetch data. (Status: ${rest.statusCode}) ${rest.response.message}`));
-						}
+						resolve(rest);
 					}
 					else {
 						reject(new Error(`internal error: failed to fetch data. ${rest.message}`));

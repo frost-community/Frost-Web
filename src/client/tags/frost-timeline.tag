@@ -79,19 +79,13 @@
 			(async () => {
 				const streamingRest = new StreamingRest(this.webSocket);
 				const rest = await streamingRest.requestAsync('get', endpoint, {query: {limit: 100}});
-
-				if (rest.success) {
-					if (rest.response.posts == null) {
-						if (rest.statusCode != 204) {
-							alert(`api error: failed to fetch ${this.opts.dataName} timeline posts. ${rest.response.message}`);
-						}
-						rest.response.posts = [];
+				if (rest.response.posts == null) {
+					if (rest.statusCode != 204) {
+						alert(`api error: failed to fetch ${this.opts.dataName} timeline posts. ${rest.response.message}`);
 					}
-					this.timelinePosts = rest.response.posts;
+					rest.response.posts = [];
 				}
-				else {
-					alert(`internal error: ${rest.message}`);
-				}
+				this.timelinePosts = rest.response.posts;
 
 				if (streaming) {
 					this.webSocket.sendEvent('timeline-connect', {type: this.opts.dataName});

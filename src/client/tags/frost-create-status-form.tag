@@ -91,12 +91,7 @@
 				(async () => {
 					const streamingRest = new StreamingRest(this.webSocket);
 					const rest = await streamingRest.requestAsync('post', '/posts/post_status', {body: {text: this.text}});
-					if (rest.success) {
-						this.clear();
-					}
-					else {
-						alert('internal error: ' + rest.message);
-					}
+					this.clear();
 				})().catch(err => {
 					console.error(err);
 				});

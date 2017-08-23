@@ -2,6 +2,7 @@
 
 const HttpServerError = require('./HttpServerError');
 const requestApiAsync = require('./requestApiAsync');
+const errors = require('request-promise/errors');
 
 module.exports = async (req, config) => {
 	let result;
@@ -33,7 +34,12 @@ module.exports = async (req, config) => {
 		});
 	}
 	catch(err) {
-		throw new HttpServerError(500, `session creation authorize error: ${err.message}`);
+		if (err instanceof errors.StatusCodeError) {
+			throw new HttpServerError(400, `authentication error: ${err.response.message}`);
+		}
+		else {
+			throw new HttpServerError(500, `session creation authentication error: ${err.message}`);
+		}
 	}
 
 	if (result.accessKey == null) {

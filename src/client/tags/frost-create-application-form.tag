@@ -65,18 +65,12 @@
 							recaptchaToken: grecaptcha.getResponse()
 						}
 					});
-
-					if (rest.success) {
-						if (rest.response.application != null) {
-							this.central.trigger('add-application', {application: rest.response.application});
-							alert('created application.');
-						}
-						else {
-							alert(`api error: failed to create application. ${rest.response.message}`);
-						}
+					if (rest.response.application != null) {
+						this.central.trigger('add-application', {application: rest.response.application});
+						alert('created application.');
 					}
 					else {
-						alert(`internal error: ${rest.message}`);
+						alert(`api error: failed to create application. ${rest.response.message}`);
 					}
 				})().catch(err => {
 					console.error(err);

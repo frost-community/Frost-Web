@@ -62,7 +62,7 @@
 		};
 
 		this.keydown = (e) => {
-			const needSubmit = (e.CtrlKey || e.ctrlKey) && e.code == 'Enter';
+			const needSubmit = (e.metaKey || e.ctrlKey) && e.code == 'Enter';
 
 			if (needSubmit && this.validTextCount()) {
 				// lock submit button

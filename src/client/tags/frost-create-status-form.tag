@@ -3,7 +3,7 @@
 		<h1>投稿する</h1>
 		<textarea ref='text' placeholder='ねえ今どんな気持ち？' oninput={ input } required>{ text }</textarea>
 		<span>{ textMax - getTextCount() }</span>
-		<button type='submit' disabled={ !validTextCount() }>投稿</button>
+		<button type='submit' disabled={ !validTextCount() || lock }>投稿</button>
 	</form>
 
 	<style>
@@ -37,10 +37,7 @@
 		const StreamingRest = require('../helpers/StreamingRest');
 		this.textMax = 256;
 		this.text = '';
-		this.inputKeys = {};
-		this.addInput = (e) => this.inputKeys[e.code || e] = true;
-		this.removeInput = (e) => delete this.inputKeys[e.code || e];
-		this.existsInput = (e) => this.inputKeys[e.code || e] != null;
+		this.lock = false;
 
 		// methods
 
@@ -50,14 +47,6 @@
 
 		this.validTextCount = () => {
 			return this.getTextCount() != 0 && this.textMax - this.getTextCount() >= 0;
-		};
-
-		this.needSubmit = () => {
-			const meta = this.existsInput('MetaLeft') || this.existsInput('MetaRight');
-			const control = this.existsInput('ControlLeft') || this.existsInput('ControlRight');
-			const enter = this.existsInput('Enter');
-
-			return (meta || control) && enter;
 		};
 
 		this.clear = () => {
@@ -73,18 +62,13 @@
 		};
 
 		this.keydown = (e) => {
-			const firstTime = !this.existsInput(e);
-			if (firstTime) {
-				this.addInput(e);
+			const needSubmit = (e.CtrlKey || e.ctrlKey) && e.code == 'Enter';
 
-				if (this.needSubmit() && this.validTextCount()) {
-					this.createStatus();
-				}
+			if (needSubmit && this.validTextCount()) {
+				// lock submit button
+				this.lock = true;
+				this.createStatus();
 			}
-		};
-
-		this.keyup = (e) => {
-			this.removeInput(e);
 		};
 
 		this.on('mount', () => {
@@ -96,8 +80,13 @@
 					const streamingRest = new StreamingRest(this.webSocket);
 					const rest = await streamingRest.requestAsync('post', '/posts/post_status', {body: {text: this.text}});
 					this.clear();
+					return 'success';
 				})().catch(err => {
 					console.error(err);
+					return 'failed';
+				}).then(status => {
+					console.log(status);
+					this.lock = false;
 				});
 			};
 

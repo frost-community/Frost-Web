@@ -18,7 +18,7 @@
 
 		this.retriver = (urls) => {
 			urls.forEach(url => {
-				const analyzer = 'https://analizzatore.prezzemolo.ga/?url=' + encodeURIComponent(url);
+				const analyzer = `https://analizzatore.prezzemolo.ga/?url=${encodeURIComponent(url)}&lang=ja`;
 				fetch(analyzer).then(response => {
 					if (!response.ok) throw new Error('received status code greater than 400.');
 					response.json().then(detail => {

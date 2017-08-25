@@ -6,12 +6,12 @@
 		</li>
 	</ul>
 
-  <style>
-    ul {
-      line-style: none;
-      padding: 0;
-    }
-  </style>
+	<style>
+		ul {
+			line-style: none;
+			padding: 0;
+		}
+	</style>
 
 	<script>
 		this.details = [];

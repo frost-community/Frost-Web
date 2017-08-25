@@ -37,10 +37,6 @@
 		const StreamingRest = require('../helpers/StreamingRest');
 		this.textMax = 256;
 		this.text = '';
-		this.inputKeys = {};
-		this.addInput = (e) => this.inputKeys[e.code || e] = true;
-		this.removeInput = (e) => delete this.inputKeys[e.code || e];
-		this.existsInput = (e) => this.inputKeys[e.code || e] != null;
 
 		// methods
 
@@ -50,14 +46,6 @@
 
 		this.validTextCount = () => {
 			return this.getTextCount() != 0 && this.textMax - this.getTextCount() >= 0;
-		};
-
-		this.needSubmit = () => {
-			const meta = this.existsInput('MetaLeft') || this.existsInput('MetaRight');
-			const control = this.existsInput('ControlLeft') || this.existsInput('ControlRight');
-			const enter = this.existsInput('Enter');
-
-			return (meta || control) && enter;
 		};
 
 		this.clear = () => {
@@ -73,13 +61,10 @@
 		};
 
 		this.keydown = (e) => {
-			const firstTime = !this.existsInput(e);
-			if (firstTime) {
-				this.addInput(e);
+			const needSubmit = (e.CtrlKey || e.ctrlKey) && e.code == 'Enter';
 
-				if (this.needSubmit() && this.validTextCount()) {
-					this.createStatus();
-				}
+			if (needSubmit && this.validTextCount()) {
+				this.createStatus();
 			}
 		};
 

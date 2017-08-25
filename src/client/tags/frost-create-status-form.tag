@@ -3,7 +3,7 @@
 		<h1>投稿する</h1>
 		<textarea ref='text' placeholder='ねえ今どんな気持ち？' oninput={ input } required>{ text }</textarea>
 		<span>{ textMax - getTextCount() }</span>
-		<button type='submit' disabled={ !validTextCount() }>投稿</button>
+		<button type='submit' disabled={ !validTextCount() || lock }>投稿</button>
 	</form>
 
 	<style>
@@ -37,6 +37,7 @@
 		const StreamingRest = require('../helpers/StreamingRest');
 		this.textMax = 256;
 		this.text = '';
+		this.lock = false;
 
 		// methods
 
@@ -64,12 +65,10 @@
 			const needSubmit = (e.CtrlKey || e.ctrlKey) && e.code == 'Enter';
 
 			if (needSubmit && this.validTextCount()) {
+				// lock submit button
+				this.lock = true;
 				this.createStatus();
 			}
-		};
-
-		this.keyup = (e) => {
-			this.removeInput(e);
 		};
 
 		this.on('mount', () => {
@@ -81,8 +80,13 @@
 					const streamingRest = new StreamingRest(this.webSocket);
 					const rest = await streamingRest.requestAsync('post', '/posts/post_status', {body: {text: this.text}});
 					this.clear();
+					return 'success';
 				})().catch(err => {
 					console.error(err);
+					return 'failed';
+				}).then(status => {
+					console.log(status);
+					this.lock = false;
 				});
 			};
 

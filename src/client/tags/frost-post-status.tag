@@ -6,11 +6,7 @@
 			<time datetime={ getTime().format() } title={ getTime().format() }>{ getTime().fromNow() }</time>
 		</div>
 		<div class='text' ref='text'></div>
-		<ul if={ urls.length > 0 }>
-			<li each={ url in urls }>
-				<frost-url-preview url={ url } />
-			</li>
-		</ul>
+		<frost-post-status if={ urls.length > 0 } urls={ urls }/>
 	</div>
 
 	<style>
@@ -40,10 +36,6 @@
 					p {
 						margin-bottom: 0;
 					}
-				}
-
-				ul > li {
-					list-style: none;
 				}
 			}
 		}

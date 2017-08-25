@@ -8,6 +8,8 @@
 			urls.forEach(url => {
 				const analyzer = `https://analizzatore.prezzemolo.ga/?url=${encodeURIComponent(url)}&lang=ja`;
 				fetch(analyzer).then(response => {
+					// add originUrl to detail object
+					detail.originUrl = url;
 					if (!response.ok) throw new Error('received status code greater than 400.');
 					response.json().then(detail => {
 						this.details.push(detail);

@@ -3,7 +3,7 @@
 		<h1>投稿する</h1>
 		<textarea ref='text' placeholder='ねえ今どんな気持ち？' oninput={ input } required>{ text }</textarea>
 		<span>{ textMax - getTextCount() }</span>
-		<button type='submit' disabled={ !getValidTextCount() }>投稿</button>
+		<button type='submit' disabled={ !validTextCount() }>投稿</button>
 	</form>
 
 	<style>
@@ -37,50 +37,54 @@
 		const StreamingRest = require('../helpers/StreamingRest');
 		this.textMax = 256;
 		this.text = '';
-		this.keyBuffer = [];
+		this.inputKeys = {};
+		this.addInput = (e) => this.inputKeys[e.code || e] = true;
+		this.removeInput = (e) => delete this.inputKeys[e.code || e];
+		this.existsInput = (e) => this.inputKeys[e.code || e] != null;
 
 		// methods
 
-		this.getTextCount = () => this.text.length;
-		this.getValidTextCount = () => this.getTextCount() != 0 && this.textMax - this.getTextCount() >= 0;
-		this.getNeedSubmit = () => ((this.keyBuffer[17] || this.keyBuffer[91]) && this.keyBuffer[13]) == true; // Ctrl + Enter
+		this.getTextCount = () => {
+			return this.text.length;
+		};
+
+		this.validTextCount = () => {
+			return this.getTextCount() != 0 && this.textMax - this.getTextCount() >= 0;
+		};
+
+		this.needSubmit = () => {
+			const meta = this.existsInput('MetaLeft') || this.existsInput('MetaRight');
+			const control = this.existsInput('ControlLeft') || this.existsInput('ControlRight');
+			const enter = this.existsInput('Enter');
+
+			return (meta || control) && enter;
+		};
 
 		this.clear = () => {
 			this.text = '';
 			this.update();
 		};
 
-		this.checkShortcut = () => {
-			if (this.getNeedSubmit()) {
-				if (this.createStatus) {
+		// input events
+
+		this.input = (e) => {
+			this.text = this.refs.text.value; // 入力された文字列を反映
+			this.update();
+		};
+
+		this.keydown = (e) => {
+			const firstTime = !this.existsInput(e);
+			if (firstTime) {
+				this.addInput(e);
+
+				if (this.needSubmit() && this.validTextCount()) {
 					this.createStatus();
 				}
 			}
 		};
 
-		// input events
-
-		this.submit = (e) => {
-			e.preventDefault();
-
-			if (this.createStatus) {
-				this.createStatus();
-			}
-		};
-
-		this.input = (e) => {
-			this.text = this.refs.text.value;
-			this.update();
-		};
-
-		this.keydown = (e) => {
-			this.keyBuffer[e.which] = true;
-		};
-
 		this.keyup = (e) => {
-			this.checkShortcut();
-
-			this.keyBuffer[e.which] = false;
+			this.removeInput(e);
 		};
 
 		this.on('mount', () => {
@@ -96,6 +100,20 @@
 					console.error(err);
 				});
 			};
+
+			// input events
+
+			this.submit = (e) => {
+				e.preventDefault();
+
+				if (this.validTextCount()) {
+					this.createStatus();
+				}
+
+				return false;
+			};
+
+			this.update();
 		});
 	</script>
 </frost-create-status-form>

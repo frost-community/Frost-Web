@@ -6,6 +6,11 @@
 			<time datetime={ getTime().format() } title={ getTime().format() }>{ getTime().fromNow() }</time>
 		</div>
 		<div class='text' ref='text'></div>
+		<ul if={ urls.length > 0 }>
+			<li each={ url in urls }>
+				<frost-url-preview url={ url } />
+			</li>
+		</ul>
 	</div>
 
 	<style>
@@ -36,17 +41,24 @@
 						margin-bottom: 0;
 					}
 				}
+
+				ul > li {
+					list-style: none;
+				}
 			}
 		}
 	</style>
 
 	<script>
 		this.moment = require('moment');
+		this.urls = [];
 
 		getTime() {
 			this.moment.locale("ja");
 			return this.moment.unix(this.opts.status.createdAt);
 		}
+
+		const urlMatcher = /((?:https?|ftp):\/\/[^\s/$.?#].[^\s]*)/ig
 
 		compileText(text) {
 			let compiledText = '<p>';
@@ -58,7 +70,7 @@
 				.replace(/'/g, '&#039;')
 				.replace(/"/g, '&quot;')
 				.replace(/`/g, '&#x60;')
-				.replace(/((https?|ftp):\/\/[^\s/$.?#].[^\s]*)/ig, '<a href=\'$1\' target=\'_blank\'>$1</a>') // url
+				.replace(urlMatcher, '<a href=\'$1\' target=\'_blank\'>$1</a>') // url
 				.replace(/\n/g, '</p><p>'); // 改行
 
 			compiledText += '</p>';
@@ -68,6 +80,7 @@
 
 		this.on('mount', () => {
 			this.refs.text.innerHTML = this.compileText(this.opts.status.text);
+			this.urls = this.opts.status.text.match(urlMatcher)
 
 			// 定期的に画面を更新
 			setInterval(() => {

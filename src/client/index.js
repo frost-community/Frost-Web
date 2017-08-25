@@ -53,6 +53,7 @@ const mixinGlobal = {};
 		// - general
 		require('./tags/frost-logout-button.tag');
 		require('./tags/frost-post-status.tag');
+		require('./tags/frost-url-preview.tag');
 		require('./tags/frost-timeline.tag');
 		require('./tags/frost-hint.tag');
 		// - container

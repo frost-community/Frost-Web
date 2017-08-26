@@ -1,9 +1,9 @@
-/* display width */
+/* device width */
 
-$phone: 420px;
+$phone: 414px;
 $tablet: 768px;
 $desktop: 1024px;
-$desktopHD: 1280px;
+$desktopWide: 1280px;
 
 /* colors */
 
@@ -41,18 +41,13 @@ $general-font-family: Raleway, HelveticaNeue, 'Helvetica Neue', Helvetica, Arial
 	}
 }
 
-// レスポンシブ表示をサポートする。(に適用してください。)
-@mixin responsive($minWidth: 300px) {
+// レスポンシブ表示をサポートする。(親コンテナに適用してください)
+@mixin responsive() {
 	display: flex;
-	min-width: $minWidth;
 	margin: 0 auto;
-	padding: 0 .5rem;
 
 	@include less-than($tablet) {
 		width: 100%;
-	}
-	@include greater-than($phone) {
-		padding: 0 1rem;
 	}
 	@include greater-than($tablet) {
 		max-width: $tablet;
@@ -60,7 +55,7 @@ $general-font-family: Raleway, HelveticaNeue, 'Helvetica Neue', Helvetica, Arial
 	@include greater-than($desktop) {
 		max-width: $desktop;
 	}
-	@include greater-than($desktopHD) {
-		max-width: $desktopHD;
+	@include greater-than($desktopWide) {
+		max-width: $desktopWide;
 	}
 }

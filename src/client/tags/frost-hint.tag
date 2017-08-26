@@ -14,10 +14,10 @@
 					margin: 0;
 				}
 				> i {
-					margin-right: 0.75rem;
+					margin-right: 0.4rem;
 				}
 				> p {
-					font-size: 1.2rem;
+					font-size: 0.66rem;
 				}
 			}
 		}

@@ -6,7 +6,7 @@
 		<frost-hint />
 	</div>
 	<div class='main'>
-		<h1>{ this.timelineType == 'general' ? 'ジェネラル' : '' } タイムライン</h1>
+		<h6>{ this.timelineType == 'general' ? 'ジェネラル' : '' } タイムライン</h6>
 		<frost-timeline if={ mountTimeline } data-name={ timelineType } />
 	</div>
 
@@ -20,7 +20,7 @@
 				}
 
 				.box {
-					margin: 10px 0;
+					margin: 0.5rem 0;
 				}
 			}
 
@@ -29,15 +29,13 @@
 			}
 
 			> .main {
-				min-width: 300px;
 				flex: 1;
 			}
 
 			> .side,
 			> .main {
-				h1 {
-					font-size: 18px;
-					margin-bottom: 10px;
+				> h1 {
+					margin: 0.5rem 0;
 				}
 			}
 		}

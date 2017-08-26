@@ -12,13 +12,20 @@
 
 		:scope {
 			display: block;
-			padding-top: 7rem !important;
+			padding-top: 15*3px;
 
 			> * {
 				@include responsive();
 
+				padding: 1.5rem;
+
+				@include less-than($tablet) {
+					padding: 1rem;
+				}
+
+
 				> :not(:last-child) {
-					margin-right: 2rem;
+					margin-right: 1.1rem;
 				}
 			}
 		}

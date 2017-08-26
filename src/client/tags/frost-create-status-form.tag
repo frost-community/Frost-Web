@@ -1,6 +1,6 @@
 <frost-create-status-form>
 	<form onsubmit={ submit } onkeydown={ keydown } onkeyup={ keyup }>
-		<h1>投稿する</h1>
+		<h5>投稿する</h5>
 		<textarea ref='text' placeholder='ねえ今どんな気持ち？' oninput={ input } required>{ text }</textarea>
 		<span>{ textMax - getTextCount() }</span>
 		<button type='submit' disabled={ !validTextCount() || lock }>投稿</button>
@@ -8,25 +8,25 @@
 
 	<style>
 		:scope {
-			form {
+			> form {
 				display: flex;
 				flex-direction: column;
 
-				h1 {
-					font-size: 18px;
-					margin-bottom: 1rem;
+				> h5 {
+					margin-bottom: 0.5rem;
 				}
 
-				textarea {
-					height: 12rem;
+				> textarea {
+					height: 6.6rem;
+					font-size: 0.9rem;
 				}
 
-				button {
-					width: 10rem;
+				> button {
+					width: 5.5rem;
 					align-self: flex-end;
 				}
 
-				button:disabled {
+				> button:disabled {
 					cursor: default;
 				}
 			}

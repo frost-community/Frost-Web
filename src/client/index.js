@@ -57,7 +57,7 @@ const mixinGlobal = {};
 		require('./tags/frost-hint.tag');
 		// - container
 		require('./tags/frost-container.tag');
-		require('./tags/frost-header.tag');
+		require('./tags/frost-global-nav.tag');
 		require('./tags/frost-page-switcher.tag');
 		require('./tags/frost-footer.tag');
 		// - entrance

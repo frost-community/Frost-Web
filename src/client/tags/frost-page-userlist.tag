@@ -1,6 +1,6 @@
 <frost-page-userlist>
 	<div class='main'>
-		<h5>ユーザーの一覧</h5>
+		<h4>ユーザーの一覧</h4>
 		<ul>
 			<li each={ user in users }>
 				<a href={ '/users/'+user.screenName }>{ user.name } @{ user.screenName }</a>

@@ -29,8 +29,8 @@
 			}
 
 			> section {
-				padding: 3rem;
-				margin: 1rem;
+				padding: 1.65rem;
+				margin: 0.5rem;
 
 				@include greater-than($phone) {
 					width: 370px;
@@ -45,10 +45,10 @@
 				border: none;
 
 				.logo-icon {
-					height: 3rem;
+					height: 1.65rem;
 
 					@include greater-than($phone) {
-						height: 4rem;
+						height: 2.2rem;
 					}
 				}
 			}

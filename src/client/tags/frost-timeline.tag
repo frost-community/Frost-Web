@@ -1,11 +1,11 @@
 <frost-timeline>
-	<div style='margin: 5rem auto' if={ loading }>
+	<div style='margin: 2.75rem auto' if={ loading }>
 		<p>取得しています...</p>
 	</div>
-	<div style='margin: 5rem auto' if={ !loading && timelinePosts.length == 0 }>
+	<div style='margin: 2.75rem auto' if={ !loading && timelinePosts.length == 0 }>
 		<p>投稿がありません。</p>
 	</div>
-	<div style='margin: 5rem auto' if={ !loading && timelinePosts.length == 0 && error }>
+	<div style='margin: 2.75rem auto' if={ !loading && timelinePosts.length == 0 && error }>
 		<p>タイムラインの取得中にエラーが発生しました。</p>
 	</div>
 	<ul if={ !loading && timelinePosts.length != 0 }>

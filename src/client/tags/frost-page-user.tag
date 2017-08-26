@@ -1,13 +1,13 @@
 <frost-page-user>
 	<virtual if={ user != null }>
 		<div class='side'>
-			<h1>{ user.name } @{ user.screenName }</h1>
-			<h2>プロフィール:</h2><!-- Profile -->
+			<h4>{ user.name } @{ user.screenName }</h4>
+			<h5>プロフィール:</h5><!-- Profile -->
 			<p>{ user.description != '' ? user.description : 'まだ設定されていません' }</p>
 			<frost-follow-button data-target-id={ user.id } />
 		</div>
 		<div class='main'>
-			<h1>{ user.name }さんの投稿</h1>
+			<h5>{ user.name }さんの投稿</h5>
 			<frost-timeline data-name='user', data-user-id={ user.id } />
 		</div>
 	</virtual>
@@ -26,15 +26,15 @@
 				width: 250px;
 
 				@include less-than($tablet) {
-					margin-bottom: 2rem;
+					margin-bottom: 1.1rem;
 				}
 
 				> h1 {
-					font-size: 2.5rem;
+					font-size: 1.4rem;
 				}
 
 				> h2 {
-					font-size: 2rem;
+					font-size: 1.1rem;
 				}
 			}
 

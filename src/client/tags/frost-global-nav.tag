@@ -1,4 +1,4 @@
-<frost-header role='banner'>
+<frost-global-nav role='banner'>
 	<nav>
 		<ul>
 			<li class={ active: activeId == (login ? 'home' : 'entrance') }>
@@ -34,9 +34,10 @@
 			ul {
 				@include responsive();
 
+				padding: 0 1rem;
 				list-style-type: none;
 				align-items: center;
-				height: 45px;
+				height: 15*3px;
 
 				@include less-than($tablet) {
 					overflow-x: auto;
@@ -58,6 +59,7 @@
 						text-decoration-line: none;
 						color: hsla(0, 0%, 0%, 0.7);
 						padding-top: 3px;
+						font-size: 15px;
 					}
 				}
 
@@ -94,4 +96,4 @@
 			this.central.off('change-page', changePageHandler);
 		});
 	</script>
-</frost-header>
+</frost-global-nav>

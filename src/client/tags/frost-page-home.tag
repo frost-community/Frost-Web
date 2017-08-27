@@ -14,18 +14,21 @@
 		@import "../styles/variables";
 
 		:scope {
-			> .side {
-				@include less-than($tablet) {
-					display: none;
-				}
-
-				.box {
-					margin: 0.5rem 0;
-				}
+			> :not(:last-child) {
+				margin-right: 2rem;
 			}
 
 			> .side {
 				width: 250px;
+
+				> :not(:last-child) {
+					display: block;
+					margin-bottom: 2rem;
+				}
+
+				@include less-than($tablet) {
+					display: none;
+				}
 			}
 
 			> .main {

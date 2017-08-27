@@ -17,8 +17,11 @@
 	<p if={ !loading && applications.length == 0 }>あなたはアプリケーションを持っていません。</p><!-- You don't have any applications -->
 
 	<style>
+		@import "../styles/variables";
+
 		:scope {
 			> ul > li {
+				@include box();
 				list-style-type: none;
 
 				&:not(:last-child) {

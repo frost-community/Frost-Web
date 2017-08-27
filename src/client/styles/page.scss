@@ -8,7 +8,7 @@
 
 html {
 	// 基本となるフォントサイズ(ここ以外ではremでそれぞれ相対指定)
-	font-size: 17px;
+	font-size: 16.5px;
 	@include less-than($tablet) {
 		font-size: 15px;
 	}
@@ -26,6 +26,14 @@ body {
 	color: $fore-color;
 	font-size: 1rem;
 	min-width: 270px;
+}
+
+a {
+	transition: color 200ms ease-in-out;
+}
+
+button, .button {
+	transition: color 200ms ease-in-out, border-color 200ms ease-in-out;
 }
 
 button, .button, label {
@@ -47,23 +55,24 @@ textarea {
 	font-size: 0.75rem;
 	font-family: $general-font-family;
 	background-color: $textbox-back-color;
-	transition: border 150ms ease-in-out;
+	transition: background-color 200ms ease-in-out;
+	border: none;
+	border-radius: 6px;
+
+	&:focus {
+		border: none;
+		background-color: $textbox-back-color-focus;
+	}
+
+	&.checkable {
+		&:invalid {
+			background-color: $textbox-invalid-value-color;
+		}
+	}
 }
 
 form :last-child {
 	margin-bottom: 0;
-}
-
-.box {
-	border: 1px solid $border-color;
-	border-radius: 0.2rem;
-	padding: 1.1rem 1.1rem 0.3rem;
-
-	@include less-than($tablet) {
-		border: none;
-		border-radius: unset;
-		padding: 0;
-	}
 }
 
 .orange-button {
@@ -73,8 +82,7 @@ form :last-child {
 }
 
 hr {
-	margin-top: 2rem;
-	margin-bottom: 2.5rem;
+	margin: 2rem 0;
 }
 
 h1 { font-size: 2.2rem; }
@@ -84,6 +92,18 @@ h4 { font-size: 1.4rem; }
 h5 { font-size: 1.2rem; }
 h6 { font-size: 1.1rem; }
 
-p {
-	margin-bottom: 2rem;
+h1, h2, h3, h4, h5, h6 {
+	margin-bottom: 1rem;
+}
+
+p, ul, form {
+	margin-bottom: 1.5rem;
+
+	&:last-child {
+		margin-bottom: 0;
+	}
+}
+
+fieldset, input, select, textarea {
+	margin-bottom: 0.8rem;
 }

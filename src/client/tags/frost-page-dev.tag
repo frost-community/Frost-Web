@@ -18,6 +18,12 @@
 
 		:scope {
 			flex-direction: column;
+
+			> .main {
+				> :not(:last-child) {
+					margin-bottom: 1.5rem;
+				}
+			}
 		}
 	</style>
 

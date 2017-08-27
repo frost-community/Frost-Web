@@ -1,5 +1,6 @@
 <frost-signup-form>
 	<h4>アカウント作成</h4><!-- Sign up -->
+	<button class='button orange-button' onclick={ showModal }>{ isShowModal ? '折りたたむ -' : '展開する +' }</button>
 	<div show={ isShowModal }>
 		<form onsubmit={ submit }>
 			<label for='signup-screen-name-box'>ユーザー名 *</label><!-- Screen name -->
@@ -15,7 +16,6 @@
 			<button class='button-primary'>アカウント作成</button><!-- Sign up -->
 		</form>
 	</div>
-	<button class='button orange-button' onclick={ showModal }>{ isShowModal ? '折りたたむ -' : '展開する +' }</button>
 
 	<style>
 		@import "../styles/variables";

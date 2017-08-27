@@ -22,6 +22,10 @@
 				flex-direction: column;
 			}
 
+			> :not(:last-child) {
+				margin-right: 2rem;
+			}
+
 			> .side {
 				width: 250px;
 

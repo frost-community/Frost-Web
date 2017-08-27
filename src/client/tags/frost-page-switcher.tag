@@ -22,11 +22,6 @@
 				@include less-than($tablet) {
 					padding: 1rem;
 				}
-
-
-				> :not(:last-child) {
-					margin-right: 1.1rem;
-				}
 			}
 		}
 	</style>

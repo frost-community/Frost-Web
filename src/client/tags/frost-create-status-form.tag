@@ -7,14 +7,12 @@
 	</form>
 
 	<style>
+		@import "../styles/variables";
+
 		:scope {
 			> form {
 				display: flex;
 				flex-direction: column;
-
-				> h5 {
-					margin-bottom: 0.5rem;
-				}
 
 				> textarea {
 					height: 6.6rem;

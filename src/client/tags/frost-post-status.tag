@@ -17,10 +17,11 @@
 
 			> .side {
 				> .icon {
-					margin: 0.3rem 1rem 0;
+					margin-right: 0.8rem;
 					min-height: 4rem;
 					min-width: 4rem;
 					background-color: hsla(0, 0%, 0%, 0.05);
+					border-radius: 6px;
 				}
 			}
 
@@ -33,6 +34,8 @@
 					justify-content: space-between;
 
 					> a {
+						// テキストを上に詰める
+						line-height: 100%;
 						text-decoration-line: none;
 
 						// テキストの省略

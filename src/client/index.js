@@ -67,7 +67,7 @@ const mixinGlobal = {};
 		// - home
 		require('./tags/frost-page-home.tag');
 		require('./tags/frost-home-logo.tag');
-		require('./tags/frost-create-status-form.tag');
+		require('./tags/frost-form-create-status.tag');
 		// - user
 		require('./tags/frost-page-user.tag');
 		require('./tags/frost-follow-button.tag');
@@ -78,7 +78,7 @@ const mixinGlobal = {};
 		// - dev
 		require('./tags/frost-page-dev.tag');
 		require('./tags/frost-applications.tag');
-		require('./tags/frost-create-application-form.tag');
+		require('./tags/frost-form-create-application.tag');
 		// - error
 		require('./tags/frost-page-error.tag');
 

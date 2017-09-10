@@ -1,9 +1,11 @@
-<frost-create-status-form>
+<frost-form-create-status>
 	<form onsubmit={ submit } onkeydown={ keydown } onkeyup={ keyup }>
-		<h5>投稿する</h5>
+		<h6>投稿する</h6>
 		<textarea ref='text' placeholder='ねえ今どんな気持ち？' oninput={ input } required>{ text }</textarea>
-		<span>{ textMax - getTextCount() }</span>
-		<button type='submit' disabled={ !validTextCount() || lock }>投稿</button>
+		<div class='tool-bar'>
+			<span>{ textMax - getTextCount() }</span>
+			<button type='submit' disabled={ !validTextCount() || lock }>投稿</button>
+		</div>
 	</form>
 
 	<style>
@@ -15,17 +17,22 @@
 				flex-direction: column;
 
 				> textarea {
-					height: 6.6rem;
+					height: 7rem;
 					font-size: 0.9rem;
 				}
 
-				> button {
-					width: 5.5rem;
-					align-self: flex-end;
-				}
+				> .tool-bar {
+					display: flex;
+					align-items: center;
 
-				> button:disabled {
-					cursor: default;
+					> button {
+						width: 5.5rem;
+						margin-left: auto;
+
+						&:disabled {
+							cursor: default;
+						}
+					}
 				}
 			}
 		}
@@ -103,4 +110,4 @@
 			this.update();
 		});
 	</script>
-</frost-create-status-form>
+</frost-form-create-status>

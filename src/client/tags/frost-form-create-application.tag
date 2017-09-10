@@ -1,4 +1,4 @@
-<frost-create-application-form>
+<frost-form-create-application>
 	<button class='orange-button' onclick={ showModal }>連携アプリケーションを作成する { isShowModal ? '－' : '＋' }</button><!-- Create an application -->
 	<form onsubmit={ submit } show={ isShowModal }>
 		<label for='application-name'>連携アプリケーション名 *</label><!-- Application name -->
@@ -46,7 +46,7 @@
 				e.preventDefault();
 
 				const permissions = [];
-				for (let permission of document.querySelectorAll('frost-create-application-form .permissions *')) {
+				for (let permission of document.querySelectorAll('frost-form-create-application .permissions *')) {
 					if (permission.checked) {
 						permissions.push(permission.value);
 					}
@@ -84,4 +84,4 @@
 			document.querySelector('.g-recaptcha-bubble-arrow').parentNode.remove();
 		});
 	</script>
-</frost-create-application-form>
+</frost-form-create-application>

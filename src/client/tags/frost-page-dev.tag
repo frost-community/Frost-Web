@@ -9,7 +9,7 @@
 			<frost-applications />
 		</div>
 		<div if={ login }>
-			<frost-create-application-form />
+			<frost-form-create-application />
 		</div>
 	</div>
 

@@ -1,12 +1,15 @@
 <frost-timeline>
-	<div style='margin: 2.75rem auto' if={ loading }>
-		<p>取得しています...</p>
+	<div class='information' if={ loading }>
+		<i class="fa fa-spinner fa-spin fa-fw" aria-hidden="true"></i>
+		取得しています...
 	</div>
-	<div style='margin: 2.75rem auto' if={ !loading && timelinePosts.length == 0 }>
-		<p>投稿がありません。</p>
+	<div class='information' if={ !loading && timelinePosts.length == 0 }>
+		<i class="fa fa-info-circle fa-fw" aria-hidden="true"></i>
+		投稿がありません。
 	</div>
-	<div style='margin: 2.75rem auto' if={ !loading && timelinePosts.length == 0 && error }>
-		<p>タイムラインの取得中にエラーが発生しました。</p>
+	<div class='information' if={ !loading && timelinePosts.length == 0 && error }>
+		<i class="fa fa-exclamation-triangle fa-fw" aria-hidden="true"></i>
+		タイムラインの取得中にエラーが発生しました。
 	</div>
 	<ul if={ !loading && timelinePosts.length != 0 }>
 		<li each={ post in timelinePosts }>
@@ -15,9 +18,41 @@
 	</ul>
 
 	<style>
+		@import "../styles/variables";
+
 		:scope {
-			ul > li {
-				list-style: none;
+			> .information,
+			> ul {
+				@include greater-than($tablet) {
+					border: 1px solid hsl(0, 0%, 88%);
+					border-radius: 0.25rem;
+				}
+			}
+
+			> .information {
+				padding: 1rem 0;
+				font-size: 0.95rem;
+
+				@include greater-than($tablet) {
+					background-color: hsla(0, 0%, 0%, 0.02);
+					padding: 1.5rem 2rem;
+				}
+			}
+
+			> ul {
+				> li {
+					list-style: none;
+
+					@include greater-than($tablet) {
+						&:not(:last-child) {
+							border-bottom: 1px solid hsl(0, 0%, 88%);
+						}
+
+						> frost-post-status {
+							margin: 1.25rem;
+						}
+					}
+				}
 			}
 		}
 	</style>

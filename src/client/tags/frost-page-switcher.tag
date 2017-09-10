@@ -17,7 +17,7 @@
 			> * {
 				@include responsive();
 
-				padding: 1.5rem;
+				padding: 1.5rem 1rem;
 
 				@include less-than($tablet) {
 					padding: 1rem;

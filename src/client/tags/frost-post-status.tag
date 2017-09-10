@@ -18,9 +18,11 @@
 			> .side {
 				> .icon {
 					margin-right: 0.8rem;
-					min-height: 4rem;
-					min-width: 4rem;
 					background-color: hsla(0, 0%, 0%, 0.05);
+					/* background-image: url(); */
+					/* background-size: cover; */
+					min-height: 3.75rem;
+					min-width: 3.75rem;
 					border-radius: 6px;
 				}
 			}
@@ -45,6 +47,7 @@
 					}
 
 					> time {
+						color: $sub-text-color;
 						font-size: 0.9rem;
 
 						// 幅固定

@@ -1,7 +1,6 @@
 <frost-page-home>
 	<div class='side'>
 		<frost-home-logo />
-		<hr />
 		<frost-create-status-form />
 		<frost-hint />
 	</div>
@@ -15,7 +14,11 @@
 
 		:scope {
 			> :not(:last-child) {
-				margin-right: 2rem;
+				margin-right: 2.25rem;
+
+				@include less-than($desktop) {
+					margin-right: 2rem;
+				}
 			}
 
 			> .side {

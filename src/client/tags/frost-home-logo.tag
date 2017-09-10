@@ -16,7 +16,7 @@
 				display: flex;
 				align-items: center;
 				justify-content: center;
-				margin: 1rem 0;
+				margin: 0.5rem 0 2rem;
 
 				> .icon {
 					width: 1em;
@@ -26,6 +26,10 @@
 						width: 100%;
 					}
 				}
+			}
+
+			> p {
+				line-height: 1;
 			}
 		}
 	</style>

@@ -10,30 +10,33 @@ class StreamingProxy {
 	constructor(frontConnection, apiConnection, debugDetail, config) {
 		// 利用可能なエンドポイント一覧
 		this.endpointWhiteList = [
-			{method: 'get', path: '/general/timeline'},
-			{method: 'get', path: '/users'},
-			{method: 'get', path: '/users/:id'},
-			{method: 'get', path: '/users/:id/followings/:target_id'},
-			{method: 'put', path: '/users/:id/followings/:target_id'},
-			{method: 'delete', path: '/users/:id/followings/:target_id'},
-			{method: 'get', path: '/users/:id/timelines/home'},
-			{method: 'get', path: '/users/:id/timelines/user'},
-			{method: 'post', path: '/applications', before: async (data, frontConnection, apiConnection, config) => {
-				const verifyResult = await requestAsync('https://www.google.com/recaptcha/api/siteverify', {
-					method: 'POST',
-					json: true,
-					form: {secret: config.web.reCAPTCHA.secretKey, response: data.request.body.recaptchaToken}
-				});
+			{ method: 'get', path: '/general/timeline' },
+			{ method: 'get', path: '/users' },
+			{ method: 'get', path: '/users/:id' },
+			{ method: 'get', path: '/users/:id/followings/:target_id' },
+			{ method: 'put', path: '/users/:id/followings/:target_id' },
+			{ method: 'delete', path: '/users/:id/followings/:target_id' },
+			{ method: 'get', path: '/users/:id/timelines/home' },
+			{ method: 'get', path: '/users/:id/timelines/user' },
+			{
+				method: 'post', path: '/applications',
+				before: async (data, frontConnection, apiConnection, config) => {
+					const verifyResult = await requestAsync('https://www.google.com/recaptcha/api/siteverify', {
+						method: 'POST',
+						json: true,
+						form: { secret: config.web.reCAPTCHA.secretKey, response: data.request.body.recaptchaToken }
+					});
 
-				if (verifyResult.success !== true) {
-					frontConnection.send('rest', {success: false, request: data.request, message: 'failed to verify recaptcha'});
+					if (verifyResult.success !== true) {
+						frontConnection.send('rest', { success: false, request: data.request, message: 'failed to verify recaptcha' });
 
-					throw new Error('failed to verify recaptcha');
+						throw new Error('failed to verify recaptcha');
+					}
 				}
-			}},
-			{method: 'get', path: '/applications'},
-			{method: 'get', path: '/applications/:id'},
-			{method: 'post', path: '/posts/post_status'},
+			},
+			{ method: 'get', path: '/applications' },
+			{ method: 'get', path: '/applications/:id' },
+			{ method: 'post', path: '/posts/post_status' },
 		];
 
 		// クライアントに返却する必要のあるイベント一覧
@@ -54,8 +57,8 @@ class StreamingProxy {
 	/**
 	 * クライアントに返却する必要のあるイベントを追加します。
 	 */
-	addNeedReturnEvent (eventName) {
-		this.apiConnection.on(eventName, data => {
+	addNeedReturnEvent(eventName) {
+		this.apiConnection.on(eventName, (data) => {
 			if (this.debugDetail) {
 				console.log(`[front<] ${eventName}`);
 			}
@@ -76,18 +79,18 @@ class StreamingProxy {
 
 		// front -> api
 
-		this.frontConnection.on('rest', data => {
+		this.frontConnection.on('rest', (data) => {
 			(async () => {
 				try {
-					const {request} = data;
-					const {method, endpoint} = request;
+					const { request } = data;
+					const { method, endpoint } = request;
 
-					const endpointInfo = this.endpointWhiteList.find(e => {
-						return e.method == method && pathToRegexp(e.path).test(endpoint);
+					const endpointInfo = this.endpointWhiteList.find((item) => {
+						return item.method == method && pathToRegexp(item.path).test(endpoint);
 					});
 
 					if (endpointInfo == null) {
-						this.frontConnection.send('rest', {success: false, request: request, message: `'${endpoint}' endpoint is not access allowed on 'rest' event.`});
+						this.frontConnection.send('rest', { success: false, request: request, message: `'${endpoint}' endpoint is not access allowed on 'rest' event.` });
 						return;
 					}
 
@@ -110,14 +113,14 @@ class StreamingProxy {
 
 					this.apiConnection.send('rest', data);
 				}
-				catch(err) {
+				catch (err) {
 					console.log('error on: rest event in streaming proxy');
 					console.dir(err);
 				}
 			})();
 		});
 
-		this.frontConnection.on('timeline-connect', data => {
+		this.frontConnection.on('timeline-connect', (data) => {
 			if (this.debugDetail) {
 				console.log('[>api] timeline-connect');
 			}
@@ -125,7 +128,7 @@ class StreamingProxy {
 			this.apiConnection.send('timeline-connect', data);
 		});
 
-		this.frontConnection.on('timeline-disconnect', data => {
+		this.frontConnection.on('timeline-disconnect', (data) => {
 			if (this.debugDetail) {
 				console.log('[>api] timeline-disconnect');
 			}

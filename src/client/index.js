@@ -24,8 +24,8 @@ const mixinGlobal = {};
 			let webSocket;
 			try {
 				webSocket = await WebSocketEvents.connectAsync(`${secure ? 'wss' : 'ws'}://${location.host}`);
-				webSocket.addEventListener('close', ev => { console.log('close:'); console.dir(ev); });
-				webSocket.addEventListener('error', ev => { console.log('error:'); console.dir(ev); });
+				webSocket.addEventListener('close', (ev) => { console.log('close:'); console.dir(ev); });
+				webSocket.addEventListener('error', (ev) => { console.log('error:'); console.dir(ev); });
 				WebSocketEvents.init(webSocket);
 				mixinGlobal.webSocket = webSocket;
 			}
@@ -109,10 +109,10 @@ const mixinGlobal = {};
 		});
 		route('general', () => {
 			if (!getLogin()) {
-				changePage('error', {message: 'forbidden'});
+				changePage('error', { message: 'forbidden' });
 				return;
 			}
-			changePage('home', {timelineType: 'general'});
+			changePage('home', { timelineType: 'general' });
 		});
 		route('dev', () => {
 			changePage('dev');
@@ -121,13 +121,13 @@ const mixinGlobal = {};
 			changePage('userlist');
 		});
 		route('users/*', (screenName) => {
-			changePage('user', {screenName: screenName});
+			changePage('user', { screenName: screenName });
 		});
 		route('posts/*', (postId) => {
-			changePage('post', {postId: postId});
+			changePage('post', { postId: postId });
 		});
 		route('*', () => {
-			changePage('error', {message: 'page not found'});
+			changePage('error', { message: 'page not found' });
 		});
 
 		// recaptcha

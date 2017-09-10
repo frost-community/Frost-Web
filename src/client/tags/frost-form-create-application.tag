@@ -42,8 +42,8 @@
 		};
 
 		this.on('mount', () => {
-			this.submit = (e) => {
-				e.preventDefault();
+			this.submit = (ev) => {
+				ev.preventDefault();
 
 				const permissions = [];
 				for (let permission of document.querySelectorAll('frost-form-create-application .permissions *')) {

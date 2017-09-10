@@ -29,7 +29,7 @@
 					})();
 				};
 				this.update();
-			})().catch(err => {
+			})().catch((err) => {
 				console.error(err);
 			});
 		});

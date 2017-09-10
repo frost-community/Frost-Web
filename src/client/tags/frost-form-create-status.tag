@@ -61,13 +61,13 @@
 
 		// input events
 
-		this.input = (e) => {
+		this.input = (ev) => {
 			this.text = this.refs.text.value; // 入力された文字列を反映
 			this.update();
 		};
 
-		this.keydown = (e) => {
-			const needSubmit = (e.metaKey || e.ctrlKey) && e.code == 'Enter';
+		this.keydown = (ev) => {
+			const needSubmit = (ev.metaKey || ev.ctrlKey) && ev.code == 'Enter';
 
 			if (needSubmit && this.validTextCount()) {
 				// lock submit button
@@ -83,13 +83,13 @@
 			this.createStatus = () => {
 				(async () => {
 					const streamingRest = new StreamingRest(this.webSocket);
-					const rest = await streamingRest.requestAsync('post', '/posts/post_status', {body: {text: this.text}});
+					const rest = await streamingRest.requestAsync('post', '/posts/post_status', { body: { text: this.text } });
 					this.clear();
 					return 'success';
-				})().catch(err => {
+				})().catch((err) => {
 					console.error(err);
 					return 'failed';
-				}).then(status => {
+				}).then((status) => {
 					console.log(status);
 					this.lock = false;
 				});
@@ -97,8 +97,8 @@
 
 			// input events
 
-			this.submit = (e) => {
-				e.preventDefault();
+			this.submit = (ev) => {
+				ev.preventDefault();
 
 				if (this.validTextCount()) {
 					this.createStatus();

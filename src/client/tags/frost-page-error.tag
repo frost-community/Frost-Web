@@ -39,7 +39,7 @@
 			this.update();
 		};
 
-		const changeErrorHandler = error => {
+		const changeErrorHandler = (error) => {
 			this.message = error.message || 'no message';
 			this.update();
 		};

@@ -64,7 +64,7 @@
 				(async () => {
 					// ユーザー情報をフェッチ
 					const streamingRest = new StreamingRest(this.webSocket);
-					const rest = await streamingRest.requestAsync('get', '/users', {query: {'screen_names': params.screenName}});
+					const rest = await streamingRest.requestAsync('get', '/users', { query: { 'screen_names': params.screenName } });
 
 					this.user = rest.response.users[0];
 					this.loading = false;
@@ -72,7 +72,7 @@
 
 					window.document.title = `Frost - @${params.screenName}さんのページ`;
 					this.central.off('ev:changed-page', changedPageHandler);
-				})().catch(err => {
+				})().catch((err) => {
 					console.error(err);
 					this.loading = false;
 					this.update();

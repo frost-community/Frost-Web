@@ -9,6 +9,6 @@ process.on('unhandledRejection', (err) => {
 try {
 	appServer();
 }
-catch(err) {
+catch (err) {
 	console.log('Unprocessed Error:', err); // † Last Stand †
 }

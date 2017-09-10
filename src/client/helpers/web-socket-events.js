@@ -10,10 +10,10 @@ class WebSocketEvents {
 				return reject(new ReferenceError('missing argumets'));
 			}
 
-			const ws = new WebSocket2(url, [], {reconnectInterval: 3000});
+			const ws = new WebSocket2(url, [], { reconnectInterval: 3000 });
 			riot.observable(ws);
-			ws.addEventListener('error', errorEvent => { reject(errorEvent); });
-			ws.addEventListener('close', closeEvent => { reject(closeEvent); });
+			ws.addEventListener('error', (errorEvent) => { reject(errorEvent); });
+			ws.addEventListener('close', (closeEvent) => { reject(closeEvent); });
 			ws.addEventListener('open', () => {
 				resolve(ws);
 			});
@@ -25,8 +25,8 @@ class WebSocketEvents {
 			throw new ReferenceError('missing argumets');
 		}
 
-		ws.addEventListener('message', messageEvent => {
-			const {type, data} = WebSocketEvents.parse(messageEvent.data);
+		ws.addEventListener('message', (messageEvent) => {
+			const { type, data } = WebSocketEvents.parse(messageEvent.data);
 			ws.trigger(type, data);
 		});
 

@@ -36,7 +36,7 @@
 
 					window.document.title = 'Frost - ユーザーの一覧';
 					this.central.off('ev:changed-page', changedPageHandler);
-				})().catch(err => {
+				})().catch((err) => {
 					console.error(err);
 					this.loading = false;
 					this.update();

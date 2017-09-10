@@ -21,7 +21,7 @@ class StreamingRest {
 			}, timeoutInterval);
 
 			// handler
-			const rest = rest => {
+			const rest = (rest) => {
 				if (rest.request.method == method && rest.request.endpoint == endpoint) {
 					if (rest.success) {
 						resolve(rest);
@@ -48,7 +48,7 @@ class StreamingRest {
 			request = Object.assign(request, requestContent);
 
 			// send request
-			this.connection.sendEvent('rest', {request: request});
+			this.connection.sendEvent('rest', { request: request });
 		});
 	}
 }

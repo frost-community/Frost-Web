@@ -74,12 +74,12 @@
 	</style>
 
 	<script>
-		const changedLoginStatusEventHandler = login => {
+		const changedLoginStatusEventHandler = (login) => {
 			this.login = login;
 			this.update();
 		};
 
-		const changePageHandler = pageId => {
+		const changePageHandler = (pageId) => {
 			this.activeId = pageId;
 			this.update();
 		};

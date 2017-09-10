@@ -41,7 +41,7 @@
 		this.loading = true;
 		this.error = false;
 
-		const centralAddApplicationHandler = data => {
+		const centralAddApplicationHandler = (data) => {
 			this.applications.push(data.application);
 			this.update();
 		};
@@ -62,7 +62,7 @@
 				this.applications = rest.response.applications;
 				this.loading = false;
 				this.update();
-			})().catch(err => {
+			})().catch((err) => {
 				console.error(err);
 				this.loading = false;
 				this.error = true;

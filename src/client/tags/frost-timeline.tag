@@ -90,18 +90,18 @@
 
 		this.reconnectHandler = () => {
 			console.log('reconnecting timeline...');
-			this.webSocket.sendEvent('timeline-connect', {type: this.opts.dataName});
+			this.webSocket.sendEvent('timeline-connect', { type: this.opts.dataName });
 		};
 
-		this.timelineConnectHandler = data => {
+		this.timelineConnectHandler = (data) => {
 			console.log(data.message);
 		};
 
-		this.timelineDisconnectHandler = data => {
+		this.timelineDisconnectHandler = (data) => {
 			console.log(data.message);
 		};
 
-		this.receiveStatusHandler = status => {
+		this.receiveStatusHandler = (status) => {
 			console.log('status: ', status);
 			this.timelinePosts.splice(0, 0, status);
 			this.update();
@@ -113,7 +113,7 @@
 
 			(async () => {
 				const streamingRest = new StreamingRest(this.webSocket);
-				const rest = await streamingRest.requestAsync('get', endpoint, {query: {limit: 100}});
+				const rest = await streamingRest.requestAsync('get', endpoint, { query: { limit: 100 } });
 				if (rest.response.posts == null) {
 					if (rest.statusCode != 204) {
 						alert(`api error: failed to fetch ${this.opts.dataName} timeline posts. ${rest.response.message}`);
@@ -123,13 +123,13 @@
 				this.timelinePosts = rest.response.posts;
 
 				if (streaming) {
-					this.webSocket.sendEvent('timeline-connect', {type: this.opts.dataName});
+					this.webSocket.sendEvent('timeline-connect', { type: this.opts.dataName });
 				}
 
 				this.error = false;
 				this.loading = false;
 				this.update();
-			})().catch(err => {
+			})().catch((err) => {
 				console.error(err);
 				this.error = true;
 				this.loading = false;
@@ -150,7 +150,7 @@
 
 		this.on('unmount', () => {
 			if (streaming) {
-				this.webSocket.sendEvent('timeline-disconnect', {type: this.opts.dataName});
+				this.webSocket.sendEvent('timeline-disconnect', { type: this.opts.dataName });
 				this.webSocket.removeEventListener('open', this.reconnectHandler);
 				this.webSocket.off(`stream:${this.opts.dataName}-timeline-status`, this.receiveStatusHandler);
 			}

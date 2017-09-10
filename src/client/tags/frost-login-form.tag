@@ -34,7 +34,7 @@
 			}).then((res) => {
 				location.reload();
 			})
-			.catch(reason => {
+			.catch((reason) => {
 				console.log('Sign in error: ' + reason);
 				alert('ログインに失敗しました。' + reason);
 			});

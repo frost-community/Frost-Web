@@ -32,7 +32,7 @@ module.exports = async (debug, config) => {
 
 	// body parser
 
-	app.use(bodyParser.urlencoded({extended: false}));
+	app.use(bodyParser.urlencoded({ extended: false }));
 	app.use(bodyParser.json());
 
 	// compression
@@ -60,7 +60,7 @@ module.exports = async (debug, config) => {
 
 	// securities
 
-	app.use(helmet({frameguard: {action: 'deny'}}));
+	app.use(helmet({ frameguard: { action: 'deny' } }));
 	app.use(csurf());
 
 	// page middleware
@@ -93,7 +93,7 @@ module.exports = async (debug, config) => {
 
 			next();
 		}
-		catch(err) {
+		catch (err) {
 			throw new HttpServerError(500, err.message, true);
 		}
 	});
@@ -105,96 +105,96 @@ module.exports = async (debug, config) => {
 	// == routings ==
 
 	app.route('/session')
-	.put((req, res, next) => {
-		(async () => {
-			if (req.session.accessKey == null) {
-				await createSessionAsync(req, config);
-			}
-			res.json({message: 'ok'});
-		})().catch((err) => {
-			if (err instanceof HttpServerError) {
-				err.isJson = true;
-				next(err);
-			}
-			else {
-				next(new HttpServerError(500, err.message, true));
-			}
-		});
-	})
-	.delete(checkLogin, (req, res) => {
-		try {
-			if (req.session.accessKey != null) {
-				req.session.accessKey = null;
-			}
-			res.json({message: 'ok'});
-		}
-		catch(err) {
-			if (err instanceof HttpServerError) {
-				err.isJson = true;
-				throw err;
-			}
-			else {
-				throw new HttpServerError(500, err.message, true);
-			}
-		}
-	});
-
-	app.route('/session/register')
-	.post((req, res, next) => {
-		(async () => {
-			console.log('/session/register');
-			let recaptchaResult;
-			try {
-				recaptchaResult = await requestAsync('https://www.google.com/recaptcha/api/siteverify', {
-					method: 'POST',
-					json: true,
-					form: {
-						secret: config.web.reCAPTCHA.secretKey,
-						response: req.body.recaptchaToken
-					}
-				});
-			}
-			catch(err) {
-				throw new HttpServerError(500, 'recaptcha verification request failed:', err.message, true);
-			}
-
-			if (recaptchaResult.success !== true) {
-				throw new HttpServerError(400, `recaptcha verification error: ${JSON.stringify(recaptchaResult['error-codes'])}`, true);
-			}
-
-			let creationResult;
-			try {
-				creationResult = await requestApiAsync('post', '/account', req.body, {
-					'X-Api-Version': 1.0,
-					'X-Application-Key': config.web.applicationKey,
-					'X-Access-Key': config.web.hostAccessKey
-				});
-			}
-			catch(err) {
-				if (err instanceof requestErrors.StatusCodeError) {
-					throw new HttpServerError(err.statusCode, `session register error: ${JSON.stringify(err.body)}`, true);
+		.put((req, res, next) => {
+			(async () => {
+				if (req.session.accessKey == null) {
+					await createSessionAsync(req, config);
+				}
+				res.json({ message: 'ok' });
+			})().catch((err) => {
+				if (err instanceof HttpServerError) {
+					err.isJson = true;
+					next(err);
 				}
 				else {
+					next(new HttpServerError(500, err.message, true));
+				}
+			});
+		})
+		.delete(checkLogin, (req, res) => {
+			try {
+				if (req.session.accessKey != null) {
+					req.session.accessKey = null;
+				}
+				res.json({ message: 'ok' });
+			}
+			catch (err) {
+				if (err instanceof HttpServerError) {
+					err.isJson = true;
 					throw err;
 				}
-			}
-
-			if (!creationResult.user) {
-				throw new HttpServerError(creationResult.statusCode || 500, `session register error: ${creationResult.message}`, true);
-			}
-
-			await createSessionAsync(req, config);
-			res.json({message: 'ok'});
-		})().catch((err) => {
-			if (err instanceof HttpServerError) {
-				err.isJson = true;
-				next(err);
-			}
-			else {
-				next(new HttpServerError(500, err.message, true));
+				else {
+					throw new HttpServerError(500, err.message, true);
+				}
 			}
 		});
-	});
+
+	app.route('/session/register')
+		.post((req, res, next) => {
+			(async () => {
+				console.log('/session/register');
+				let recaptchaResult;
+				try {
+					recaptchaResult = await requestAsync('https://www.google.com/recaptcha/api/siteverify', {
+						method: 'POST',
+						json: true,
+						form: {
+							secret: config.web.reCAPTCHA.secretKey,
+							response: req.body.recaptchaToken
+						}
+					});
+				}
+				catch (err) {
+					throw new HttpServerError(500, 'recaptcha verification request failed:', err.message, true);
+				}
+
+				if (recaptchaResult.success !== true) {
+					throw new HttpServerError(400, `recaptcha verification error: ${JSON.stringify(recaptchaResult['error-codes'])}`, true);
+				}
+
+				let creationResult;
+				try {
+					creationResult = await requestApiAsync('post', '/account', req.body, {
+						'X-Api-Version': 1.0,
+						'X-Application-Key': config.web.applicationKey,
+						'X-Access-Key': config.web.hostAccessKey
+					});
+				}
+				catch (err) {
+					if (err instanceof requestErrors.StatusCodeError) {
+						throw new HttpServerError(err.statusCode, `session register error: ${JSON.stringify(err.body)}`, true);
+					}
+					else {
+						throw err;
+					}
+				}
+
+				if (!creationResult.user) {
+					throw new HttpServerError(creationResult.statusCode || 500, `session register error: ${creationResult.message}`, true);
+				}
+
+				await createSessionAsync(req, config);
+				res.json({ message: 'ok' });
+			})().catch((err) => {
+				if (err instanceof HttpServerError) {
+					err.isJson = true;
+					next(err);
+				}
+				else {
+					next(new HttpServerError(500, err.message, true));
+				}
+			});
+		});
 
 	// pages
 
@@ -207,7 +207,7 @@ module.exports = async (debug, config) => {
 		'/dev'
 	];
 
-	for(const page of pages) {
+	for (const page of pages) {
 		app.get(page, (req, res) => res.renderPage());
 	}
 
@@ -216,8 +216,8 @@ module.exports = async (debug, config) => {
 
 	// csrf token
 	app.use((err, req, res, next) => {
-		if(err.code !== 'EBADCSRFTOKEN') return next(err);
-		res.status(400).json({error: {message: err.message}});
+		if (err.code !== 'EBADCSRFTOKEN') return next(err);
+		res.status(400).json({ error: { message: err.message } });
 	});
 
 	// HttpServerError
@@ -225,17 +225,17 @@ module.exports = async (debug, config) => {
 		if (!(err instanceof HttpServerError)) return next(err);
 		res.status(err.status);
 		if (err.isJson) {
-			res.json({error: {message: err.message}});
+			res.json({ error: { message: err.message } });
 		}
 		else {
-			res.renderPage({error: err.message, code: err.status});
+			res.renderPage({ error: err.message, code: err.status });
 		}
 	});
 
 	// others
 	app.use((err, req, res, next) => {
 		// console.log('[http server] error:', err.message);
-		res.status(500).renderPage({error: err.message, code: 500});
+		res.status(500).renderPage({ error: err.message, code: 500 });
 	});
 
 	// == listening start ==

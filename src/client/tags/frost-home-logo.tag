@@ -10,6 +10,8 @@
 	</p>
 
 	<style>
+		@import "../styles/variables";
+
 		:scope {
 			> h1 {
 				font-size: 2.5rem !important;
@@ -30,6 +32,10 @@
 
 			> p {
 				line-height: 1;
+			}
+
+			@include less-than($tablet) {
+				display: none !important;
 			}
 		}
 	</style>

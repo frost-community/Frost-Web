@@ -26,7 +26,7 @@
 					align-items: center;
 
 					> button {
-						width: 5.5rem;
+						width: 100px;
 						margin-left: auto;
 
 						&:disabled {

@@ -22,15 +22,19 @@
 			}
 
 			> .side {
-				width: 250px;
-
 				> :not(:last-child) {
 					display: block;
 					margin-bottom: 2rem;
 				}
 
 				@include less-than($tablet) {
-					display: none;
+					display: flex;
+					flex-direction: column-reverse;
+					margin-right: 0;
+				}
+
+				@include greater-than($tablet) {
+					width: 250px;
 				}
 			}
 
@@ -43,6 +47,10 @@
 				> h1 {
 					margin: 0.5rem 0;
 				}
+			}
+
+			@include less-than($tablet) {
+				flex-direction: column;
 			}
 		}
 	</style>

@@ -89,7 +89,7 @@ class StreamingProxy {
 					});
 
 					if (endpointInfo == null) {
-						this.frontConnection.send('rest', { success: false, request: request, message: `'${endpoint}' endpoint is not access allowed on 'rest' event.` });
+						this.frontConnection.send('rest', { success: false, request: data, message: `'${endpoint}' endpoint is not access allowed on 'rest' event.` });
 						return;
 					}
 

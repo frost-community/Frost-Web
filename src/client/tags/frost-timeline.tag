@@ -40,6 +40,10 @@
 			}
 
 			> ul {
+				@include greater-than($tablet) {
+					background-color: hsla(0, 0%, 100%, 0.35);
+				}
+
 				> li {
 					list-style: none;
 

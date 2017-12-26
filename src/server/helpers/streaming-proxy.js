@@ -44,7 +44,7 @@ class StreamingProxy {
 			'rest',
 			'timeline-connect',
 			'timeline-disconnect',
-			// 'stream:general-timeline-status',
+			'stream:general-timeline-status',
 			'stream:home-timeline-status'
 		];
 
@@ -82,8 +82,7 @@ class StreamingProxy {
 		this.frontConnection.on('rest', (data) => {
 			(async () => {
 				try {
-					const { request } = data;
-					const { method, endpoint } = request;
+					const { method, endpoint } = data;
 
 					const endpointInfo = this.endpointWhiteList.find((item) => {
 						return item.method == method && pathToRegexp(item.path).test(endpoint);

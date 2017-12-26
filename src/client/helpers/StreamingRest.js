@@ -48,7 +48,7 @@ class StreamingRest {
 			request = Object.assign(request, requestContent);
 
 			// send request
-			this.connection.sendEvent('rest', { request: request });
+			this.connection.sendEvent('rest', request);
 		});
 	}
 }

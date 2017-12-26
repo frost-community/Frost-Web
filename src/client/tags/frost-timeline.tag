@@ -101,9 +101,9 @@
 			console.log(data.message);
 		};
 
-		this.receiveStatusHandler = (status) => {
-			console.log('status: ', status);
-			this.timelinePosts.splice(0, 0, status);
+		this.receiveStatusHandler = (data) => {
+			console.log('status: ', data.resource);
+			this.timelinePosts.splice(0, 0, data.resource);
 			this.update();
 		};
 

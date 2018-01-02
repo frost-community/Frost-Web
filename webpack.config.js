@@ -1,7 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 
-const absolutePath = relative => path.join(__dirname, relative);
+const absolutePath = (relative) => path.join(__dirname, relative);
 
 module.exports = {
 	context: absolutePath('src/client'),

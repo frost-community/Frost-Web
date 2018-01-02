@@ -1,24 +1,20 @@
 <frost-page-userlist>
-	<div class='content'>
-		<div class='main'>
-			<h5>ユーザーの一覧</h5>
-			<ul>
-				<li each={ user in users }>
-					<a href={ '/users/'+user.screenName }>{ user.name } @{ user.screenName }</a>
-				</li>
-			</ul>
-			<p if={ loading }>読み込み中...</p>
-			<p if={ !loading && users.length == 0 }>ユーザーリストの取得に失敗しました。</p>
-		</div>
+	<div class='main'>
+		<h4>ユーザーの一覧</h4>
+		<ul>
+			<li each={ user in users }>
+				<a href={ '/users/'+user.screenName }>{ user.name } @{ user.screenName }</a>
+			</li>
+		</ul>
+		<p if={ loading }>読み込み中...</p>
+		<p if={ !loading && users.length == 0 }>ユーザーリストの取得に失敗しました。</p>
 	</div>
 
 	<style>
 		@import "../styles/variables";
 
 		:scope {
-			> .content {
-				@include responsive();
-			}
+
 		}
 	</style>
 
@@ -27,9 +23,12 @@
 		this.users = [];
 		this.loading = true;
 
-		const changedPageHandler = (pageId) => {
+		const changedPageHandler = async (pageId) => {
 			if (pageId == 'userlist') {
-				(async () => {
+				this.central.off('ev:changed-page', changedPageHandler);
+				window.document.title = 'Frost - ユーザーの一覧';
+
+				try {
 					// ユーザー情報をフェッチ
 					const streamingRest = new StreamingRest(this.webSocket);
 					const rest = await streamingRest.requestAsync('get', '/users');
@@ -37,14 +36,13 @@
 					this.users = rest.response.users;
 					this.loading = false;
 					this.update();
-
-					window.document.title = 'Frost - ユーザーの一覧';
-					this.central.off('ev:changed-page', changedPageHandler);
-				})().catch(err => {
+				}
+				catch(err) {
 					console.error(err);
 					this.loading = false;
-					this.update();
-				});
+				}
+
+				this.update();
 			}
 		};
 

@@ -1,16 +1,14 @@
 <frost-page-post>
-	<div class='content'>
-		<div class='main'>
-			<p>ポストが表示されるページです。</p>
-		</div>
+	<div class='main'>
+		<p>ポストが表示されるページです。</p>
 	</div>
 
 	<style>
 		@import "../styles/variables";
 
 		:scope {
-			> .content {
-				@include responsive();
+			> :not(:last-child) {
+				margin-right: 2rem;
 			}
 		}
 	</style>
@@ -18,14 +16,15 @@
 	<script>
 		const changedPageHandler = (pageId, params) => {
 			if (pageId == 'post') {
-				const postId = params[0];
+				this.central.off('ev:changed-page', changedPageHandler);
+
+				const postId = params.postId;
 				// TODO: ポストとその投稿者をフェッチ
 				const screenName = 'hoge';
 				window.document.title = `Frost - @${screenName}さんの投稿`;
 
-				this.central.off('ev:changed-page', changedPageHandler);
+				this.update();
 			}
-			this.update();
 		};
 
 		this.on('mount', () => {

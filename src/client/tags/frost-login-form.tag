@@ -8,6 +8,19 @@
 		<button class='button-primary'>ログイン</button><!-- Sign in -->
 	</form>
 
+	<style>
+		@import "../styles/variables";
+
+		:scope {
+			input[type=text],
+			input[type=password] {
+				&:focus:invalid {
+					border-color: $textbox-invalid-value-color;
+				}
+			}
+		}
+	</style>
+
 	<script>
 		const fetchJson = require('../helpers/fetch-json');
 
@@ -21,7 +34,7 @@
 			}).then((res) => {
 				location.reload();
 			})
-			.catch(reason => {
+			.catch((reason) => {
 				console.log('Sign in error: ' + reason);
 				alert('ログインに失敗しました。' + reason);
 			});

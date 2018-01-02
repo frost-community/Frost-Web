@@ -21,15 +21,10 @@ class StreamingRest {
 			}, timeoutInterval);
 
 			// handler
-			const rest = rest => {
+			const rest = (rest) => {
 				if (rest.request.method == method && rest.request.endpoint == endpoint) {
 					if (rest.success) {
-						if (rest.statusCode < 400) {
-							resolve(rest);
-						}
-						else {
-							reject(new Error(`api error: failed to fetch data. (Status: ${rest.statusCode}) ${rest.response.message}`));
-						}
+						resolve(rest);
 					}
 					else {
 						reject(new Error(`internal error: failed to fetch data. ${rest.message}`));
@@ -53,7 +48,7 @@ class StreamingRest {
 			request = Object.assign(request, requestContent);
 
 			// send request
-			this.connection.sendEvent('rest', {request: request});
+			this.connection.sendEvent('rest', request);
 		});
 	}
 }

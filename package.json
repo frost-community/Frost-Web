@@ -1,11 +1,11 @@
 {
   "name": "frost-web",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Frost Web Server",
   "private": true,
   "main": "./built/index.js",
   "engines": {
-    "node": ">= 7.0.0"
+    "node": ">= 8.0.0"
   },
   "scripts": {
     "start": "node ./",
@@ -45,7 +45,7 @@
     "helmet": "^3.8.1",
     "mocha": "^3.5.0",
     "moment": "^2.18.1",
-    "node-sass": "^4.5.2",
+    "node-sass": "^4.7.2",
     "path-to-regexp": "^1.7.0",
     "prominence": "^0.2.0",
     "pug": "^2.0.0-rc.3",
@@ -58,7 +58,7 @@
     "riot-tag-loader": "^1.0.0",
     "webpack": "^2.6.1",
     "websocket": "^1.0.24",
-    "websocket-events": "^0.0.3"
+    "websocket-events": "^0.0.4"
   },
   "files": [
     "*"

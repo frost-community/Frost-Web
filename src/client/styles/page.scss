@@ -1,18 +1,39 @@
 @import "variables";
 
-/* 全般 */
+// 全般
 
 * {
 	box-sizing: border-box;
 }
 
+html {
+	// 基本となるフォントサイズ(ここ以外ではremでそれぞれ相対指定)
+	font-size: 16.5px;
+	@include less-than($tablet) {
+		font-size: 15px;
+	}
+	@include less-than($phone) {
+		font-size: 13px;
+	}
+}
+
 body {
 	margin: 0;
 	padding: 0;
-	font-family: Raleway, HelveticaNeue, 'Helvetica Neue', Helvetica, Arial, メイリオ, sans-serif;
+	font-family: $general-font-family;
 	word-wrap: break-word;
 	background-color: $back-color;
 	color: $fore-color;
+	font-size: 1rem;
+	min-width: 270px;
+}
+
+a {
+	transition: color 200ms ease-in-out;
+}
+
+button, .button {
+	transition: color 200ms ease-in-out, border-color 200ms ease-in-out;
 }
 
 button, .button, label {
@@ -31,10 +52,22 @@ input[type=tel],
 input[type=text],
 input[type=url],
 textarea {
+	font-size: 0.75rem;
+	font-family: $general-font-family;
 	background-color: $textbox-back-color;
+	transition: background-color 200ms ease-in-out;
+	border: none;
+	border-radius: 6px;
 
-	&:focus:invalid {
-		border-color: $textbox-invalid-value-color;
+	&:focus {
+		border: none;
+		background-color: $textbox-back-color-focus;
+	}
+
+	&.checkable {
+		&:invalid {
+			background-color: $textbox-invalid-value-color;
+		}
 	}
 }
 
@@ -42,21 +75,35 @@ form :last-child {
 	margin-bottom: 0;
 }
 
-.box {
-	border: 1px solid $border-color;
-	border-radius: 4px;
-	padding: 30px;
-	padding-bottom: 0px;
-
-	@include less-than($tablet) {
-		border: none;
-		border-radius: unset;
-		padding: 0;
-	}
-}
-
 .orange-button {
 	color: $white;
 	background-color: $orange;
 	border: none;
+}
+
+hr {
+	margin: 2rem 0;
+}
+
+h1 { font-size: 2.2rem; }
+h2 { font-size: 2rem; }
+h3 { font-size: 1.7rem; }
+h4 { font-size: 1.4rem; }
+h5 { font-size: 1.2rem; }
+h6 { font-size: 1.1rem; }
+
+h1, h2, h3, h4, h5, h6 {
+	margin-bottom: 0.75rem;
+}
+
+p, ul, form {
+	margin-bottom: 1.5rem;
+
+	&:last-child {
+		margin-bottom: 0;
+	}
+}
+
+fieldset, input, select, textarea {
+	margin-bottom: 0.8rem;
 }

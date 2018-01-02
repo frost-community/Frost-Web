@@ -1,21 +1,16 @@
 <frost-page-entrance>
-	<div class='content'>
+	<div class='sections'>
 		<section id='logo-section'>
-			<h1>
-				<img class='logo-icon' src='/images/apple-touch-icon.png' />
-				Frost
-			</h1>
-			<p>
-				A cool and cool social-media.
-				<br />
-				冷やし中華はじめました。
-			</p>
+			<div class='logo'>
+				<img src='/images/apple-touch-icon.png' />
+				<h1>Frost</h1>
+			</div>
+			<p>A cool and cool social-media.</p>
+			<p>冷やし中華はじめました。</p>
 		</section>
-
 		<section>
 			<frost-login-form />
 		</section>
-
 		<section>
 			<frost-signup-form />
 		</section>
@@ -25,39 +20,53 @@
 		@import "../styles/variables";
 
 		:scope {
-			.logo-icon {
-				height: 3rem;
+			flex-direction: column;
+			align-items: center;
 
-				@include greater-than($phone) {
-					height: 4rem;
+			.sections {
+				width: 390px;
+
+				@include less-than($phone) {
+					width: 100%;
 				}
 			}
 
-			> .content {
-				@include responsive();
-
-				flex-direction: column;
-				align-items: flex-start;
+			section {
+				margin: 1.5rem 0;
 
 				@include greater-than($phone) {
-					align-items: center;
-				}
-
-				> section {
-					padding: 3rem;
+					border: 1px solid $border-color;
+					border-radius: 6px;
+					padding: 1.65rem;
 					margin: 1rem;
+				}
+			}
 
-					@include greater-than($phone) {
-						width: 370px;
-						border: 1px solid $border-color;
-						border-radius: 4px;
-					}
+			#logo-section {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				border: none;
+
+				p {
+					font-size: 0.85rem;
+					margin: 0;
 				}
 
-				#logo-section {
-					align-self: center;
-					text-align: center;
-					border: none;
+				.logo {
+					display: flex;
+					align-items: center;
+					margin-bottom: 1rem;
+
+					h1 {
+						font-size: 2.8rem;
+						margin: 0;
+					}
+
+					img {
+						height: 2.3rem;
+						margin-right: 0.1rem;
+					}
 				}
 			}
 		}
@@ -66,11 +75,11 @@
 	<script>
 		const changedPageHandler = (pageId) => {
 			if (pageId == 'entrance') {
+				this.central.off('ev:changed-page', changedPageHandler);
 				window.document.title = 'Frost';
 
-				this.central.off('ev:changed-page', changedPageHandler);
+				this.update();
 			}
-			this.update();
 		};
 
 		this.on('mount', () => {

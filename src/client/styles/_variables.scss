@@ -1,14 +1,15 @@
-/* display width */
+/* break points */
 
-$phone: 420px;
+$phone: 414px;
 $tablet: 768px;
 $desktop: 1024px;
-$desktopHD: 1280px;
+$desktopWide: 1280px;
 
 /* colors */
 
 $back-color: hsl(214, 100%, 98%);
 $fore-color: hsl(189, 50%, 20%);
+$sub-text-color: hsla(189, 50%, 20%, 0.75);
 $border-color: rgba(0, 0, 0, 0.1);
 
 $back-color-dev: hsl(190, 26%, 50%);
@@ -18,8 +19,13 @@ $border-color-dev: hsla(0, 0%, 100%, 0.3);
 $white: hsl(0, 0%, 100%);
 $orange: hsl(33, 100%, 64%);
 
-$textbox-back-color: transparent;
-$textbox-invalid-value-color: hsla(0, 100%, 50%, 0.7);
+$textbox-back-color: hsl(206, 47%, 93%);
+$textbox-back-color-focus: hsla(206, 47%, 93%, 0.5);
+$textbox-invalid-value-color: hsla(0, 100%, 50%, 0.2);
+
+/* font-family */
+
+$general-font-family: Raleway, HelveticaNeue, 'Helvetica Neue', Helvetica, Arial, メイリオ, sans-serif;
 
 /* mixins */
 
@@ -37,18 +43,13 @@ $textbox-invalid-value-color: hsla(0, 100%, 50%, 0.7);
 	}
 }
 
-// レスポンシブ表示をサポートする。(に適用してください。)
-@mixin responsive($minWidth: 300px) {
+// レスポンシブ表示をサポートする。(親コンテナに適用してください)
+@mixin responsive() {
 	display: flex;
-	min-width: $minWidth;
 	margin: 0 auto;
-	padding: 0 .5rem;
 
 	@include less-than($tablet) {
 		width: 100%;
-	}
-	@include greater-than($phone) {
-		padding: 0 1rem;
 	}
 	@include greater-than($tablet) {
 		max-width: $tablet;
@@ -56,7 +57,19 @@ $textbox-invalid-value-color: hsla(0, 100%, 50%, 0.7);
 	@include greater-than($desktop) {
 		max-width: $desktop;
 	}
-	@include greater-than($desktopHD) {
-		max-width: $desktopHD;
+	@include greater-than($desktopWide) {
+		max-width: $desktopWide;
+	}
+}
+
+@mixin box() {
+	border: 1px solid $border-color;
+	border-radius: 0.2rem;
+	padding: 1.1rem 1.1rem 0.3rem;
+
+	@include less-than($tablet) {
+		border: none;
+		border-radius: unset;
+		padding: 0;
 	}
 }

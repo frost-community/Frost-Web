@@ -24,8 +24,8 @@ const mixinGlobal = {};
 			let webSocket;
 			try {
 				webSocket = await WebSocketEvents.connectAsync(`${secure ? 'wss' : 'ws'}://${location.host}`);
-				webSocket.addEventListener('close', ev => { console.log('close:'); console.dir(ev); });
-				webSocket.addEventListener('error', ev => { console.log('error:'); console.dir(ev); });
+				webSocket.addEventListener('close', (ev) => { console.log('close:'); console.dir(ev); });
+				webSocket.addEventListener('error', (ev) => { console.log('error:'); console.dir(ev); });
 				WebSocketEvents.init(webSocket);
 				mixinGlobal.webSocket = webSocket;
 			}
@@ -57,7 +57,7 @@ const mixinGlobal = {};
 		require('./tags/frost-hint.tag');
 		// - container
 		require('./tags/frost-container.tag');
-		require('./tags/frost-header.tag');
+		require('./tags/frost-global-nav.tag');
 		require('./tags/frost-page-switcher.tag');
 		require('./tags/frost-footer.tag');
 		// - entrance
@@ -67,7 +67,7 @@ const mixinGlobal = {};
 		// - home
 		require('./tags/frost-page-home.tag');
 		require('./tags/frost-home-logo.tag');
-		require('./tags/frost-create-status-form.tag');
+		require('./tags/frost-form-create-status.tag');
 		// authorize
 		require('./tags/frost-appauth-form.tag');
 		// - user
@@ -80,7 +80,7 @@ const mixinGlobal = {};
 		// - dev
 		require('./tags/frost-page-dev.tag');
 		require('./tags/frost-applications.tag');
-		require('./tags/frost-create-application-form.tag');
+		require('./tags/frost-form-create-application.tag');
 		// - error
 		require('./tags/frost-page-error.tag');
 
@@ -102,29 +102,37 @@ const mixinGlobal = {};
 		// routing
 
 		const changePage = (pageId, params) => {
-			params = params || [];
+			params = params || {};
 			central.trigger('change-page', pageId, params);
 		};
 
 		route.base('/');
-		route('', () => {
-			changePage(getLogin() ? 'home' : 'entrance');
+
+		route('', () =>
+			changePage(getLogin() ? 'home' : 'entrance'));
+
+		route('general', () => {
+			if (!getLogin()) {
+				changePage('error', { message: 'forbidden' });
+				return;
+			}
+			changePage('home', { timelineType: 'general' });
 		});
-		route('dev', () => {
-			changePage('dev');
-		});
-		route('userlist', () => {
-			changePage('userlist');
-		});
-		route('users/*', (screenName) => {
-			changePage('user', [screenName]);
-		});
-		route('posts/*', (postId) => {
-			changePage('post', [postId]);
-		});
-		route('*', () => {
-			changePage('error', ['page not found']);
-		});
+
+		route('dev', () =>
+			changePage('dev'));
+
+		route('userlist', () =>
+			changePage('userlist'));
+
+		route('users/*', (screenName) =>
+			changePage('user', { screenName }));
+
+		route('posts/*', (postId) =>
+			changePage('post', { postId }));
+
+		route('*', () =>
+			changePage('error', { message: 'page not found' }));
 
 		// recaptcha
 
@@ -150,9 +158,4 @@ const mixinGlobal = {};
 
 	// start routing
 	route.start(true);
-
-	const hasError = document.getElementsByName('frost-error').item(0) != null;
-	if (hasError) {
-		mixinGlobal.central.trigger('change-page', 'error');
-	}
 })();

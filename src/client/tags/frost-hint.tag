@@ -5,6 +5,8 @@
 	</div>
 
 	<style>
+		@import "../styles/variables";
+
 		:scope {
 			> div {
 				display: flex;
@@ -14,11 +16,15 @@
 					margin: 0;
 				}
 				> i {
-					margin-right: 0.75rem;
+					margin-right: 0.4rem;
 				}
 				> p {
-					font-size: 1.2rem;
+					font-size: 0.66rem;
 				}
+			}
+
+			@include less-than($tablet) {
+				margin-bottom: 1rem;
 			}
 		}
 	</style>

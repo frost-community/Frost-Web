@@ -10,8 +10,8 @@ const StreamingProxy = require('./helpers/streaming-proxy');
  * セッション経由でAPIにアクセスできる機能が含まれます。
  */
 module.exports = (http, sessionStore, debugDetail, config) => {
-	const server = new WebSocket.server({httpServer: http});
-	server.on('request', request => {
+	const server = new WebSocket.server({ httpServer: http });
+	server.on('request', (request) => {
 		(async () => {
 			let frontConnection;
 			try {
@@ -48,11 +48,11 @@ module.exports = (http, sessionStore, debugDetail, config) => {
 					}
 				}
 
-				apiConnection.on('error', err => {
+				apiConnection.on('error', (err) => {
 					console.log('api error:', err);
 				});
 
-				apiConnection.on('close', data => {
+				apiConnection.on('close', (data) => {
 					if (debugDetail) {
 						console.log('[api close]:', data.reasonCode, data.description);
 					}
@@ -66,7 +66,7 @@ module.exports = (http, sessionStore, debugDetail, config) => {
 				frontConnection = request.accept();
 				WebSocketUtility.addExtensionMethods(frontConnection);
 
-				frontConnection.on('error', err => {
+				frontConnection.on('error', (err) => {
 					if (err.message.indexOf('ECONNRESET') != -1) {
 						// noop
 					}
@@ -75,7 +75,7 @@ module.exports = (http, sessionStore, debugDetail, config) => {
 					}
 				});
 
-				frontConnection.on('close', data => {
+				frontConnection.on('close', (data) => {
 					if (debugDetail) {
 						console.log('[front close]:', data.reasonCode, data.description);
 					}
@@ -89,7 +89,7 @@ module.exports = (http, sessionStore, debugDetail, config) => {
 				const streamingProxy = new StreamingProxy(frontConnection, apiConnection, debugDetail, config);
 				streamingProxy.start();
 			}
-			catch(err) {
+			catch (err) {
 				if (frontConnection != null && frontConnection.connected) {
 					frontConnection.close();
 				}

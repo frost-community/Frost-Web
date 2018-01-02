@@ -14,9 +14,9 @@ const questionResult = (ans) => (ans.toLowerCase()).indexOf('y') === 0;
  * Webアプリケーションサーバ
  */
 module.exports = async () => {
-	console.log('--------------------');
-	console.log('  Frost-Web Server  ');
-	console.log('--------------------');
+	console.log('+------------------+');
+	console.log('| Frost Web Server |');
+	console.log('+------------------+');
 
 	console.log('loading config...');
 	let config = loadConfig();
@@ -38,6 +38,7 @@ module.exports = async () => {
 	}
 
 	if (config == null) {
+		console.log('failed to loading config');
 		return;
 	}
 	console.log('loaded config');

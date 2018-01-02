@@ -1,12 +1,15 @@
 <frost-timeline>
-	<div style='margin: 5rem auto' if={ loading }>
-		<p>取得しています...</p>
+	<div class='information' if={ loading }>
+		<i class="fa fa-spinner fa-spin fa-fw" aria-hidden="true"></i>
+		取得しています...
 	</div>
-	<div style='margin: 5rem auto' if={ !loading && timelinePosts.length == 0 }>
-		<p>投稿がありません。</p>
+	<div class='information' if={ !loading && timelinePosts.length == 0 }>
+		<i class="fa fa-info-circle fa-fw" aria-hidden="true"></i>
+		投稿がありません。
 	</div>
-	<div style='margin: 5rem auto' if={ !loading && timelinePosts.length == 0 && error }>
-		<p>タイムラインの取得中にエラーが発生しました。</p>
+	<div class='information' if={ !loading && timelinePosts.length == 0 && error }>
+		<i class="fa fa-exclamation-triangle fa-fw" aria-hidden="true"></i>
+		タイムラインの取得中にエラーが発生しました。
 	</div>
 	<ul if={ !loading && timelinePosts.length != 0 }>
 		<li each={ post in timelinePosts }>
@@ -15,9 +18,45 @@
 	</ul>
 
 	<style>
+		@import "../styles/variables";
+
 		:scope {
-			ul > li {
-				list-style: none;
+			> .information,
+			> ul {
+				@include greater-than($tablet) {
+					border: 1px solid hsl(0, 0%, 88%);
+					border-radius: 0.25rem;
+				}
+			}
+
+			> .information {
+				padding: 1rem 0;
+				font-size: 0.95rem;
+
+				@include greater-than($tablet) {
+					background-color: hsla(0, 0%, 0%, 0.02);
+					padding: 1.5rem 2rem;
+				}
+			}
+
+			> ul {
+				@include greater-than($tablet) {
+					background-color: hsla(0, 0%, 100%, 0.35);
+				}
+
+				> li {
+					list-style: none;
+
+					@include greater-than($tablet) {
+						&:not(:last-child) {
+							border-bottom: 1px solid hsl(0, 0%, 88%);
+						}
+
+						> frost-post-status {
+							margin: 1.25rem;
+						}
+					}
+				}
 			}
 		}
 	</style>
@@ -55,20 +94,20 @@
 
 		this.reconnectHandler = () => {
 			console.log('reconnecting timeline...');
-			this.webSocket.sendEvent('timeline-connect', {type: this.opts.dataName});
+			this.webSocket.sendEvent('timeline-connect', { type: this.opts.dataName });
 		};
 
-		this.timelineConnectHandler = data => {
+		this.timelineConnectHandler = (data) => {
 			console.log(data.message);
 		};
 
-		this.timelineDisconnectHandler = data => {
+		this.timelineDisconnectHandler = (data) => {
 			console.log(data.message);
 		};
 
-		this.receiveStatusHandler = status => {
-			console.log('status: ', status);
-			this.timelinePosts.splice(0, 0, status);
+		this.receiveStatusHandler = (data) => {
+			console.log('status: ', data.resource);
+			this.timelinePosts.splice(0, 0, data.resource);
 			this.update();
 		};
 
@@ -78,29 +117,23 @@
 
 			(async () => {
 				const streamingRest = new StreamingRest(this.webSocket);
-				const rest = await streamingRest.requestAsync('get', endpoint, {query: {limit: 100}});
-
-				if (rest.success) {
-					if (rest.response.posts == null) {
-						if (rest.statusCode != 204) {
-							alert(`api error: failed to fetch ${this.opts.dataName} timeline posts. ${rest.response.message}`);
-						}
-						rest.response.posts = [];
+				const rest = await streamingRest.requestAsync('get', endpoint, { query: { limit: 100 } });
+				if (rest.response.posts == null) {
+					if (rest.statusCode != 204) {
+						alert(`api error: failed to fetch ${this.opts.dataName} timeline posts. ${rest.response.message}`);
 					}
-					this.timelinePosts = rest.response.posts;
+					rest.response.posts = [];
 				}
-				else {
-					alert(`internal error: ${rest.message}`);
-				}
+				this.timelinePosts = rest.response.posts;
 
 				if (streaming) {
-					this.webSocket.sendEvent('timeline-connect', {type: this.opts.dataName});
+					this.webSocket.sendEvent('timeline-connect', { type: this.opts.dataName });
 				}
 
 				this.error = false;
 				this.loading = false;
 				this.update();
-			})().catch(err => {
+			})().catch((err) => {
 				console.error(err);
 				this.error = true;
 				this.loading = false;
@@ -121,7 +154,7 @@
 
 		this.on('unmount', () => {
 			if (streaming) {
-				this.webSocket.sendEvent('timeline-disconnect', {type: this.opts.dataName});
+				this.webSocket.sendEvent('timeline-disconnect', { type: this.opts.dataName });
 				this.webSocket.removeEventListener('open', this.reconnectHandler);
 				this.webSocket.off(`stream:${this.opts.dataName}-timeline-status`, this.receiveStatusHandler);
 			}

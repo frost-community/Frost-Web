@@ -1,62 +1,76 @@
 <frost-page-home>
-	<div class='content'>
-		<div class='side'>
-			<frost-home-logo />
-			<hr />
-			<frost-create-status-form />
-			<frost-hint />
-		</div>
-		<div class='main'>
-			<h1>タイムライン</h1>
-			<frost-timeline data-name='home' />
-		</div>
+	<div class='side'>
+		<frost-home-logo />
+		<frost-form-create-status />
+		<frost-hint />
+	</div>
+	<div class='main'>
+		<h6>{ this.timelineType == 'general' ? 'ジェネラル' : '' } タイムライン</h6>
+		<frost-timeline if={ mountTimeline } data-name={ timelineType } />
 	</div>
 
 	<style>
 		@import "../styles/variables";
 
 		:scope {
-			> .content {
-				@include responsive();
+			> :not(:last-child) {
+				margin-right: 2.25rem;
 
-				> .side {
-					@include less-than($tablet) {
-						display: none;
-					}
+				@include less-than($desktop) {
+					margin-right: 2rem;
+				}
+			}
 
-					.box {
-						margin: 10px 0;
-					}
+			> .side {
+				> :not(:last-child) {
+					display: block;
+					margin-bottom: 2rem;
 				}
 
-				> .side {
+				@include less-than($tablet) {
+					display: flex;
+					flex-direction: column-reverse;
+					margin-right: 0;
+				}
+
+				@include greater-than($tablet) {
 					width: 250px;
 				}
+			}
 
-				> .main {
-					min-width: 300px;
-					flex: 1;
-				}
+			> .main {
+				flex: 1;
+			}
 
-				> .side,
-				> .main {
-					h1 {
-						font-size: 18px;
-						margin-bottom: 10px;
-					}
+			> .side,
+			> .main {
+				> h1 {
+					margin: 0.5rem 0;
 				}
+			}
+
+			@include less-than($tablet) {
+				flex-direction: column;
 			}
 		}
 	</style>
 
 	<script>
-		const changedPageHandler = (pageId) => {
+		this.mountTimeline = false;
+		this.timelineType = 'home';
+
+		const changedPageHandler = (pageId, params) => {
 			if (pageId == 'home') {
+				this.central.off('ev:changed-page', changedPageHandler);
 				window.document.title = 'Frost';
 
-				this.central.off('ev:changed-page', changedPageHandler);
+				if (params.timelineType == 'general') {
+					this.timelineType = 'general';
+				}
+				this.mountTimeline = true;
+
+				this.update();
 			}
-			this.update();
 		};
 
 		this.on('mount', () => {

@@ -1,5 +1,5 @@
 <frost-post-status>
-	<div class='side'></div>
+	<div class='side'><div class='icon'></div></div>
 	<div class='main'>
 		<div class='info'>
 			<a href={ '/users/' + opts.status.user.screenName }>{ opts.status.user.name } @{ opts.status.user.screenName }</a>
@@ -9,30 +9,54 @@
 	</div>
 
 	<style>
+		@import "../styles/variables";
+
 		:scope {
 			display: flex;
-			margin: 2.5rem 0;
+			margin: 1rem 0;
 
-			.side {
-				min-width: 72px;
+			> .side {
+				> .icon {
+					margin-right: 0.8rem;
+					background-color: hsla(0, 0%, 0%, 0.05);
+					/* background-image: url(); */
+					/* background-size: cover; */
+					min-height: 3.75rem;
+					min-width: 3.75rem;
+					border-radius: 6px;
+				}
 			}
 
-			.main {
+			> .main {
 				width: 100%;
 				word-break: break-word;
 
-				.info {
+				> .info {
 					display: flex;
 					justify-content: space-between;
-					margin-bottom: 0.5rem;
 
-					a {
+					> a {
+						// テキストを上に詰める
+						line-height: 100%;
 						text-decoration-line: none;
+
+						// テキストの省略
+						overflow: hidden;
+						text-overflow: ellipsis;
+						white-space: nowrap;
+					}
+
+					> time {
+						color: $sub-text-color;
+						font-size: 0.9rem;
+
+						// 幅固定
+						flex-shrink: 0;
 					}
 				}
 
-				.text {
-					p {
+				> .text {
+					> p {
 						margin-bottom: 0;
 					}
 				}

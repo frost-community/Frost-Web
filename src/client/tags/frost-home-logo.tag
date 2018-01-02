@@ -1,6 +1,8 @@
 <frost-home-logo>
 	<h1>
-		<img class='icon' src='/images/apple-touch-icon.png' />
+		<div class='icon'>
+			<img src='/images/apple-touch-icon.png' />
+		</div>
 		Frost
 	</h1>
 	<p>
@@ -8,17 +10,32 @@
 	</p>
 
 	<style>
+		@import "../styles/variables";
+
 		:scope {
 			> h1 {
-				font-size: 4.5rem !important;
+				font-size: 2.5rem !important;
 				display: flex;
 				align-items: center;
 				justify-content: center;
-				padding: 0.5rem 0;
+				margin: 0.5rem 0 2rem;
 
 				> .icon {
-					height: 5rem;
+					width: 1em;
+					height: 1em;
+
+					> img {
+						width: 100%;
+					}
 				}
+			}
+
+			> p {
+				line-height: 1;
+			}
+
+			@include less-than($tablet) {
+				display: none !important;
 			}
 		}
 	</style>

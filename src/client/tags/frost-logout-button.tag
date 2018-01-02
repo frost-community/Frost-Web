@@ -10,7 +10,7 @@
 			}).then((res) => {
 				location.reload();
 			})
-			.catch(reason => {
+			.catch((reason) => {
 				console.log('Sign out error: ' + reason);
 				alert('エラー: ログアウトに失敗しました。' + reason);
 			});

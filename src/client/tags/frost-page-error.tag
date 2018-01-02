@@ -17,24 +17,21 @@
 
 		const changedPageEventHandler = (pageId, params) => {
 			if (pageId == 'error') {
+				this.central.off('ev:changed-page', changedPageEventHandler);
+
 				const metaError = document.getElementsByName('frost-error').item(0);
 				const metaCode = document.getElementsByName('frost-code').item(0);
-
 				if (metaError != null) {
 					this.message = metaError.content;
 					const code = metaCode.content;
 					metaError.remove();
 					metaCode.remove();
-
 					window.document.title = `Frost - Error ${code}`;
 				}
 				else {
 					this.message = params.message || 'no message';
-
 					window.document.title = `Frost - Error`;
 				}
-
-				this.central.off('ev:changed-page', changedPageEventHandler);
 			}
 			this.update();
 		};

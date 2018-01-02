@@ -104,9 +104,10 @@ const mixinGlobal = {};
 		};
 
 		route.base('/');
-		route('', () => {
-			changePage(getLogin() ? 'home' : 'entrance');
-		});
+
+		route('', () =>
+			changePage(getLogin() ? 'home' : 'entrance'));
+
 		route('general', () => {
 			if (!getLogin()) {
 				changePage('error', { message: 'forbidden' });
@@ -114,21 +115,21 @@ const mixinGlobal = {};
 			}
 			changePage('home', { timelineType: 'general' });
 		});
-		route('dev', () => {
-			changePage('dev');
-		});
-		route('userlist', () => {
-			changePage('userlist');
-		});
-		route('users/*', (screenName) => {
-			changePage('user', { screenName: screenName });
-		});
-		route('posts/*', (postId) => {
-			changePage('post', { postId: postId });
-		});
-		route('*', () => {
-			changePage('error', { message: 'page not found' });
-		});
+
+		route('dev', () =>
+			changePage('dev'));
+
+		route('userlist', () =>
+			changePage('userlist'));
+
+		route('users/*', (screenName) =>
+			changePage('user', { screenName }));
+
+		route('posts/*', (postId) =>
+			changePage('post', { postId }));
+
+		route('*', () =>
+			changePage('error', { message: 'page not found' }));
 
 		// recaptcha
 

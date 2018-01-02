@@ -61,6 +61,7 @@
 
 		const changedPageHandler = (pageId, params) => {
 			if (pageId == 'home') {
+				this.central.off('ev:changed-page', changedPageHandler);
 				window.document.title = 'Frost';
 
 				if (params.timelineType == 'general') {
@@ -68,9 +69,8 @@
 				}
 				this.mountTimeline = true;
 
-				this.central.off('ev:changed-page', changedPageHandler);
+				this.update();
 			}
-			this.update();
 		};
 
 		this.on('mount', () => {

@@ -38,6 +38,7 @@ module.exports = async () => {
 	}
 
 	if (config == null) {
+		console.log('failed to loading config');
 		return;
 	}
 	console.log('loaded config');

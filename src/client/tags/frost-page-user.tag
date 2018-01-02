@@ -59,24 +59,25 @@
 		this.user = null;
 		this.loading = true;
 
-		const changedPageHandler = (pageId, params) => {
+		const changedPageHandler = async (pageId, params) => {
 			if (pageId == 'user') {
-				(async () => {
+				this.central.off('ev:changed-page', changedPageHandler);
+				window.document.title = `Frost - @${params.screenName}さんのページ`;
+
+				try {
 					// ユーザー情報をフェッチ
 					const streamingRest = new StreamingRest(this.webSocket);
 					const rest = await streamingRest.requestAsync('get', '/users', { query: { 'screen_names': params.screenName } });
 
 					this.user = rest.response.users[0];
 					this.loading = false;
-					this.update();
-
-					window.document.title = `Frost - @${params.screenName}さんのページ`;
-					this.central.off('ev:changed-page', changedPageHandler);
-				})().catch((err) => {
+				}
+				catch(err) {
 					console.error(err);
 					this.loading = false;
-					this.update();
-				});
+				}
+
+				this.update();
 			}
 		};
 

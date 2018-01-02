@@ -23,9 +23,12 @@
 		this.users = [];
 		this.loading = true;
 
-		const changedPageHandler = (pageId) => {
+		const changedPageHandler = async (pageId) => {
 			if (pageId == 'userlist') {
-				(async () => {
+				this.central.off('ev:changed-page', changedPageHandler);
+				window.document.title = 'Frost - ユーザーの一覧';
+
+				try {
 					// ユーザー情報をフェッチ
 					const streamingRest = new StreamingRest(this.webSocket);
 					const rest = await streamingRest.requestAsync('get', '/users');
@@ -33,14 +36,13 @@
 					this.users = rest.response.users;
 					this.loading = false;
 					this.update();
-
-					window.document.title = 'Frost - ユーザーの一覧';
-					this.central.off('ev:changed-page', changedPageHandler);
-				})().catch((err) => {
+				}
+				catch(err) {
 					console.error(err);
 					this.loading = false;
-					this.update();
-				});
+				}
+
+				this.update();
 			}
 		};
 

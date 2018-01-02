@@ -75,11 +75,11 @@
 	<script>
 		const changedPageHandler = (pageId) => {
 			if (pageId == 'entrance') {
+				this.central.off('ev:changed-page', changedPageHandler);
 				window.document.title = 'Frost';
 
-				this.central.off('ev:changed-page', changedPageHandler);
+				this.update();
 			}
-			this.update();
 		};
 
 		this.on('mount', () => {

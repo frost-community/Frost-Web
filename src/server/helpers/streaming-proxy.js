@@ -95,7 +95,7 @@ class StreamingProxy {
 
 					if (this.debugDetail) {
 						console.log('[>api] rest');
-						console.dir(data);
+						console.log(data);
 						console.log('----');
 					}
 
@@ -105,7 +105,7 @@ class StreamingProxy {
 							await endpointInfo.before(data, this.frontConnection, this.apiConnection, this.config);
 						}
 						catch (err) {
-							console.dir(err);
+							console.log(err);
 							return;
 						}
 					}
@@ -114,7 +114,7 @@ class StreamingProxy {
 				}
 				catch (err) {
 					console.log('error on: rest event in streaming proxy');
-					console.dir(err);
+					console.log(err);
 				}
 			})();
 		});

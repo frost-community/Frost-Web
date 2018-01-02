@@ -24,14 +24,14 @@ const mixinGlobal = {};
 			let webSocket;
 			try {
 				webSocket = await WebSocketEvents.connectAsync(`${secure ? 'wss' : 'ws'}://${location.host}`);
-				webSocket.addEventListener('close', (ev) => { console.log('close:'); console.dir(ev); });
-				webSocket.addEventListener('error', (ev) => { console.log('error:'); console.dir(ev); });
+				webSocket.addEventListener('close', (ev) => { console.log('close:', ev); });
+				webSocket.addEventListener('error', (ev) => { console.log('error:', ev); });
 				WebSocketEvents.init(webSocket);
 				mixinGlobal.webSocket = webSocket;
 			}
 			catch (err) {
 				alert('WebSocketの接続に失敗しました');
-				console.dir(err);
+				console.log(err);
 				return;
 				// noop
 			}
@@ -43,7 +43,7 @@ const mixinGlobal = {};
 			}
 			catch (err) {
 				alert('ユーザー情報の取得に失敗しました');
-				console.dir(err);
+				console.log(err);
 				return;
 			}
 		}
@@ -146,7 +146,7 @@ const mixinGlobal = {};
 	}
 	catch (err) {
 		console.log('何かがおかしいよ');
-		console.dir(err);
+		console.log(err);
 	}
 
 	// mount

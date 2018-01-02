@@ -6,6 +6,7 @@
 	<frost-page-post if={ pageId == 'post' } />
 	<frost-page-user if={ pageId == 'user' } />
 	<frost-page-userlist if={ pageId == 'userlist' } />
+	<frost-page-appauth if={ pageId == 'appauth' } />
 
 	<style>
 		@import "../styles/variables";

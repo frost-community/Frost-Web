@@ -125,7 +125,7 @@
 	</script>
 </frost-modal>
 
-<frost-appauth-form>
+<frost-form-appauth>
 	<div class='parent'>
 		<div class='child'>
 			<h6>アプリケーションがあなたのアカウントにアクセスすることを承認しますか？</h6>
@@ -217,4 +217,4 @@
 			});
 		});
 	</script>
-</frost-appauth-form>
+</frost-form-appauth>

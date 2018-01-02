@@ -71,6 +71,7 @@ const mixinGlobal = {};
 		// - user
 		require('./tags/frost-page-user.tag');
 		require('./tags/frost-follow-button.tag');
+		require('./tags/frost-tabs-user-page.tag');
 		// - userlist
 		require('./tags/frost-page-userlist.tag');
 		// - post

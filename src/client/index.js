@@ -62,8 +62,8 @@ const mixinGlobal = {};
 		require('./tags/frost-footer.tag');
 		// - entrance
 		require('./tags/frost-page-entrance.tag');
-		require('./tags/frost-login-form.tag');
-		require('./tags/frost-signup-form.tag');
+		require('./tags/frost-form-login.tag');
+		require('./tags/frost-form-signup.tag');
 		// - home
 		require('./tags/frost-page-home.tag');
 		require('./tags/frost-home-logo.tag');

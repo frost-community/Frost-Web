@@ -1,4 +1,4 @@
-<frost-signup-form>
+<frost-form-signup>
 	<h4>アカウント作成</h4><!-- Sign up -->
 	<button class='button orange-button' onclick={ showModal }>{ isShowModal ? '折りたたむ -' : '展開する +' }</button>
 	<div show={ isShowModal }>
@@ -66,4 +66,4 @@
 			document.querySelector('.g-recaptcha-bubble-arrow').parentNode.remove();
 		});
 	</script>
-</frost-signup-form>
+</frost-form-signup>

@@ -1,4 +1,4 @@
-<frost-login-form>
+<frost-form-login>
 	<h4>ログイン</h4><!-- Sign in -->
 	<form onsubmit={ submit }>
 		<label for='signin-screen-name-box'>ユーザー名 *</label><!-- Username -->
@@ -40,4 +40,4 @@
 			});
 		}
 	</script>
-</frost-login-form>
+</frost-form-login>

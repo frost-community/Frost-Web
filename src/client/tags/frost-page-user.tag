@@ -6,6 +6,7 @@
 			<p>{ user.description != '' ? user.description : 'まだ設定されていません' }</p>
 			<frost-follow-button data-target-id={ user.id } />
 			<hr />
+			<p>投稿数: { user.postsCount.status }</p>
 			<p>フォロー: { user.followingsCount } / フォロワー: { user.followersCount }</p>
 		</div>
 		<div class='main'>

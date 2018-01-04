@@ -13,9 +13,11 @@ class StreamingProxy {
 			{ method: 'get', path: '/general/timeline' },
 			{ method: 'get', path: '/users' },
 			{ method: 'get', path: '/users/:id' },
+			{ method: 'get', path: '/users/:id/followings' },
 			{ method: 'get', path: '/users/:id/followings/:target_id' },
 			{ method: 'put', path: '/users/:id/followings/:target_id' },
 			{ method: 'delete', path: '/users/:id/followings/:target_id' },
+			{ method: 'get', path: '/users/:id/followers' },
 			{ method: 'get', path: '/users/:id/timelines/home' },
 			{ method: 'get', path: '/users/:id/timelines/user' },
 			{

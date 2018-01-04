@@ -7,11 +7,10 @@
 			<frost-follow-button data-target-id={ user.id } />
 		</div>
 		<div class='main'>
-			<h5>{ user.name }さんの投稿</h5>
-			<frost-timeline data-name='user', data-user-id={ user.id } />
+			<frost-tabs-user-page if={user != null} data-user={ user } />
 		</div>
 	</virtual>
-	<p if={ loading }>読み込み中...</p>
+	<p if={ loading }>ユーザー情報を取得しています...</p>
 	<p if={ !loading && user == null }>ユーザー情報の取得に失敗しました。</p>
 
 	<style>

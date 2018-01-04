@@ -4,20 +4,20 @@
 			<a onclick={ parent.changeTab }>{ text }</a>
 		</li>
 	</ul>
-	<div class='content' if={ selectedTab.id == 'timeline' }>
+	<div class='content' show={ selectedTab.id == 'timeline' }>
 		<frost-timeline data-name='user', data-user-id={ user.id } />
 	</div>
-	<div class='content' if={ selectedTab.id == 'followings' }>
+	<div class='content' show={ selectedTab.id == 'followings' }>
 		<ul>
 			<li each={ user in followings }>
-				<p>{ user.screenName }</p>
+				<a href={ '/users/'+user.screenName }>{ user.name } @{ user.screenName }</a>
 			</li>
 		</ul>
 	</div>
-	<div class='content' if={ selectedTab.id == 'followers' }>
+	<div class='content' show={ selectedTab.id == 'followers' }>
 		<ul>
 			<li each={ user in followers }>
-				<p>{ user.screenName }</p>
+				<a href={ '/users/'+user.screenName }>{ user.name } @{ user.screenName }</a>
 			</li>
 		</ul>
 	</div>
@@ -110,12 +110,8 @@
 				streamingRest.requestAsync('get', `/users/${this.user.id}/followings`),
 				streamingRest.requestAsync('get', `/users/${this.user.id}/followers`)
 			]);
-			for(const id of restFollowings.response.userfollowings) {
-				this.followings.push((await streamingRest.requestAsync('get', `/users/${id}`)).response.user);
-			}
-			for(const id of restFollowers.response.userfollowings) {
-				this.followers.push((await streamingRest.requestAsync('get', `/users/${id}`)).response.user);
-			}
+			this.followings = restFollowings.response.users;
+			this.followers = restFollowers.response.users;
 		});
 	</script>
 </frost-tabs-user-page>

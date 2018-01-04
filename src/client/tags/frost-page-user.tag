@@ -5,6 +5,8 @@
 			<h5>プロフィール:</h5><!-- Profile -->
 			<p>{ user.description != '' ? user.description : 'まだ設定されていません' }</p>
 			<frost-follow-button data-target-id={ user.id } />
+			<hr />
+			<p>フォロー: { user.followingsCount } / フォロワー: { user.followersCount }</p>
 		</div>
 		<div class='main'>
 			<frost-tabs-user-page if={user != null} data-user={ user } />

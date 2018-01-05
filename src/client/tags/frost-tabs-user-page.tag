@@ -107,8 +107,8 @@
 
 			let restFollowings, restFollowers;
 			[restFollowings, restFollowers] = await Promise.all([
-				streamingRest.requestAsync('get', `/users/${this.user.id}/followings`),
-				streamingRest.requestAsync('get', `/users/${this.user.id}/followers`)
+				streamingRest.requestAsync('get', `/users/${this.user.id}/followings`, { query: { limit: 100 } }),
+				streamingRest.requestAsync('get', `/users/${this.user.id}/followers`, { query: { limit: 100 } })
 			]);
 			this.followings = restFollowings.response.users;
 			this.followers = restFollowers.response.users;

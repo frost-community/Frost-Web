@@ -9,8 +9,8 @@
 				const streamingRest = new StreamingRest(this.webSocket);
 
 				const rest = await streamingRest.requestAsync('get', `/users/${this.user.id}/followings/${this.opts.dataTargetId}`);
-				if (rest.statusCode == 204 || rest.statusCode == 404) {
-					this.following = (rest.statusCode == 204);
+				if (rest.statusCode == 200 || rest.statusCode == 404) {
+					this.following = (rest.statusCode == 200);
 					this.showing = true;
 					this.update();
 				}

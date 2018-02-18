@@ -53,7 +53,7 @@
 				const streamingRest = new StreamingRest(this.webSocket);
 				const rest = await streamingRest.requestAsync('get', '/applications');
 				if (rest.response.applications == null) {
-					if (rest.statusCode != 404) {
+					if (rest.statusCode != 204) {
 						alert(`api error: failed to fetch list of appliations. ${rest.response.message}`);
 						return;
 					}

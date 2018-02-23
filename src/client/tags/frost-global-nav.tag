@@ -47,7 +47,7 @@
 				> li {
 					margin: 0;
 					height: 100%;
-					min-width: 75px;
+					min-width: 85px;
 					width: 100px;
 
 					a {

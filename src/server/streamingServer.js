@@ -1,5 +1,3 @@
-'use strict';
-
 const getSessionFromCookieAsync = require('./helpers/get-session-from-cookie-async');
 const WebSocket = require('websocket');
 const WebSocketUtility = require('./helpers/websocket-utility');

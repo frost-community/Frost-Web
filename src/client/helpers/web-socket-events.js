@@ -1,5 +1,3 @@
-'use strict';
-
 const WebSocket2 = require('reconnecting-websocket');
 const riot = require('riot');
 

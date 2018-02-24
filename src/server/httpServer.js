@@ -1,5 +1,3 @@
-'use strict';
-
 const bodyParser = require('body-parser');
 const checkLogin = require('./helpers/check-login');
 const compression = require('compression');

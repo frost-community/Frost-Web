@@ -1,5 +1,3 @@
-'use strict';
-
 const HttpServerError = require('./HttpServerError');
 const requestApiAsync = require('./requestApiAsync');
 const errors = require('request-promise/errors');

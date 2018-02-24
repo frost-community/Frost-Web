@@ -1,5 +1,3 @@
-'use strict';
-
 const readline = require('readline');
 const prominence = require('prominence');
 

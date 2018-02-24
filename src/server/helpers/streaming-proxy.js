@@ -1,5 +1,3 @@
-'use strict';
-
 const pathToRegexp = require('path-to-regexp');
 const requestAsync = require('request-promise');
 

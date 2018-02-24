@@ -1,5 +1,3 @@
-'use strict';
-
 const cookie = require('cookie');
 const cookieParser = require('cookie-parser');
 const prominence = require('prominence');

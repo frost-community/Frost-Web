@@ -1,5 +1,3 @@
-'use strict';
-
 const appServer = require('./server');
 
 process.on('unhandledRejection', (err) => {

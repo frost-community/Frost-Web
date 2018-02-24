@@ -1,5 +1,3 @@
-'use strict';
-
 const fs = require('fs');
 const httpServer = require('./httpServer');
 const i = require('./helpers/input-async');

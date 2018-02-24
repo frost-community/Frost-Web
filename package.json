@@ -8,7 +8,7 @@
     "node": ">= 8.0.0"
   },
   "scripts": {
-    "start": "node ./",
+    "start": "node --use_strict ./",
     "build:copy": "cpx \"./src/{*.js,server/**/*.js,server/views/**/*.pug,client/images/**}\" built",
     "build:sass": "node-sass --output-style compressed \"src/client/styles\" -o \"built/client/styles\"",
     "build:bundle": "webpack",

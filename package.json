@@ -16,7 +16,7 @@
     "clean": "rimraf \"./built\"",
     "rebuild": "npm run clean && npm run build",
     "test:lint": "eslint \"./src/**/*.js\"",
-    "test:mocha": "mocha",
+    "test:mocha": "mocha -A --use_strict",
     "test": "npm run test:lint && npm run test:mocha"
   },
   "author": "team FrostDevelop",

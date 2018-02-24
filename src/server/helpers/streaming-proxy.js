@@ -24,13 +24,13 @@ class StreamingProxy {
 					const verifyResult = await requestAsync('https://www.google.com/recaptcha/api/siteverify', {
 						method: 'POST',
 						json: true,
-						form: { secret: config.web.reCAPTCHA.secretKey, response: data.request.body.recaptchaToken }
+						form: { secret: config.web.reCAPTCHA.secretKey, response: data.body.recaptchaToken }
 					});
 
-					if (verifyResult.success !== true) {
-						frontConnection.send('rest', { success: false, request: data.request, message: 'failed to verify recaptcha' });
+					if (!verifyResult.success) {
+						frontConnection.send('rest', { success: false, request: data, message: 'invalid recaptcha' });
 
-						throw new Error('failed to verify recaptcha');
+						throw new Error('invalid recaptcha');
 					}
 				}
 			},

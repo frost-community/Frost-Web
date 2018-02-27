@@ -56,11 +56,11 @@
 				}
 				else {
 					const json = await res.json();
-					alert(json.error.message);
+					alert('アカウント作成に失敗しました: ' + json.error.message);
 				}
 			})
 			.catch((reason) => {
-				console.log('Sign up error: ' + reason);
+				alert('アカウント作成に失敗しました: ' + reason);
 			});
 		}
 

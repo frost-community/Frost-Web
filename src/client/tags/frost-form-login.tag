@@ -39,12 +39,11 @@
 				}
 				else {
 					const json = await res.json();
-					alert(json.error.message);
+					alert('ログインに失敗しました: ' + json.error.message);
 				}
 			})
 			.catch((reason) => {
-				console.log('Sign in error: ' + reason);
-				alert('ログインに失敗しました。' + reason);
+				alert('ログインに失敗しました: ' + reason);
 			});
 		}
 	</script>

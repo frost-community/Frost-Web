@@ -170,7 +170,7 @@ module.exports = async (debug, config) => {
 				}
 				catch (err) {
 					if (err instanceof requestErrors.StatusCodeError) {
-						throw new HttpServerError(err.statusCode, `session register error: ${JSON.stringify(err.body)}`, true);
+						throw new HttpServerError(err.statusCode, `session register error: ${err.message}`, true);
 					}
 					else {
 						throw err;

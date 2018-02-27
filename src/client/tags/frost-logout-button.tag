@@ -15,12 +15,11 @@
 				}
 				else {
 					const json = await res.json();
-					alert(json.error.message);
+					alert('ログアウトに失敗しました: ' + json.error.message);
 				}
 			})
 			.catch((reason) => {
-				console.log('Sign out error: ' + reason);
-				alert('エラー: ログアウトに失敗しました。' + reason);
+				alert('ログアウトに失敗しました: ' + reason);
 			});
 		}
 	</script>

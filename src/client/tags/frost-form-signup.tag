@@ -48,9 +48,18 @@
 				description: this.refs.description.value,
 				_csrf: this.csrf,
 				recaptchaToken: grecaptcha.getResponse()
-			}).then(() => {
-				location.reload();
-			}).catch((reason) => {
+			})
+			.then(async (res) => {
+				if (res.ok) {
+					location.reload();
+					return;
+				}
+				else {
+					const json = await res.json();
+					alert(json.error.message);
+				}
+			})
+			.catch((reason) => {
 				console.log('Sign up error: ' + reason);
 			});
 		}

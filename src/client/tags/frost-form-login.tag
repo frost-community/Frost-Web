@@ -31,8 +31,16 @@
 				screenName: this.refs.screenName.value,
 				password: this.refs.password.value,
 				_csrf: this.csrf
-			}).then((res) => {
-				location.reload();
+			})
+			.then(async (res) => {
+				if (res.ok) {
+					location.reload();
+					return;
+				}
+				else {
+					const json = await res.json();
+					alert(json.error.message);
+				}
 			})
 			.catch((reason) => {
 				console.log('Sign in error: ' + reason);

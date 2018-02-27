@@ -32,6 +32,7 @@
 
 	<script>
 		const fetchJson = require('../helpers/fetch-json');
+		let widgetId;
 
 		this.isShowModal = false;
 		showModal() {
@@ -52,20 +53,21 @@
 			.then(async (res) => {
 				if (res.ok) {
 					location.reload();
-					return;
 				}
 				else {
 					const json = await res.json();
 					alert('アカウント作成に失敗しました: ' + json.error.message);
+					grecaptcha.reset(widgetId);
 				}
 			})
 			.catch((reason) => {
 				alert('アカウント作成に失敗しました: ' + reason);
+				grecaptcha.reset(widgetId);
 			});
 		}
 
 		this.on('mount', () => {
-			grecaptcha.render('recaptcha-signup', {
+			widgetId = grecaptcha.render('recaptcha-signup', {
 				sitekey: this.siteKey
 			});
 		});

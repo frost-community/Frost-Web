@@ -15,7 +15,7 @@ const requestAsync = require('request-promise');
 const requestErrors = require('request-promise/errors');
 
 /**
- * HTTP接続をサポートします。
+ * Webサーバーと内部的なWebAPIを提供します
  */
 module.exports = async (debug, config) => {
 	const app = express();

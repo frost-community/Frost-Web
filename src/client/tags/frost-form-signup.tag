@@ -1,4 +1,4 @@
-<frost-signup-form>
+<frost-form-signup>
 	<h4>アカウント作成</h4><!-- Sign up -->
 	<button class='button orange-button' onclick={ showModal }>{ isShowModal ? '折りたたむ -' : '展開する +' }</button>
 	<div show={ isShowModal }>
@@ -32,6 +32,7 @@
 
 	<script>
 		const fetchJson = require('../helpers/fetch-json');
+		let widgetId;
 
 		this.isShowModal = false;
 		showModal() {
@@ -48,15 +49,25 @@
 				description: this.refs.description.value,
 				_csrf: this.csrf,
 				recaptchaToken: grecaptcha.getResponse()
-			}).then(() => {
-				location.reload();
-			}).catch((reason) => {
-				console.log('Sign up error: ' + reason);
+			})
+			.then(async (res) => {
+				if (res.ok) {
+					location.reload();
+				}
+				else {
+					const json = await res.json();
+					alert('アカウント作成に失敗しました: ' + json.error.message);
+					grecaptcha.reset(widgetId);
+				}
+			})
+			.catch((reason) => {
+				alert('アカウント作成に失敗しました: ' + reason);
+				grecaptcha.reset(widgetId);
 			});
 		}
 
 		this.on('mount', () => {
-			grecaptcha.render('recaptcha-signup', {
+			widgetId = grecaptcha.render('recaptcha-signup', {
 				sitekey: this.siteKey
 			});
 		});
@@ -66,4 +77,4 @@
 			document.querySelector('.g-recaptcha-bubble-arrow').parentNode.remove();
 		});
 	</script>
-</frost-signup-form>
+</frost-form-signup>

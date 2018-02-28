@@ -1,5 +1,3 @@
-'use strict';
-
 const config = require('./load-config')(); // TODO: di
 const requestAsync = require('request-promise');
 

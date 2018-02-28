@@ -1,5 +1,3 @@
-'use strict';
-
 const bodyParser = require('body-parser');
 const checkLogin = require('./helpers/check-login');
 const compression = require('compression');
@@ -17,7 +15,7 @@ const requestAsync = require('request-promise');
 const requestErrors = require('request-promise/errors');
 
 /**
- * HTTP接続をサポートします。
+ * Webサーバーと内部的なWebAPIを提供します
  */
 module.exports = async (debug, config) => {
 	const app = express();
@@ -164,7 +162,7 @@ module.exports = async (debug, config) => {
 
 				let creationResult;
 				try {
-					creationResult = await requestApiAsync('post', '/account', req.body, {
+					creationResult = await requestApiAsync('post', '/users', req.body, {
 						'X-Api-Version': 1.0,
 						'X-Application-Key': config.web.applicationKey,
 						'X-Access-Key': config.web.hostAccessKey
@@ -172,7 +170,7 @@ module.exports = async (debug, config) => {
 				}
 				catch (err) {
 					if (err instanceof requestErrors.StatusCodeError) {
-						throw new HttpServerError(err.statusCode, `session register error: ${JSON.stringify(err.body)}`, true);
+						throw new HttpServerError(err.statusCode, `session register error: ${err.message}`, true);
 					}
 					else {
 						throw err;

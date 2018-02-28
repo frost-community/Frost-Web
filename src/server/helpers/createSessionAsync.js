@@ -1,5 +1,3 @@
-'use strict';
-
 const HttpServerError = require('./HttpServerError');
 const requestApiAsync = require('./requestApiAsync');
 const errors = require('request-promise/errors');
@@ -37,7 +35,7 @@ module.exports = async (req, config) => {
 	}
 	catch (err) {
 		if (err instanceof errors.StatusCodeError) {
-			throw new HttpServerError(400, `authentication error: ${err.response.message}`);
+			throw new HttpServerError(err.statusCode, `authentication error: ${err.message}`);
 		}
 		else {
 			throw new HttpServerError(500, `session creation authentication error: ${err.message}`);

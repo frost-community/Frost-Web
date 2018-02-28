@@ -9,10 +9,10 @@
 			<p>冷やし中華はじめました。</p>
 		</section>
 		<section>
-			<frost-login-form />
+			<frost-form-login />
 		</section>
 		<section>
-			<frost-signup-form />
+			<frost-form-signup />
 		</section>
 	</div>
 

@@ -1,4 +1,4 @@
-<frost-login-form>
+<frost-form-login>
 	<h4>ログイン</h4><!-- Sign in -->
 	<form onsubmit={ submit }>
 		<label for='signin-screen-name-box'>ユーザー名 *</label><!-- Username -->
@@ -31,13 +31,20 @@
 				screenName: this.refs.screenName.value,
 				password: this.refs.password.value,
 				_csrf: this.csrf
-			}).then((res) => {
-				location.reload();
+			})
+			.then(async (res) => {
+				if (res.ok) {
+					location.reload();
+					return;
+				}
+				else {
+					const json = await res.json();
+					alert('ログインに失敗しました: ' + json.error.message);
+				}
 			})
 			.catch((reason) => {
-				console.log('Sign in error: ' + reason);
-				alert('ログインに失敗しました。' + reason);
+				alert('ログインに失敗しました: ' + reason);
 			});
 		}
 	</script>
-</frost-login-form>
+</frost-form-login>

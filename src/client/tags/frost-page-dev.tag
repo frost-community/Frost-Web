@@ -40,7 +40,7 @@
 		this.on('mount', () => {
 			this.central.on('ev:changed-page', changedPageHandler);
 
-			this.login = this.getLogin();
+			this.login = this.getLoginStatus();
 		});
 	</script>
 </frost-page-dev>

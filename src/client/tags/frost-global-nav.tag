@@ -47,7 +47,7 @@
 				> li {
 					margin: 0;
 					height: 100%;
-					min-width: 75px;
+					min-width: 85px;
 					width: 100px;
 
 					a {
@@ -74,7 +74,7 @@
 	</style>
 
 	<script>
-		const changedLoginStatusEventHandler = (login) => {
+		const changedLoginStatusEvent = (login) => {
 			this.login = login;
 			this.update();
 		};
@@ -85,14 +85,14 @@
 		};
 
 		this.on('mount', () => {
-			this.central.on('ev:changed-login-status', changedLoginStatusEventHandler);
+			this.central.on('ev:changed-login-status', changedLoginStatusEvent);
 			this.central.on('change-page', changePageHandler);
 
-			this.login = this.getLogin();
+			this.login = this.getLoginStatus();
 		});
 
 		this.on('unmount', () => {
-			this.central.off('ev:changed-login-status', changedLoginStatusEventHandler);
+			this.central.off('ev:changed-login-status', changedLoginStatusEvent);
 			this.central.off('change-page', changePageHandler);
 		});
 	</script>

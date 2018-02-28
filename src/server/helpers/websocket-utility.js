@@ -1,5 +1,3 @@
-'use strict';
-
 const WebSocketNode = require('websocket');
 const events = require('websocket-events');
 

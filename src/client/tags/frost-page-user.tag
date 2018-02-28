@@ -5,13 +5,15 @@
 			<h5>プロフィール:</h5><!-- Profile -->
 			<p>{ user.description != '' ? user.description : 'まだ設定されていません' }</p>
 			<frost-follow-button data-target-id={ user.id } />
+			<hr />
+			<p>投稿数: { user.postsCount.status }</p>
+			<p>フォロー: { user.followingsCount } / フォロワー: { user.followersCount }</p>
 		</div>
 		<div class='main'>
-			<h5>{ user.name }さんの投稿</h5>
-			<frost-timeline data-name='user', data-user-id={ user.id } />
+			<frost-tabs-user-page if={user != null} data-user={ user } />
 		</div>
 	</virtual>
-	<p if={ loading }>読み込み中...</p>
+	<p if={ loading }>ユーザー情報を取得しています...</p>
 	<p if={ !loading && user == null }>ユーザー情報の取得に失敗しました。</p>
 
 	<style>

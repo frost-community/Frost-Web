@@ -1,5 +1,3 @@
-'use strict';
-
 const getSessionFromCookieAsync = require('./helpers/get-session-from-cookie-async');
 const WebSocket = require('websocket');
 const WebSocketUtility = require('./helpers/websocket-utility');
@@ -43,7 +41,7 @@ module.exports = (http, sessionStore, debugDetail, config) => {
 					}
 					else {
 						console.log('failed to connect api:');
-						console.dir(err);
+						console.log(err);
 						return request.reject(500, 'an error occurred while connecting to api server');
 					}
 				}
@@ -94,7 +92,7 @@ module.exports = (http, sessionStore, debugDetail, config) => {
 					frontConnection.close();
 				}
 				console.log('error on: request event in streaming server');
-				console.dir(err);
+				console.log(err);
 			}
 		})();
 	});

@@ -27,7 +27,7 @@ class StreamingRest {
 						resolve(rest);
 					}
 					else {
-						reject(new Error(`internal error: failed to fetch data. ${rest.message}`));
+						reject(new Error(rest.message));
 					}
 
 					// disposings

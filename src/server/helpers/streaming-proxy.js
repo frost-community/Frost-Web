@@ -1,5 +1,3 @@
-'use strict';
-
 const pathToRegexp = require('path-to-regexp');
 const requestAsync = require('request-promise');
 
@@ -13,9 +11,11 @@ class StreamingProxy {
 			{ method: 'get', path: '/general/timeline' },
 			{ method: 'get', path: '/users' },
 			{ method: 'get', path: '/users/:id' },
+			{ method: 'get', path: '/users/:id/followings' },
 			{ method: 'get', path: '/users/:id/followings/:target_id' },
 			{ method: 'put', path: '/users/:id/followings/:target_id' },
 			{ method: 'delete', path: '/users/:id/followings/:target_id' },
+			{ method: 'get', path: '/users/:id/followers' },
 			{ method: 'get', path: '/users/:id/timelines/home' },
 			{ method: 'get', path: '/users/:id/timelines/user' },
 			{
@@ -24,13 +24,13 @@ class StreamingProxy {
 					const verifyResult = await requestAsync('https://www.google.com/recaptcha/api/siteverify', {
 						method: 'POST',
 						json: true,
-						form: { secret: config.web.reCAPTCHA.secretKey, response: data.request.body.recaptchaToken }
+						form: { secret: config.web.reCAPTCHA.secretKey, response: data.body.recaptchaToken }
 					});
 
-					if (verifyResult.success !== true) {
-						frontConnection.send('rest', { success: false, request: data.request, message: 'failed to verify recaptcha' });
+					if (!verifyResult.success) {
+						frontConnection.send('rest', { success: false, request: data, message: 'invalid recaptcha' });
 
-						throw new Error('failed to verify recaptcha');
+						throw new Error('invalid recaptcha');
 					}
 				}
 			},
@@ -95,7 +95,7 @@ class StreamingProxy {
 
 					if (this.debugDetail) {
 						console.log('[>api] rest');
-						console.dir(data);
+						console.log(data);
 						console.log('----');
 					}
 
@@ -105,7 +105,7 @@ class StreamingProxy {
 							await endpointInfo.before(data, this.frontConnection, this.apiConnection, this.config);
 						}
 						catch (err) {
-							console.dir(err);
+							console.log(err);
 							return;
 						}
 					}
@@ -114,7 +114,7 @@ class StreamingProxy {
 				}
 				catch (err) {
 					console.log('error on: rest event in streaming proxy');
-					console.dir(err);
+					console.log(err);
 				}
 			})();
 		});

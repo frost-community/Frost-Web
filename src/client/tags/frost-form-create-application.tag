@@ -36,6 +36,7 @@
 	<script>
 		const StreamingRest = require('../helpers/StreamingRest');
 		this.isShowModal = false;
+		let widgetId;
 
 		this.showModal = () => {
 			this.isShowModal = !this.isShowModal;
@@ -69,12 +70,14 @@
 					else {
 						alert(`api error: failed to create application. ${rest.response.message}`);
 					}
+					grecaptcha.reset(widgetId);
 				})().catch(err => {
-					console.error(err);
+					alert(`error: failed to create application. ${err.message}`);
+					grecaptcha.reset(widgetId);
 				});
 			};
 
-			grecaptcha.render('recaptcha-create-application', {
+			widgetId = grecaptcha.render('recaptcha-create-application', {
 				sitekey: this.siteKey
 			});
 		});

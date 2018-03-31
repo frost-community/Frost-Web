@@ -32,7 +32,6 @@ const StreamingRest = require('./helpers/StreamingRest');
 			alert('WebSocketの接続に失敗しました');
 			console.log(err);
 			return;
-			// noop
 		}
 
 		const streamingRest = new StreamingRest(webSocket);
@@ -61,13 +60,12 @@ const StreamingRest = require('./helpers/StreamingRest');
 
 	// central observer
 
-	const central = riot.observable();
-	mixin.central = central;
+	mixin.central = riot.observable();
 
 	// routings
 
 	const changePage = (pageId, params) => {
-		central.trigger('change-page', pageId, params || {});
+		mixin.central.trigger('change-page', pageId, params || {});
 	};
 
 	route.base('/');

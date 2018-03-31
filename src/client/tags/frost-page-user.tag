@@ -57,7 +57,7 @@
 	</style>
 
 	<script>
-		const StreamingRest = require('../helpers/StreamingRest');
+		const StreamingRest = require('../helpers/streaming-rest');
 		this.user = null;
 		this.loading = true;
 
@@ -69,7 +69,7 @@
 				try {
 					// ユーザー情報をフェッチ
 					const streamingRest = new StreamingRest(this.webSocket);
-					const rest = await streamingRest.requestAsync('get', '/users', { query: { 'screen_names': params.screenName } });
+					const rest = await streamingRest.request('get', '/users', { query: { 'screen_names': params.screenName } });
 
 					this.user = rest.response.users[0];
 					this.loading = false;

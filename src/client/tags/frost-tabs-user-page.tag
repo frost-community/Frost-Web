@@ -80,7 +80,7 @@
 	</style>
 
 	<script>
-		const StreamingRest = require('../helpers/StreamingRest');
+		const StreamingRest = require('../helpers/streaming-rest');
 
 		if (this.opts.dataUser == null) {
 			throw new Error('data-user property is required');
@@ -107,8 +107,8 @@
 
 			let restFollowings, restFollowers;
 			[restFollowings, restFollowers] = await Promise.all([
-				streamingRest.requestAsync('get', `/users/${this.user.id}/followings`, { query: { limit: 100 } }),
-				streamingRest.requestAsync('get', `/users/${this.user.id}/followers`, { query: { limit: 100 } })
+				streamingRest.request('get', `/users/${this.user.id}/followings`, { query: { limit: 100 } }),
+				streamingRest.request('get', `/users/${this.user.id}/followers`, { query: { limit: 100 } })
 			]);
 			this.followings = restFollowings.response.users;
 			this.followers = restFollowers.response.users;

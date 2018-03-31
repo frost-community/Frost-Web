@@ -2,7 +2,7 @@ const WebSocket2 = require('reconnecting-websocket');
 const riot = require('riot');
 
 class WebSocketEvents {
-	static connectAsync(url) {
+	static connect(url) {
 		return new Promise((resolve, reject) => {
 			if (url == null) {
 				return reject(new ReferenceError('missing argumets'));

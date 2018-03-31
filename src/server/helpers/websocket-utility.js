@@ -5,7 +5,7 @@ class WebSocketUtility {
 	/**
 	 * webSocketサーバーに接続してコネクションを取得します。
 	 */
-	static connectAsync(requestUrl, protocols, origin, headers) {
+	static connect(requestUrl, protocols, origin, headers) {
 		return new Promise((resolve, reject) => {
 			const client = new WebSocketNode.client();
 			client.on('connect', (connection) => {
@@ -33,7 +33,7 @@ class WebSocketUtility {
 		/**
 		 * 指定されたイベントが最初に受信されるまで待機します
 		 */
-		connection.onceAsync = (eventName) => new Promise((resolve) => {
+		connection.once = (eventName) => new Promise((resolve) => {
 			connection.once(eventName, (data) => {
 				resolve(data);
 			});

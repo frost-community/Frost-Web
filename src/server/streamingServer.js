@@ -1,4 +1,4 @@
-const getSessionFromCookieAsync = require('./helpers/get-session-from-cookie-async');
+const getSessionFromCookie = require('./helpers/get-session-from-cookie');
 const WebSocket = require('websocket');
 const WebSocketUtility = require('./helpers/websocket-utility');
 const StreamingProxy = require('./helpers/streaming-proxy');
@@ -14,7 +14,7 @@ module.exports = (http, sessionStore, debugDetail, config) => {
 			let frontConnection;
 			try {
 				// セッションを取得
-				const session = await getSessionFromCookieAsync(request.httpRequest.headers['cookie'], config.web.session.name, config.web.session.SecretToken, sessionStore);
+				const session = await getSessionFromCookie(request.httpRequest.headers['cookie'], config.web.session.name, config.web.session.SecretToken, sessionStore);
 
 				if (session == null || session.accessKey == null) {
 					return request.reject(401, 'Unauthorized');
@@ -27,7 +27,7 @@ module.exports = (http, sessionStore, debugDetail, config) => {
 						console.log('[streaming server]', 'connecting streaming api server...');
 					}
 					const wsUrl = `${config.web.apiBaseUrl}?application_key=${config.web.applicationKey}&access_key=${session.accessKey}`;
-					apiConnection = await WebSocketUtility.connectAsync(wsUrl);
+					apiConnection = await WebSocketUtility.connect(wsUrl);
 					WebSocketUtility.addExtensionMethods(apiConnection);
 
 					if (debugDetail) {

@@ -34,7 +34,7 @@
 	</form>
 
 	<script>
-		const StreamingRest = require('../helpers/StreamingRest');
+		const StreamingRest = require('../helpers/streaming-rest');
 		this.isShowModal = false;
 		let widgetId;
 
@@ -55,7 +55,7 @@
 
 				(async () => {
 					const streamingRest = new StreamingRest(this.webSocket);
-					const rest = await streamingRest.requestAsync('post', '/applications', {
+					const rest = await streamingRest.request('post', '/applications', {
 						body: {
 							name: this.refs.name.value,
 							description: this.refs.description.value,

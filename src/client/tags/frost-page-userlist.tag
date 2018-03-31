@@ -19,7 +19,7 @@
 	</style>
 
 	<script>
-		const StreamingRest = require('../helpers/StreamingRest');
+		const StreamingRest = require('../helpers/streaming-rest');
 		this.users = [];
 		this.loading = true;
 
@@ -31,7 +31,7 @@
 				try {
 					// ユーザー情報をフェッチ
 					const streamingRest = new StreamingRest(this.webSocket);
-					const rest = await streamingRest.requestAsync('get', '/users');
+					const rest = await streamingRest.request('get', '/users');
 
 					this.users = rest.response.users;
 					this.loading = false;

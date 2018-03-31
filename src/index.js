@@ -1,12 +1,6 @@
-const appServer = require('./server');
+const server = require('./server');
 
-process.on('unhandledRejection', (err) => {
-	console.log('Unprocessed Promise Error:', err); // † Last Stand † (Promise)
-});
+process.on('unhandledRejection', err => console.log(err)); // † Last Stand † (Promise)
+Error.stackTraceLimit = 20;
 
-try {
-	appServer();
-}
-catch (err) {
-	console.log('Unprocessed Error:', err); // † Last Stand †
-}
+server();

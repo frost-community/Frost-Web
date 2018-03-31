@@ -1,5 +1,5 @@
 const pathToRegexp = require('path-to-regexp');
-const requestAsync = require('request-promise');
+const request = require('request-promise');
 
 /**
  * ストリーミングREST APIへのリクエストを代理します。
@@ -21,7 +21,7 @@ class StreamingProxy {
 			{
 				method: 'post', path: '/applications',
 				before: async (data, frontConnection, apiConnection, config) => {
-					const verifyResult = await requestAsync('https://www.google.com/recaptcha/api/siteverify', {
+					const verifyResult = await request('https://www.google.com/recaptcha/api/siteverify', {
 						method: 'POST',
 						json: true,
 						form: { secret: config.web.reCAPTCHA.secretKey, response: data.body.recaptchaToken }

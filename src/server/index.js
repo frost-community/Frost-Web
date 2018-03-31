@@ -4,7 +4,7 @@ const { promisify } = require('util');
 const httpServer = require('./httpServer');
 const i = require('./helpers/input-async');
 const loadConfig = require('./helpers/load-config');
-const requestAsync = require('request-promise');
+const request = require('request-promise');
 const streamingServer = require('./streamingServer');
 
 const urlConfigFile = 'https://raw.githubusercontent.com/Frost-Dev/Frost/master/config.json';
@@ -27,7 +27,7 @@ module.exports = async () => {
 			if (await q('config file is not found. generate now? (y/n) > ')) {
 				const parent = await q('generate config.json in the parent directory of repository? (y/n) > ');
 				const configPath = path.resolve(parent ? '../config.json' : 'config.json');
-				const configJson = await requestAsync(urlConfigFile);
+				const configJson = await request(urlConfigFile);
 				await writeFile(configPath, configJson);
 				console.log('generated. please edit config.json and restart frost-web.');
 			}

@@ -2,13 +2,13 @@
 	<button if={ showing } onclick={ follow }>{ following ? 'フォローしています' : 'フォロー' }</button>
 
 	<script>
-		const StreamingRest = require('../helpers/StreamingRest');
+		const StreamingRest = require('../helpers/streaming-rest');
 
 		this.on('mount', () => {
 			(async () => {
 				const streamingRest = new StreamingRest(this.webSocket);
 
-				const rest = await streamingRest.requestAsync('get', `/users/${this.user.id}/followings/${this.opts.dataTargetId}`);
+				const rest = await streamingRest.request('get', `/users/${this.user.id}/followings/${this.opts.dataTargetId}`);
 				if (rest.statusCode == 200) {
 					this.following = rest.response.following;
 					this.showing = true;
@@ -23,7 +23,7 @@
 
 				this.follow = () => {
 					(async () => {
-						await streamingRest.requestAsync(this.following ? 'delete' : 'put', `/users/${this.user.id}/followings/${this.opts.dataTargetId}`);
+						await streamingRest.request(this.following ? 'delete' : 'put', `/users/${this.user.id}/followings/${this.opts.dataTargetId}`);
 						this.following = !this.following;
 						this.update();
 					})();

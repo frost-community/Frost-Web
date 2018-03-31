@@ -36,7 +36,7 @@
 	</style>
 
 	<script>
-		const StreamingRest = require('../helpers/StreamingRest');
+		const StreamingRest = require('../helpers/streaming-rest');
 		this.applications = [];
 		this.loading = true;
 		this.error = false;
@@ -51,7 +51,7 @@
 
 			(async () => {
 				const streamingRest = new StreamingRest(this.webSocket);
-				const rest = await streamingRest.requestAsync('get', '/applications');
+				const rest = await streamingRest.request('get', '/applications');
 				if (rest.response.applications == null) {
 					if (rest.statusCode != 204) {
 						alert(`api error: failed to fetch list of appliations. ${rest.response.message}`);

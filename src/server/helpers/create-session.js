@@ -1,12 +1,12 @@
-const HttpServerError = require('./HttpServerError');
-const requestApiAsync = require('./requestApiAsync');
+const HttpServerError = require('./http-server-error');
+const requestApi = require('./request-api');
 const errors = require('request-promise/errors');
 
 module.exports = async (req, config) => {
 	let result;
 
 	try {
-		result = await requestApiAsync('post', '/ice_auth',
+		result = await requestApi('post', '/ice_auth',
 			{ applicationKey: config.web.applicationKey },
 			{ 'X-Api-Version': 1.0 }
 		);
@@ -20,7 +20,7 @@ module.exports = async (req, config) => {
 	}
 
 	try {
-		result = await requestApiAsync('post', '/ice_auth/authorize_basic',
+		result = await requestApi('post', '/ice_auth/authorize_basic',
 			{
 				screenName: req.body.screenName,
 				password: req.body.password

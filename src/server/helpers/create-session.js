@@ -28,7 +28,7 @@ module.exports = async (req, config) => {
 			{
 				'X-Api-Version': 1.0,
 				'X-Application-Key': config.web.applicationKey,
-				'X-Access-Key': config.web.hostAccessKey,
+				'X-Access-Key': config.web.hostAccessToken,
 				'X-Ice-Auth-Key': result.iceAuthKey
 			}
 		);
@@ -42,9 +42,9 @@ module.exports = async (req, config) => {
 		}
 	}
 
-	if (result.accessKey == null) {
+	if (result.accessToken == null) {
 		throw new HttpServerError(400, `authentication error: ${result.response.message}`);
 	}
 
-	req.session.accessKey = result.accessKey;
+	req.session.accessToken = result.accessToken;
 };

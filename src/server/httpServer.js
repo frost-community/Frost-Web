@@ -75,9 +75,9 @@ module.exports = async (debug, config) => {
 				});
 
 				// memo: クライアントサイドでは、パラメータ中にuserIdが存在するかどうかでWebSocketへの接続が必要かどうかを判断します。このコードはそのために必要です。
-				const accessKey = req.session.accessKey;
-				if (accessKey != null) {
-					pageParams.userId = accessKey.split('-')[0];
+				const accessToken = req.session.accessToken;
+				if (accessToken != null) {
+					pageParams.userId = accessToken.split('-')[0];
 				}
 
 				let pageRenderParams = {
@@ -103,13 +103,14 @@ module.exports = async (debug, config) => {
 	// == routings ==
 
 	app.route('/session')
-		.put((req, res, next) => {
-			(async () => {
-				if (req.session.accessKey == null) {
+		.put(async (req, res, next) => {
+			try {
+				if (req.session.accessToken == null) {
 					await createSession(req, config);
 				}
 				res.json({ message: 'ok' });
-			})().catch((err) => {
+			}
+			catch(err) {
 				if (err instanceof HttpServerError) {
 					err.isJson = true;
 					next(err);
@@ -117,12 +118,12 @@ module.exports = async (debug, config) => {
 				else {
 					next(new HttpServerError(500, err.message, true));
 				}
-			});
+			}
 		})
 		.delete(checkLogin, (req, res) => {
 			try {
-				if (req.session.accessKey != null) {
-					req.session.accessKey = null;
+				if (req.session.accessToken != null) {
+					req.session.accessToken = null;
 				}
 				res.json({ message: 'ok' });
 			}
@@ -138,8 +139,8 @@ module.exports = async (debug, config) => {
 		});
 
 	app.route('/session/register')
-		.post((req, res, next) => {
-			(async () => {
+		.post(async (req, res, next) => {
+			try {
 				console.log('/session/register');
 				let recaptchaResult;
 				try {
@@ -165,7 +166,7 @@ module.exports = async (debug, config) => {
 					creationResult = await requestApi('post', '/users', req.body, {
 						'X-Api-Version': 1.0,
 						'X-Application-Key': config.web.applicationKey,
-						'X-Access-Key': config.web.hostAccessKey
+						'X-Access-Key': config.web.hostAccessToken
 					});
 				}
 				catch (err) {
@@ -183,7 +184,8 @@ module.exports = async (debug, config) => {
 
 				await createSession(req, config);
 				res.json({ message: 'ok' });
-			})().catch((err) => {
+			}
+			catch (err) {
 				if (err instanceof HttpServerError) {
 					err.isJson = true;
 					next(err);
@@ -191,7 +193,7 @@ module.exports = async (debug, config) => {
 				else {
 					next(new HttpServerError(500, err.message, true));
 				}
-			});
+			}
 		});
 
 	app.post('/auth', (req, res) => {

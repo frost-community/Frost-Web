@@ -1,7 +1,8 @@
 const getSessionFromCookie = require('./helpers/get-session-from-cookie');
 const WebSocket = require('websocket');
 const WebSocketUtility = require('./helpers/websocket-utility');
-const streamingProxy = require('./helpers/streaming-proxy');
+const request = require('request-promise');
+const requestApi = require('./helpers/request-api');
 
 /**
  * ストリーミング接続をサポートします。
@@ -9,14 +10,14 @@ const streamingProxy = require('./helpers/streaming-proxy');
  */
 module.exports = (http, sessionStore, debugDetail, config) => {
 	const server = new WebSocket.server({ httpServer: http });
-	server.on('request', async (request) => {
+	server.on('request', async (wsRequest) => {
 		let frontConnection;
 		try {
 			// セッションを取得
-			const session = await getSessionFromCookie(request.httpRequest.headers['cookie'], config.web.session.name, config.web.session.SecretToken, sessionStore);
+			const session = await getSessionFromCookie(wsRequest.httpRequest.headers['cookie'], config.web.session.name, config.web.session.SecretToken, sessionStore);
 
 			if (session == null || session.accessToken == null) {
-				return request.reject(401, 'Unauthorized');
+				return wsRequest.reject(401, 'Unauthorized');
 			}
 
 			// APIに接続
@@ -36,12 +37,12 @@ module.exports = (http, sessionStore, debugDetail, config) => {
 			catch (err) {
 				if (err.message.indexOf('ECONNREFUSED') != -1) {
 					console.log('error: could not connect to api server');
-					return request.reject(500, 'could not connect to api server');
+					return wsRequest.reject(500, 'could not connect to api server');
 				}
 				else {
 					console.log('failed to connect api:');
 					console.log(err);
-					return request.reject(500, 'an error occurred while connecting to api server');
+					return wsRequest.reject(500, 'an error occurred while connecting to api server');
 				}
 			}
 
@@ -60,7 +61,7 @@ module.exports = (http, sessionStore, debugDetail, config) => {
 			});
 
 			// リクエストを受理
-			frontConnection = request.accept();
+			frontConnection = wsRequest.accept();
 			WebSocketUtility.addExtensionMethods(frontConnection);
 
 			frontConnection.on('error', (err) => {
@@ -82,8 +83,43 @@ module.exports = (http, sessionStore, debugDetail, config) => {
 				}
 			});
 
-			// API代理
-			streamingProxy(frontConnection, apiConnection, debugDetail, config);
+			// エラー返却メソッド
+			frontConnection.error = (eventName, message, addition) => {
+				const data = Object.assign({ success: false, message }, addition);
+				if (frontConnection.connected) {
+					frontConnection.send(eventName, data);
+				}
+			};
+
+			frontConnection.on('app-create', async (data) => {
+				console.log('app-create');
+
+				// recaptcha
+				const verifyResult = await request('https://www.google.com/recaptcha/api/siteverify', {
+					method: 'POST',
+					json: true,
+					form: { secret: config.web.reCAPTCHA.secretKey, response: data.recaptchaToken }
+				});
+
+				if (!verifyResult.success) {
+					frontConnection.error('app-create', 'invalid recaptcha');
+					return;
+				}
+
+				// request POST /applications
+				let result;
+				try {
+					result = await requestApi('post', '/applications', data, { Authorization: `Bearer ${session.accessToken}` });
+				}
+				catch (err) {
+					const statusCode = err.statusCode ? err.statusCode : 500;
+					frontConnection.error('app-create', err.message, { statusCode: statusCode });
+					return;
+				}
+
+				// response
+				frontConnection.send('app-create', { success: true, app: result.application, message: 'app created' });
+			});
 		}
 		catch (err) {
 			if (frontConnection != null && frontConnection.connected) {

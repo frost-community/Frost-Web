@@ -6,13 +6,12 @@ class StreamingRest {
 		this.connection = webSocketConnection;
 	}
 
-	request(method, endpoint, requestContent, apiVersion, timeoutInterval) {
+	request(method, endpoint, requestContent, timeoutInterval) {
 		return new Promise((resolve, reject) => {
 			if (method == null || endpoint == null) {
 				reject(new ReferenceError('missing arguments'));
 			}
 			requestContent = requestContent || {};
-			apiVersion = apiVersion || 1;
 			timeoutInterval = 3000;
 
 			// request timeout
@@ -40,10 +39,7 @@ class StreamingRest {
 			// build request
 			let request = {
 				method: method,
-				endpoint: endpoint,
-				headers: {
-					'x-api-version': apiVersion
-				}
+				endpoint: endpoint
 			};
 			request = Object.assign(request, requestContent);
 

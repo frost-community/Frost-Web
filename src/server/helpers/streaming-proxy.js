@@ -31,10 +31,7 @@ module.exports = (frontConnection, apiConnection, debugDetail, config) => {
 		try {
 			const { method, endpoint } = data;
 
-			const endpointInfo = endpoints.find((item) => {
-				return item.method == method && pathToRegexp(item.path).test(endpoint);
-			});
-
+			const endpointInfo = endpoints.find(i => i.method == method && pathToRegexp(i.path).test(endpoint));
 			if (endpointInfo == null) {
 				frontConnection.send('rest', { success: false, request: data, message: `'${endpoint}' endpoint is not access allowed on 'rest' event.` });
 				return;

@@ -163,11 +163,7 @@ module.exports = async (debug, config) => {
 
 				let creationResult;
 				try {
-					creationResult = await requestApi('post', '/users', req.body, {
-						'X-Api-Version': 1.0,
-						'X-Application-Key': config.web.applicationKey,
-						'X-Access-Key': config.web.hostAccessToken
-					});
+					creationResult = await requestApi('post', '/users', req.body, { Authorization: `Bearer ${config.web.hostAccessToken}` });
 				}
 				catch (err) {
 					if (err instanceof requestErrors.StatusCodeError) {

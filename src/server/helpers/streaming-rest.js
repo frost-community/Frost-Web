@@ -30,7 +30,7 @@ class StreamingRest {
 					}
 
 					// disposings
-					this.connection.off('rest', restHandler);
+					this.connection.removeListener('rest', restHandler);
 					clearTimeout(timeout);
 				}
 			};

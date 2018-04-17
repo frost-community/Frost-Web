@@ -10,14 +10,15 @@ const helmet = require('helmet');
 const HttpServerError = require('./helpers/http-server-error');
 const isSmartPhone = require('./helpers/is-smart-phone');
 const path = require('path');
-const requestApi = require('./helpers/request-api');
 const request = require('request-promise');
-const requestErrors = require('request-promise/errors');
+const StreamingRest = require('./helpers/streaming-rest');
 
 /**
- * Webサーバーと内部的なWebAPIを提供します
+ * クライアントサイドにWebページと各種操作を提供します
  */
-module.exports = async (debug, config) => {
+module.exports = async (hostApiConnection, debug, config) => {
+	const streamingRest = new StreamingRest(hostApiConnection);
+
 	const app = express();
 	const sessionStore = new (connectRedis(expressSession))({});
 
@@ -106,9 +107,9 @@ module.exports = async (debug, config) => {
 		.put(async (req, res, next) => {
 			try {
 				if (req.session.accessToken == null) {
-					await createSession(req, config);
+					await createSession(req, streamingRest, config);
 				}
-				res.json({ message: 'ok' });
+				res.json({ message: 'ok', token: req.session.clientSideAccessToken });
 			}
 			catch(err) {
 				if (err instanceof HttpServerError) {
@@ -124,8 +125,9 @@ module.exports = async (debug, config) => {
 			try {
 				if (req.session.accessToken != null) {
 					req.session.accessToken = null;
+					req.session.clientSideAccessToken = null;
 				}
-				res.json({ message: 'ok' });
+				res.json({ message: 'ok', token: null });
 			}
 			catch (err) {
 				if (err instanceof HttpServerError) {
@@ -142,6 +144,8 @@ module.exports = async (debug, config) => {
 		.post(async (req, res, next) => {
 			try {
 				console.log('/session/register');
+
+				// recaptcha
 				let recaptchaResult;
 				try {
 					recaptchaResult = await request('https://www.google.com/recaptcha/api/siteverify', {
@@ -161,25 +165,15 @@ module.exports = async (debug, config) => {
 					throw new HttpServerError(400, `recaptcha verification error: ${JSON.stringify(recaptchaResult['error-codes'])}`, true);
 				}
 
-				let creationResult;
-				try {
-					creationResult = await requestApi('post', '/users', req.body, { Authorization: `Bearer ${config.web.hostAccessToken}` });
-				}
-				catch (err) {
-					if (err instanceof requestErrors.StatusCodeError) {
-						throw new HttpServerError(err.statusCode, `session register error: ${err.message}`, true);
-					}
-					else {
-						throw err;
-					}
+				// creation user
+				const creationResult = await streamingRest.request('post', '/users', { body: req.body });
+				if (!creationResult.response.user) {
+					throw new HttpServerError(creationResult.statusCode || 500, `session register error: ${creationResult.response.message}`, true);
 				}
 
-				if (!creationResult.user) {
-					throw new HttpServerError(creationResult.statusCode || 500, `session register error: ${creationResult.message}`, true);
-				}
-
-				await createSession(req, config);
-				res.json({ message: 'ok' });
+				// creation session
+				await createSession(req, streamingRest, config);
+				res.json({ message: 'ok', token: req.session.clientSideAccessToken });
 			}
 			catch (err) {
 				if (err instanceof HttpServerError) {

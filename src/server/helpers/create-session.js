@@ -2,49 +2,60 @@ const HttpServerError = require('./http-server-error');
 const requestApi = require('./request-api');
 const errors = require('request-promise/errors');
 
-module.exports = async (req, config) => {
-	let result;
+module.exports = async (req, streamingRest, config) => {
 
-	try {
-		result = await requestApi('post', '/ice_auth',
-			{ applicationKey: config.web.applicationKey },
-			{ 'X-Api-Version': 1.0 }
-		);
+	// validate user credential
+	const validResult = await streamingRest.request('get', '/auth/valid_credential', {
+		query: { screenName: req.body.screenName, password: req.body.password }
+	});
+	if (validResult.statusCode != 200) {
+		throw new HttpServerError(validResult.statusCode, `session creation error: ${validResult.response.message}`);
 	}
-	catch (err) {
-		throw new HttpServerError(500, `session creation error: ${err.message}`);
-	}
-
-	if (result.iceAuthKey == null) {
-		throw new HttpServerError(500, `session creation error: ${result.response.message}`);
+	if (validResult.response.valid !== true) {
+		throw new HttpServerError(400, 'session creation error: invalid credential');
 	}
 
-	try {
-		result = await requestApi('post', '/ice_auth/authorize_basic',
-			{
-				screenName: req.body.screenName,
-				password: req.body.password
-			},
-			{
-				'X-Api-Version': 1.0,
-				'X-Application-Key': config.web.applicationKey,
-				'X-Access-Key': config.web.hostAccessToken,
-				'X-Ice-Auth-Key': result.iceAuthKey
+	const usersResult = await streamingRest.request('get', '/users', {
+		query: {
+			'screen_names': req.body.screenName
+		}
+	});
+	const user = usersResult.response.users[0];
+
+	const getToken = async (scopes) => {
+		let sessionTokenResult = await streamingRest.request('get', '/auth/tokens', {
+			body: {
+				applicationId: config.web.applicationId,
+				userId: user.id,
+				scopes: scopes
 			}
-		);
-	}
-	catch (err) {
-		if (err instanceof errors.StatusCodeError) {
-			throw new HttpServerError(err.statusCode, `authentication error: ${err.message}`);
+		});
+		if (sessionTokenResult.statusCode != 200 && sessionTokenResult.statusCode != 404) {
+			throw new HttpServerError(sessionTokenResult.statusCode, `session creation error: ${sessionTokenResult.response.message}`);
 		}
-		else {
-			throw new HttpServerError(500, `session creation authentication error: ${err.message}`);
+		if (sessionTokenResult.statusCode == 404) {
+			sessionTokenResult = await streamingRest.request('post', '/auth/tokens', {
+				body: {
+					applicationId: config.web.applicationId,
+					userId: user.id,
+					scopes: config.web.accessTokenScopes.session
+				}
+			});
+			if (sessionTokenResult.statusCode != 200) {
+				throw new HttpServerError(sessionTokenResult.statusCode, `session creation error: ${sessionTokenResult.response.message}`);
+			}
 		}
-	}
+		return sessionTokenResult.response.token;
+	};
 
-	if (result.accessToken == null) {
-		throw new HttpServerError(400, `authentication error: ${result.response.message}`);
-	}
+	// get session accessToken
+	const sessionToken = await getToken(config.web.accessTokenScopes.session);
 
-	req.session.accessToken = result.accessToken;
+	// get client-side sccessToken
+	const clientSideToken = await getToken(config.web.accessTokenScopes.clientSide);
+
+	req.session.accessToken = sessionToken;
+	req.session.clientSideAccessToken = clientSideToken;
+
+	return clientSideToken;
 };

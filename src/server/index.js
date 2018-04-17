@@ -6,11 +6,15 @@ const i = require('./helpers/input-async');
 const loadConfig = require('./helpers/load-config');
 const request = require('request-promise');
 const streamingServer = require('./streamingServer');
+const WebSocket = require('websocket');
+const WebSocketUtility = require('./helpers/websocket-utility');
 
 const urlConfigFile = 'https://raw.githubusercontent.com/Frost-Dev/Frost/master/config.json';
 
 const q = async str => (await i(str)).toLowerCase().indexOf('y') === 0;
 const writeFile = promisify(fs.writeFile);
+
+const isDebug = false;
 
 /**
  * Webアプリケーションサーバ
@@ -34,8 +38,13 @@ module.exports = async () => {
 			return;
 		}
 
-		const { http, sessionStore } = await httpServer(false, config);
-		streamingServer(http, sessionStore, false, config);
+		console.log('connecting to streaming api as host ...');
+		const hostApiConnection = await WebSocketUtility.connect(`${config.web.apiBaseUrl}?access_token=${config.web.hostAccessToken}`);
+		WebSocketUtility.addExtensionMethods(hostApiConnection);
+
+		console.log('starting http server ...');
+		const { http, sessionStore } = await httpServer(hostApiConnection, isDebug, config);
+		streamingServer(http, sessionStore, isDebug, config);
 
 		console.log('init complete');
 	}

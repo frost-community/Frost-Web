@@ -3,6 +3,7 @@ const WebSocket = require('websocket');
 const WebSocketUtility = require('./helpers/websocket-utility');
 const request = require('request-promise');
 const requestApi = require('./helpers/request-api');
+const StreamingRest = require('./helpers/streaming-rest');
 
 /**
  * ストリーミング接続をサポートします。
@@ -26,13 +27,8 @@ module.exports = (http, sessionStore, debugDetail, config) => {
 				if (debugDetail) {
 					console.log('[streaming server]', 'connecting streaming api server...');
 				}
-				const wsUrl = `${config.web.apiBaseUrl}?access_token=${session.accessToken}`;
-				apiConnection = await WebSocketUtility.connect(wsUrl);
+				apiConnection = await WebSocketUtility.connect(`${config.web.apiBaseUrl}?access_token=${session.accessToken}`);
 				WebSocketUtility.addExtensionMethods(apiConnection);
-
-				if (debugDetail) {
-					console.log('[streaming server]', 'connected streaming api server');
-				}
 			}
 			catch (err) {
 				if (err.message.indexOf('ECONNREFUSED') != -1) {
@@ -46,11 +42,11 @@ module.exports = (http, sessionStore, debugDetail, config) => {
 				}
 			}
 
-			apiConnection.on('error', (err) => {
+			apiConnection.on('error', err => {
 				console.log('api error:', err);
 			});
 
-			apiConnection.on('close', (data) => {
+			apiConnection.on('close', data => {
 				if (debugDetail) {
 					console.log('[api close]:', data.reasonCode, data.description);
 				}
@@ -60,20 +56,21 @@ module.exports = (http, sessionStore, debugDetail, config) => {
 				}
 			});
 
+			const streamingRest = new StreamingRest(apiConnection);
+
 			// リクエストを受理
 			frontConnection = wsRequest.accept();
 			WebSocketUtility.addExtensionMethods(frontConnection);
 
-			frontConnection.on('error', (err) => {
+			frontConnection.on('error', err => {
 				if (err.message.indexOf('ECONNRESET') != -1) {
-					// noop
+					return;
 				}
-				else {
-					console.log('front error:', err);
-				}
+
+				console.log('front error:', err);
 			});
 
-			frontConnection.on('close', (data) => {
+			frontConnection.on('close', data => {
 				if (debugDetail) {
 					console.log('[front close]:', data.reasonCode, data.description);
 				}
@@ -92,33 +89,38 @@ module.exports = (http, sessionStore, debugDetail, config) => {
 			};
 
 			frontConnection.on('app-create', async (data) => {
-				console.log('app-create');
-
-				// recaptcha
-				const verifyResult = await request('https://www.google.com/recaptcha/api/siteverify', {
-					method: 'POST',
-					json: true,
-					form: { secret: config.web.reCAPTCHA.secretKey, response: data.recaptchaToken }
-				});
-
-				if (!verifyResult.success) {
-					frontConnection.error('app-create', 'invalid recaptcha');
-					return;
-				}
-
-				// request POST /applications
-				let result;
 				try {
-					result = await requestApi('post', '/applications', data, { Authorization: `Bearer ${session.accessToken}` });
+					console.log('app-create');
+					// recaptcha
+					const verifyResult = await request('https://www.google.com/recaptcha/api/siteverify', {
+						method: 'POST',
+						json: true,
+						form: { secret: config.web.reCAPTCHA.secretKey, response: data.recaptchaToken }
+					});
+					if (!verifyResult.success) {
+						frontConnection.error('app-create', 'invalid recaptcha');
+						return;
+					}
+
+					// request POST /applications
+					const result = await streamingRest.request('post', '/applications', { body: data.body });
+					if (result.statusCode != 200) {
+						frontConnection.error('app-create', result.response.message, { statusCode: result.statusCode });
+						return;
+					}
+
+					// response
+					frontConnection.send('app-create', { success: true, app: result.response.application, message: 'app created' });
 				}
 				catch (err) {
-					const statusCode = err.statusCode ? err.statusCode : 500;
-					frontConnection.error('app-create', err.message, { statusCode: statusCode });
+					const detail = {};
+					if (err.statusCode) {
+						detail.statusCode = err.statusCode;
+					}
+					frontConnection.error('app-create', err.message, detail);
+					console.log(err);
 					return;
 				}
-
-				// response
-				frontConnection.send('app-create', { success: true, app: result.application, message: 'app created' });
 			});
 		}
 		catch (err) {

@@ -109,6 +109,7 @@ module.exports = async (hostApiConnection, debug, config) => {
 				if (req.session.accessToken == null) {
 					await createSession(req, streamingRest, config);
 				}
+
 				res.json({ message: 'ok', token: req.session.clientSideAccessToken });
 			}
 			catch(err) {
@@ -143,8 +144,6 @@ module.exports = async (hostApiConnection, debug, config) => {
 	app.route('/session/register')
 		.post(async (req, res, next) => {
 			try {
-				console.log('/session/register');
-
 				// recaptcha
 				let recaptchaResult;
 				try {
@@ -158,9 +157,8 @@ module.exports = async (hostApiConnection, debug, config) => {
 					});
 				}
 				catch (err) {
-					throw new HttpServerError(500, 'recaptcha verification request failed:', err.message, true);
+					throw new HttpServerError(500, `recaptcha verification error: ${err.message}`, true);
 				}
-
 				if (recaptchaResult.success !== true) {
 					throw new HttpServerError(400, `recaptcha verification error: ${JSON.stringify(recaptchaResult['error-codes'])}`, true);
 				}
@@ -173,6 +171,7 @@ module.exports = async (hostApiConnection, debug, config) => {
 
 				// creation session
 				await createSession(req, streamingRest, config);
+
 				res.json({ message: 'ok', token: req.session.clientSideAccessToken });
 			}
 			catch (err) {

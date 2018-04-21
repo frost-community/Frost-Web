@@ -1,4 +1,3 @@
-const { promisify } = require('util');
 const cookie = require('cookie');
 const cookieParser = require('cookie-parser');
 
@@ -8,10 +7,15 @@ module.exports = async (cookieString, sessionCookieName, cookieSecret, store) =>
 		return null;
 	}
 
-	const getSession = promisify(store.get);
+	const getSession = (store, sid) => new Promise((resolve, reject) => {
+		store.get(sid, (err, result) => {
+			if (err) return reject(err);
+			resolve(result);
+		});
+	});
 
 	const cookies = cookieParser.signedCookies(cookie.parse(cookieString), cookieSecret);
-	const session = await getSession(cookies[sessionCookieName]);
+	const session = await getSession(store, cookies[sessionCookieName]);
 
 	return session;
 };

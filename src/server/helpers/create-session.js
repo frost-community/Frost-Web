@@ -22,29 +22,29 @@ module.exports = async (req, streamingRest, config) => {
 	const user = usersResult.response.users[0];
 
 	const getToken = async (scopes) => {
-		let sessionTokenResult = await streamingRest.request('get', '/auth/tokens', {
+		let tokenResult = await streamingRest.request('get', '/auth/tokens', {
 			query: {
 				applicationId: config.web.applicationId,
 				userId: user.id,
 				scopes: scopes
 			}
 		});
-		if (sessionTokenResult.statusCode != 200 && sessionTokenResult.statusCode != 404) {
-			throw new HttpServerError(sessionTokenResult.statusCode, `session creation error: ${sessionTokenResult.response.message}`);
+		if (tokenResult.statusCode != 200 && tokenResult.statusCode != 404) {
+			throw new HttpServerError(tokenResult.statusCode, `session creation error: ${tokenResult.response.message}`);
 		}
-		if (sessionTokenResult.statusCode == 404) {
-			sessionTokenResult = await streamingRest.request('post', '/auth/tokens', {
+		if (tokenResult.statusCode == 404) {
+			tokenResult = await streamingRest.request('post', '/auth/tokens', {
 				body: {
 					applicationId: config.web.applicationId,
 					userId: user.id,
 					scopes: config.web.accessTokenScopes.session
 				}
 			});
-			if (sessionTokenResult.statusCode != 200) {
-				throw new HttpServerError(sessionTokenResult.statusCode, `session creation error: ${sessionTokenResult.response.message}`);
+			if (tokenResult.statusCode != 200) {
+				throw new HttpServerError(tokenResult.statusCode, `session creation error: ${tokenResult.response.message}`);
 			}
 		}
-		return sessionTokenResult.response.token;
+		return tokenResult.response.token;
 	};
 
 	// get session accessToken

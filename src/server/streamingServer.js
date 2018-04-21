@@ -1,6 +1,5 @@
 const getSessionFromCookie = require('./helpers/get-session-from-cookie');
 const WebSocket = require('websocket');
-const ReconnectingWebSocket = require('./helpers/reconnecting-websocket-node');
 const events = require('websocket-events');
 const request = require('request-promise');
 const StreamingRest = require('./helpers/streaming-rest');
@@ -27,7 +26,8 @@ module.exports = (http, sessionStore, debugDetail, config) => {
 				if (debugDetail) {
 					console.log('[streaming server]', 'connecting streaming api server...');
 				}
-				apiConnection = await ReconnectingWebSocket.connect(`${config.web.apiBaseUrl}?access_token=${session.accessToken}`);
+				const client = new WebSocket.client();
+				apiConnection = await client.connect(`${config.web.apiBaseUrl}?access_token=${session.accessToken}`);
 				events(apiConnection);
 			}
 			catch (err) {
@@ -43,6 +43,9 @@ module.exports = (http, sessionStore, debugDetail, config) => {
 			}
 
 			apiConnection.on('error', err => {
+				if (err.indexOf('ECONNRESET') != -1) {
+					return;
+				}
 				console.log('api error:', err);
 			});
 

@@ -40,6 +40,12 @@ module.exports = async () => {
 
 		console.log('connecting to streaming api as host ...');
 		const hostApiConnection = await ReconnectingWebSocket.connect(`${config.web.apiBaseUrl}?access_token=${config.web.hostAccessToken}`);
+		hostApiConnection.on('error', err => {
+			if (err.message.indexOf('ECONNRESET') != -1) {
+				return;
+			}
+			console.log('host apiConnection error:', err);
+		});
 		events(hostApiConnection);
 
 		console.log('starting http server ...');

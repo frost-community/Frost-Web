@@ -21,13 +21,22 @@ class StreamingRest {
 
 			// handler
 			const restHandler = (rest) => {
-				if (rest.request.method == method && rest.request.endpoint == endpoint) {
-					if (rest.success) {
-						resolve(rest);
+				if (rest.success == true) {
+					if (rest.request.method == method && rest.request.endpoint == endpoint) {
+						if (rest.success) {
+							resolve(rest);
+						}
+						else {
+							reject(new Error(rest.message));
+						}
+
+						// disposings
+						this.connection.removeListener('rest', restHandler);
+						clearTimeout(timeout);
 					}
-					else {
-						reject(new Error(rest.message));
-					}
+				}
+				else {
+					reject(new Error(rest.message));
 
 					// disposings
 					this.connection.removeListener('rest', restHandler);

@@ -1,6 +1,7 @@
 const { client: Client, connection: Connection } = require('websocket');
 const { EventEmitter } = require('events');
 const wait = require('./wait');
+const { connect } = require('./websocket-utility');
 
 class ReconnectingWebSocketNode extends EventEmitter {
 	/** @param {Connection} connection */
@@ -13,21 +14,8 @@ class ReconnectingWebSocketNode extends EventEmitter {
 	}
 
 	static async connect(requestUrl, protocols, origin, headers, options) {
-		const connection = await ReconnectingWebSocketNode._connect(requestUrl, protocols, origin, headers, options);
+		const connection = await connect(requestUrl, protocols, origin, headers, options);
 		return new ReconnectingWebSocketNode(connection, { requestUrl, protocols, origin, headers, options }, options);
-	}
-
-	static _connect(requestUrl, protocols, origin, headers, options) {
-		return new Promise((resolve, reject) => {
-			const client = new Client();
-			client.on('connect', (connection) => {
-				resolve(connection);
-			});
-			client.on('connectFailed', (err) => {
-				reject(err);
-			});
-			client.connect(requestUrl, protocols, origin, headers, options);
-		});
 	}
 
 	_updateConnection(connection) {
@@ -37,7 +25,7 @@ class ReconnectingWebSocketNode extends EventEmitter {
 			const { requestUrl, protocols, origin, headers, options } = this.connectParams;
 			try {
 				// コネクションの置き換え
-				const connection = await ReconnectingWebSocketNode._connect(requestUrl, protocols, origin, headers, options);
+				const connection = await connect(requestUrl, protocols, origin, headers, options);
 				this._updateConnection(connection);
 				return true;
 			}

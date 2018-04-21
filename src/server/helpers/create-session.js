@@ -1,5 +1,6 @@
 const HttpServerError = require('./http-server-error');
 
+// required scopes: auth.host, user.read
 module.exports = async (req, streamingRest, config) => {
 
 	// validate user credential
@@ -22,7 +23,7 @@ module.exports = async (req, streamingRest, config) => {
 
 	const getToken = async (scopes) => {
 		let sessionTokenResult = await streamingRest.request('get', '/auth/tokens', {
-			body: {
+			query: {
 				applicationId: config.web.applicationId,
 				userId: user.id,
 				scopes: scopes
@@ -52,8 +53,6 @@ module.exports = async (req, streamingRest, config) => {
 	// get client-side sccessToken
 	const clientSideToken = await getToken(config.web.accessTokenScopes.clientSide);
 
-	req.session.accessToken = sessionToken;
-	req.session.clientSideAccessToken = clientSideToken;
-
-	return clientSideToken;
+	req.session.token = sessionToken;
+	req.session.clientSideToken = clientSideToken;
 };

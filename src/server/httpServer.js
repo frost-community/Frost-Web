@@ -76,9 +76,8 @@ module.exports = async (hostApiConnection, debug, config) => {
 				});
 
 				// memo: クライアントサイドでは、パラメータ中にuserIdが存在するかどうかでWebSocketへの接続が必要かどうかを判断します。このコードはそのために必要です。
-				const accessToken = req.session.accessToken;
-				if (accessToken != null) {
-					pageParams.userId = accessToken.split('-')[0];
+				if (req.session.token != null) {
+					pageParams.userId = req.session.token.userId;
 				}
 
 				let pageRenderParams = {
@@ -106,11 +105,16 @@ module.exports = async (hostApiConnection, debug, config) => {
 	app.route('/session')
 		.put(async (req, res, next) => {
 			try {
-				if (req.session.accessToken == null) {
+				if (req.session.token == null) {
 					await createSession(req, streamingRest, config);
 				}
 
-				res.json({ message: 'ok', token: req.session.clientSideAccessToken });
+				res.json({
+					message: 'ok',
+					accessToken: req.session.clientSideToken.accessToken,
+					userId: req.session.clientSideToken.userId,
+					scopes: config.web.accessTokenScopes.clientSide
+				});
 			}
 			catch(err) {
 				if (err instanceof HttpServerError) {
@@ -124,11 +128,11 @@ module.exports = async (hostApiConnection, debug, config) => {
 		})
 		.delete(checkLogin, (req, res) => {
 			try {
-				if (req.session.accessToken != null) {
-					req.session.accessToken = null;
-					req.session.clientSideAccessToken = null;
+				if (req.session.token != null) {
+					req.session.token = null;
+					req.session.clientSideToken = null;
 				}
-				res.json({ message: 'ok', token: null });
+				res.json({ message: 'ok' });
 			}
 			catch (err) {
 				if (err instanceof HttpServerError) {
@@ -172,7 +176,11 @@ module.exports = async (hostApiConnection, debug, config) => {
 				// creation session
 				await createSession(req, streamingRest, config);
 
-				res.json({ message: 'ok', token: req.session.clientSideAccessToken });
+				res.json({
+					message: 'ok',
+					accessToken: req.session.clientSideToken.accessToken,
+					userId: req.session.clientSideToken.userId
+				});
 			}
 			catch (err) {
 				if (err instanceof HttpServerError) {

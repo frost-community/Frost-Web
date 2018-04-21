@@ -16,7 +16,7 @@ module.exports = (http, sessionStore, debugDetail, config) => {
 			// セッションを取得
 			const session = await getSessionFromCookie(wsRequest.httpRequest.headers['cookie'], config.web.session.name, config.web.session.SecretToken, sessionStore);
 
-			if (session == null || session.accessToken == null) {
+			if (session == null || session.token == null) {
 				return wsRequest.reject(401, 'Unauthorized');
 			}
 
@@ -27,7 +27,7 @@ module.exports = (http, sessionStore, debugDetail, config) => {
 					console.log('[streaming server]', 'connecting streaming api server...');
 				}
 				const client = new WebSocket.client();
-				apiConnection = await client.connect(`${config.web.apiBaseUrl}?access_token=${session.accessToken}`);
+				apiConnection = await client.connect(`${config.web.apiBaseUrl}?access_token=${session.token.accessToken}`);
 				events(apiConnection);
 			}
 			catch (err) {

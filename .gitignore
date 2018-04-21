@@ -1,7 +1,10 @@
+package-lock.json
 node_modules
 built
 .vscode
 *.log
 *.old
-/config*.json
-package-lock.json
+
+/.configs/*
+!/.configs/README.md
+!/.configs/*.default.json

@@ -24,7 +24,7 @@ module.exports = async (req, streamingRest, config) => {
 	const getToken = async (scopes) => {
 		let tokenResult = await streamingRest.request('get', '/auth/tokens', {
 			query: {
-				applicationId: config.web.applicationId,
+				applicationId: config.applicationId,
 				userId: user.id,
 				scopes: scopes
 			}
@@ -35,7 +35,7 @@ module.exports = async (req, streamingRest, config) => {
 		if (tokenResult.statusCode == 404) {
 			tokenResult = await streamingRest.request('post', '/auth/tokens', {
 				body: {
-					applicationId: config.web.applicationId,
+					applicationId: config.applicationId,
 					userId: user.id,
 					scopes: scopes
 				}
@@ -48,10 +48,10 @@ module.exports = async (req, streamingRest, config) => {
 	};
 
 	// get session accessToken
-	const sessionToken = await getToken(config.web.accessTokenScopes.session);
+	const sessionToken = await getToken(config.accessTokenScopes.session);
 
 	// get client-side sccessToken
-	const clientSideToken = await getToken(config.web.accessTokenScopes.clientSide);
+	const clientSideToken = await getToken(config.accessTokenScopes.clientSide);
 
 	req.session.token = sessionToken;
 	req.session.clientSideToken = clientSideToken;

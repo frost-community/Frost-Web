@@ -15,7 +15,7 @@ module.exports = (http, sessionStore, debugDetail, config) => {
 		let frontConnection;
 		try {
 			// セッションを取得
-			const session = await getSessionFromCookie(wsRequest.httpRequest.headers['cookie'], config.web.session.name, config.web.session.SecretToken, sessionStore);
+			const session = await getSessionFromCookie(wsRequest.httpRequest.headers['cookie'], config.session.name, config.session.SecretToken, sessionStore);
 
 			if (session == null || session.token == null) {
 				return wsRequest.reject(401, 'Unauthorized');
@@ -27,7 +27,7 @@ module.exports = (http, sessionStore, debugDetail, config) => {
 				if (debugDetail) {
 					console.log('[streaming server]', 'connecting streaming api server...');
 				}
-				apiConnection = await WebSocketUtility.connect(`${config.web.apiBaseUrl}?access_token=${session.token.accessToken}`);
+				apiConnection = await WebSocketUtility.connect(`ws://${config.apiHost}?access_token=${session.token.accessToken}`);
 				events(apiConnection);
 			}
 			catch (err) {
@@ -98,7 +98,7 @@ module.exports = (http, sessionStore, debugDetail, config) => {
 					const verifyResult = await request('https://www.google.com/recaptcha/api/siteverify', {
 						method: 'POST',
 						json: true,
-						form: { secret: config.web.reCAPTCHA.secretKey, response: data.recaptchaToken }
+						form: { secret: config.reCAPTCHA.secretKey, response: data.recaptchaToken }
 					});
 					if (!verifyResult.success) {
 						frontConnection.error('app-create', 'invalid recaptcha');

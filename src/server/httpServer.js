@@ -46,8 +46,8 @@ module.exports = async (hostApiConnection, debug, config) => {
 
 	app.use(expressSession({
 		store: sessionStore,
-		name: config.web.session.name,
-		secret: config.web.session.SecretToken,
+		name: config.session.name,
+		secret: config.session.SecretToken,
 		cookie: {
 			httpOnly: false,
 			maxAge: 7 * 24 * 60 * 60 * 1000 // 7days
@@ -72,7 +72,7 @@ module.exports = async (hostApiConnection, debug, config) => {
 				pageParams = Object.assign(pageParams || {}, {
 					csrf: req.csrfToken(),
 					isSmartPhone: req.isSmartPhone,
-					siteKey: config.web.reCAPTCHA.siteKey
+					siteKey: config.reCAPTCHA.siteKey
 				});
 
 				// memo: クライアントサイドでは、パラメータ中にuserIdが存在するかどうかでWebSocketへの接続が必要かどうかを判断します。このコードはそのために必要です。
@@ -113,7 +113,7 @@ module.exports = async (hostApiConnection, debug, config) => {
 					message: 'ok',
 					accessToken: req.session.clientSideToken.accessToken,
 					userId: req.session.clientSideToken.userId,
-					scopes: config.web.accessTokenScopes.clientSide
+					scopes: config.accessTokenScopes.clientSide
 				});
 			}
 			catch(err) {
@@ -155,7 +155,7 @@ module.exports = async (hostApiConnection, debug, config) => {
 						method: 'POST',
 						json: true,
 						form: {
-							secret: config.web.reCAPTCHA.secretKey,
+							secret: config.reCAPTCHA.secretKey,
 							response: req.body.recaptchaToken
 						}
 					});
@@ -180,7 +180,7 @@ module.exports = async (hostApiConnection, debug, config) => {
 					message: 'ok',
 					accessToken: req.session.clientSideToken.accessToken,
 					userId: req.session.clientSideToken.userId,
-					scopes: config.web.accessTokenScopes.clientSide
+					scopes: config.accessTokenScopes.clientSide
 				});
 			}
 			catch (err) {
@@ -252,7 +252,7 @@ module.exports = async (hostApiConnection, debug, config) => {
 			resolve(http);
 		});
 	});
-	const http = await listen(config.web.port);
+	const http = await listen(config.port);
 
 	console.log('[http server]', 'initialized');
 

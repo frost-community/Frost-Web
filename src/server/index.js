@@ -6,8 +6,8 @@ const i = require('./helpers/input-async');
 const loadConfig = require('./helpers/load-config');
 const request = require('request-promise');
 const streamingServer = require('./streamingServer');
-const WebSocket = require('websocket');
-const WebSocketUtility = require('./helpers/websocket-utility');
+const ReconnectingWebSocket = require('./helpers/reconnecting-websocket-node');
+const events = require('websocket-events');
 
 const urlConfigFile = 'https://raw.githubusercontent.com/Frost-Dev/Frost/master/config.json';
 
@@ -39,8 +39,8 @@ module.exports = async () => {
 		}
 
 		console.log('connecting to streaming api as host ...');
-		const hostApiConnection = await WebSocketUtility.connect(`${config.web.apiBaseUrl}?access_token=${config.web.hostAccessToken}`);
-		WebSocketUtility.addExtensionMethods(hostApiConnection);
+		const hostApiConnection = await ReconnectingWebSocket.connect(`${config.web.apiBaseUrl}?access_token=${config.web.hostAccessToken}`);
+		events(hostApiConnection);
 
 		console.log('starting http server ...');
 		const { http, sessionStore } = await httpServer(hostApiConnection, isDebug, config);

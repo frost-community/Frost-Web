@@ -1,6 +1,7 @@
 const getSessionFromCookie = require('./helpers/get-session-from-cookie');
 const WebSocket = require('websocket');
-const WebSocketUtility = require('./helpers/websocket-utility');
+const ReconnectingWebSocket = require('./helpers/reconnecting-websocket-node');
+const events = require('websocket-events');
 const request = require('request-promise');
 const StreamingRest = require('./helpers/streaming-rest');
 
@@ -26,8 +27,8 @@ module.exports = (http, sessionStore, debugDetail, config) => {
 				if (debugDetail) {
 					console.log('[streaming server]', 'connecting streaming api server...');
 				}
-				apiConnection = await WebSocketUtility.connect(`${config.web.apiBaseUrl}?access_token=${session.accessToken}`);
-				WebSocketUtility.addExtensionMethods(apiConnection);
+				apiConnection = await ReconnectingWebSocket.connect(`${config.web.apiBaseUrl}?access_token=${session.accessToken}`);
+				events(apiConnection);
 			}
 			catch (err) {
 				if (err.message.indexOf('ECONNREFUSED') != -1) {
@@ -59,7 +60,7 @@ module.exports = (http, sessionStore, debugDetail, config) => {
 
 			// リクエストを受理
 			frontConnection = wsRequest.accept();
-			WebSocketUtility.addExtensionMethods(frontConnection);
+			events(frontConnection);
 
 			frontConnection.on('error', err => {
 				if (err.message.indexOf('ECONNRESET') != -1) {

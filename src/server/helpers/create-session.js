@@ -37,7 +37,7 @@ module.exports = async (req, streamingRest, config) => {
 				body: {
 					applicationId: config.web.applicationId,
 					userId: user.id,
-					scopes: config.web.accessTokenScopes.session
+					scopes: scopes
 				}
 			});
 			if (tokenResult.statusCode != 200) {

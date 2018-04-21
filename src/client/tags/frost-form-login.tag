@@ -33,7 +33,10 @@
 				_csrf: this.csrf
 			})
 			.then(async (res) => {
+				const json = await res.json();
+
 				if (res.ok) {
+					localStorage.setItem('accessToken', json.accessToken);
 					location.reload();
 					return;
 				}

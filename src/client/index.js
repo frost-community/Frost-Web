@@ -2,10 +2,17 @@ const riot = require('riot');
 const route = require('riot-route').default;
 const WebSocketEvents = require('./helpers/web-socket-events');
 const StreamingRest = require('./helpers/streaming-rest');
+const fetchJson = require('./helpers/fetch-json');
 
 (async () => {
 
 	const mixin = {};
+
+	// csrf
+
+	const csrfElement = document.getElementsByName('frost-csrf').item(0);
+	if (csrfElement != null)
+		mixin.csrf = csrfElement.content;
 
 	// userId
 
@@ -22,7 +29,9 @@ const StreamingRest = require('./helpers/streaming-rest');
 
 		let webSocket;
 		try {
-			webSocket = await WebSocketEvents.connect(`${secure ? 'wss' : 'ws'}://${location.host}`);
+			const apiHost = 'localhost:8000'; // TODO
+			const accessToken = localStorage.getItem('accessToken');
+			webSocket = await WebSocketEvents.connect(`${secure ? 'wss' : 'ws'}://${apiHost}?access_token=${accessToken}`);
 			webSocket.addEventListener('close', (ev) => { console.log('close:', ev); });
 			webSocket.addEventListener('error', (ev) => { console.log('error:', ev); });
 			WebSocketEvents.init(webSocket);
@@ -31,6 +40,10 @@ const StreamingRest = require('./helpers/streaming-rest');
 		catch (err) {
 			alert('WebSocketの接続に失敗しました');
 			console.log(err);
+			// 念のためログアウト
+			await fetchJson('DELETE', '/session', {
+				_csrf: mixin.csrf
+			});
 			return;
 		}
 
@@ -51,12 +64,6 @@ const StreamingRest = require('./helpers/streaming-rest');
 	const siteKeyElement = document.getElementsByName('frost-siteKey').item(0);
 	if (siteKeyElement != null)
 		mixin.siteKey = siteKeyElement.content;
-
-	// csrf
-
-	const csrfElement = document.getElementsByName('frost-csrf').item(0);
-	if (csrfElement != null)
-		mixin.csrf = csrfElement.content;
 
 	// central observer
 

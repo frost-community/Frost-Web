@@ -24,15 +24,15 @@
 	<script>
 		const fetchJson = require('../helpers/fetch-json');
 
-		submit(e) {
+		async submit(e) {
 			e.preventDefault();
 
-			fetchJson('PUT', '/session', {
-				screenName: this.refs.screenName.value,
-				password: this.refs.password.value,
-				_csrf: this.csrf
-			})
-			.then(async (res) => {
+			try {
+				const res = await fetchJson('PUT', '/session', {
+					screenName: this.refs.screenName.value,
+					password: this.refs.password.value,
+					_csrf: this.csrf
+				})
 				const json = await res.json();
 
 				if (res.ok) {
@@ -44,10 +44,10 @@
 					const json = await res.json();
 					alert('ログインに失敗しました: ' + json.error.message);
 				}
-			})
-			.catch((reason) => {
-				alert('ログインに失敗しました: ' + reason);
-			});
+			}
+			catch (err) {
+				alert('ログインに失敗しました: ' + err);
+			}
 		}
 	</script>
 </frost-form-login>

@@ -31,10 +31,9 @@ const fetchJson = require('./helpers/fetch-json');
 	if (mixin.getLoginStatus()) {
 		const secure = location.protocol == 'https:';
 
-		let webSocket;
 		try {
 			const accessToken = localStorage.getItem('accessToken');
-			webSocket = await WebSocketEvents.connect(`${secure ? 'wss' : 'ws'}://${mixin.config.apiHost}?access_token=${accessToken}`);
+			const webSocket = await WebSocketEvents.connect(`${secure ? 'wss' : 'ws'}://${mixin.config.apiHost}?access_token=${accessToken}`);
 			webSocket.addEventListener('close', (ev) => { console.log('close:', ev); });
 			webSocket.addEventListener('error', (ev) => { console.log('error:', ev); });
 			WebSocketEvents.init(webSocket);
@@ -50,9 +49,10 @@ const fetchJson = require('./helpers/fetch-json');
 			return;
 		}
 
-		const streamingRest = new StreamingRest(webSocket);
+		mixin.streamingRest = new StreamingRest(mixin.webSocket);
+
 		try {
-			const rest = await streamingRest.request('get', `/users/${mixin.userId}`);
+			const rest = await mixin.streamingRest.request('get', `/users/${mixin.userId}`);
 			mixin.user = rest.response.user;
 		}
 		catch (err) {

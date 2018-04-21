@@ -80,8 +80,6 @@
 	</style>
 
 	<script>
-		const StreamingRest = require('../helpers/streaming-rest');
-
 		if (this.opts.dataUser == null) {
 			throw new Error('data-user property is required');
 		}
@@ -103,12 +101,10 @@
 		}
 
 		this.on('mount', async () => {
-			const streamingRest = new StreamingRest(this.webSocket);
-
 			let restFollowings, restFollowers;
 			[restFollowings, restFollowers] = await Promise.all([
-				streamingRest.request('get', `/users/${this.user.id}/followings`, { query: { limit: 100 } }),
-				streamingRest.request('get', `/users/${this.user.id}/followers`, { query: { limit: 100 } })
+				this.streamingRest.request('get', `/users/${this.user.id}/followings`, { query: { limit: 100 } }),
+				this.streamingRest.request('get', `/users/${this.user.id}/followers`, { query: { limit: 100 } })
 			]);
 			this.followings = restFollowings.response.users;
 			this.followers = restFollowers.response.users;

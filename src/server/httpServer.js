@@ -179,7 +179,8 @@ module.exports = async (hostApiConnection, debug, config) => {
 				res.json({
 					message: 'ok',
 					accessToken: req.session.clientSideToken.accessToken,
-					userId: req.session.clientSideToken.userId
+					userId: req.session.clientSideToken.userId,
+					scopes: config.web.accessTokenScopes.clientSide
 				});
 			}
 			catch (err) {

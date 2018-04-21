@@ -8,6 +8,7 @@ class ReconnectingWebSocketNode extends EventEmitter {
 		super();
 		this.connectParams = connectParams;
 		this.needReconnect = true;
+		this.retryCount = 0;
 		this._updateConnection(connection);
 	}
 
@@ -31,7 +32,7 @@ class ReconnectingWebSocketNode extends EventEmitter {
 
 	_updateConnection(connection) {
 		const reconnect = async () => {
-			await wait(5000);
+			await wait((5 + 5 * this.retryCount) * 1000);
 
 			const { requestUrl, protocols, origin, headers, options } = this.connectParams;
 			try {
@@ -51,8 +52,10 @@ class ReconnectingWebSocketNode extends EventEmitter {
 				console.log('reconnecting...');
 				if (await reconnect()) {
 					console.log('reconnected!');
+					this.retryCount = 0;
 					break;
 				}
+				this.retryCount++;
 			}
 		});
 		this.connection = connection;

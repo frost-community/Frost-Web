@@ -1,6 +1,4 @@
 const HttpServerError = require('./http-server-error');
-const requestApi = require('./request-api');
-const errors = require('request-promise/errors');
 
 module.exports = async (req, streamingRest, config) => {
 

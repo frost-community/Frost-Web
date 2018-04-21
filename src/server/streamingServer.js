@@ -2,7 +2,6 @@ const getSessionFromCookie = require('./helpers/get-session-from-cookie');
 const WebSocket = require('websocket');
 const WebSocketUtility = require('./helpers/websocket-utility');
 const request = require('request-promise');
-const requestApi = require('./helpers/request-api');
 const StreamingRest = require('./helpers/streaming-rest');
 
 /**

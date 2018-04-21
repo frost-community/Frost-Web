@@ -1,4 +1,4 @@
 {
   "$version": 1,
-  "apiHost": "localhost:8000"
+  "apiHost": "your_frost_web_domain.com"
 }

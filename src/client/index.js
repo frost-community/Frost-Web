@@ -8,6 +8,10 @@ const fetchJson = require('./helpers/fetch-json');
 
 	const mixin = {};
 
+	// config
+
+	mixin.config = require('../../.configs/client-config.json');
+
 	// csrf
 
 	const csrfElement = document.getElementsByName('frost-csrf').item(0);
@@ -29,9 +33,8 @@ const fetchJson = require('./helpers/fetch-json');
 
 		let webSocket;
 		try {
-			const apiHost = 'localhost:8000'; // TODO
 			const accessToken = localStorage.getItem('accessToken');
-			webSocket = await WebSocketEvents.connect(`${secure ? 'wss' : 'ws'}://${apiHost}?access_token=${accessToken}`);
+			webSocket = await WebSocketEvents.connect(`${secure ? 'wss' : 'ws'}://${mixin.config.apiHost}?access_token=${accessToken}`);
 			webSocket.addEventListener('close', (ev) => { console.log('close:', ev); });
 			webSocket.addEventListener('error', (ev) => { console.log('error:', ev); });
 			WebSocketEvents.init(webSocket);

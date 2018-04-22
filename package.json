@@ -17,7 +17,8 @@
     "rebuild": "npm run clean && npm run build",
     "test:lint": "eslint \"./src/**/*.js\"",
     "test:mocha": "mocha -A --use_strict",
-    "test": "npm run test:lint && npm run test:mocha"
+    "test": "npm run test:lint && npm run test:mocha",
+    "generate-configs": "cp ./.configs/client-config.default.json ./.configs/client-config.json && cp ./.configs/server-config.default.json ./.configs/server-config.json"
   },
   "author": "team FrostDevelop",
   "license": "MIT",

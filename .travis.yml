@@ -6,13 +6,13 @@ notifications:
     on_failure: always
 
 node_js:
-  - "7.7.0"
+  - "8.9.0"
 
 cache:
   directories:
   - node_modules
 
 script:
-  - wget https://raw.githubusercontent.com/Frost-Dev/Frost/master/config.json
-  - npm run rebuild
+  - npm run generate-configs
+  - npm run build
   - npm run test

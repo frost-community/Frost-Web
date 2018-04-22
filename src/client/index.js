@@ -169,3 +169,5 @@ const fetchJson = require('./helpers/fetch-json');
 	console.log('何かがおかしいよ');
 	console.log(err);
 });
+
+require('./styles/page.scss');

@@ -1,19 +1,18 @@
 {
   "name": "frost-web",
-  "version": "0.2.0",
+  "version": "0.4.0",
   "description": "Frost Web Server",
   "private": true,
-  "main": "./built/index.js",
+  "main": "./src/index.js",
   "engines": {
     "node": ">= 8.0.0"
   },
   "scripts": {
     "start": "node --use_strict ./",
-    "build:copy": "cpx \"./src/{*.js,server/**/*.js,server/views/**/*.pug,client/images/**}\" built",
-    "build:sass": "node-sass --output-style compressed \"src/client/styles\" -o \"built/client/styles\"",
+    "build:copy": "cpx \"./src/client/images/**\" ./src/client.built/images",
     "build:bundle": "webpack",
-    "build": "npm run build:copy && npm run build:sass && npm run build:bundle",
-    "clean": "rimraf \"./built\"",
+    "build": "npm run build:copy && npm run build:bundle",
+    "clean": "rimraf \"./src/*.built\"",
     "rebuild": "npm run clean && npm run build",
     "test:lint": "eslint \"./src/**/*.js\"",
     "test:mocha": "mocha -A --use_strict",
@@ -36,6 +35,7 @@
     "cookie": "0.3.x",
     "cookie-parser": "1.4.x",
     "cpx": "1.5.x",
+    "css-loader": "^0.28.11",
     "csurf": "1.9.x",
     "eslint": "4.x",
     "eslint-config-standard": "11.x",
@@ -58,6 +58,9 @@
     "riot": "3.5.x",
     "riot-route": "3.1.x",
     "riot-tag-loader": "1.0.x",
+    "sass-loader": "^7.0.1",
+    "style-loader": "^0.21.0",
+    "uglifyjs-webpack-plugin": "^1.2.5",
     "webpack": "3.x",
     "websocket": "1.0.x",
     "websocket-events": "1.0.x"

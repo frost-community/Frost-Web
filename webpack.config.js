@@ -1,50 +1,46 @@
 const path = require('path');
 const webpack = require('webpack');
+const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
-const absolutePath = (relative) => path.join(__dirname, relative);
+const absolutePath = (relative) => path.resolve(__dirname, relative);
 
 module.exports = {
-	context: absolutePath('src/client'),
 	entry: {
-		bundle: './index.js'
+		main: './src/client/index.js'
 	},
 	output: {
-		path: absolutePath('built/client'),
+		path: absolutePath('./src/client.built'),
 		filename: '[name].js'
 	},
+	plugins: [
+		new webpack.ProvidePlugin({ riot: 'riot' }),
+		new UglifyJSPlugin()
+	],
 	module: {
 		rules: [
 			{
+				test: /\.js$|\.tag$/,
+				exclude: /node_modules/,
+				use: 'babel-loader'
+			},
+			{
 				test: /\.tag$/,
-				enforce: 'pre',
 				exclude: /node_modules/,
 				use: [
 					{
 						loader: 'riot-tag-loader',
-						options: {
-							style: 'scss'
-						}
+						options: { style: 'scss' }
 					}
 				]
 			},
 			{
-				test: /\.js$|\.tag$/,
-				exclude: /node_modules/,
+				test: /\.scss$/,
 				use: [
-					{
-						loader: 'babel-loader',
-						options: {}
-					}
+					'style-loader',
+					'css-loader',
+					'sass-loader'
 				]
 			}
 		]
-	},
-	resolve: {
-		extensions: ['*', '.js', '.tag']
-	},
-	plugins: [
-		new webpack.ProvidePlugin({
-			riot: 'riot'
-		})
-	]
+	}
 };

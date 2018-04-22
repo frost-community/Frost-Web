@@ -81,7 +81,7 @@ module.exports = async (hostApiConnection, debug, config) => {
 				}
 
 				let pageRenderParams = {
-					scriptFile: '/bundle.js',
+					scriptFile: '/main.js',
 					params: pageParams
 				};
 				pageRenderParams = Object.assign(pageRenderParams, renderParams);
@@ -98,7 +98,7 @@ module.exports = async (hostApiConnection, debug, config) => {
 
 	// static files
 
-	app.use(express.static(path.join(__dirname, '../client'), { etag: false }));
+	app.use(express.static(path.join(__dirname, '../client.built'), { etag: false }));
 
 	// == routings ==
 

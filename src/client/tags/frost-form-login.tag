@@ -41,7 +41,6 @@
 					return;
 				}
 				else {
-					const json = await res.json();
 					alert('ログインに失敗しました: ' + json.error.message);
 				}
 			}

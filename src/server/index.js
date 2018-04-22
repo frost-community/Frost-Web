@@ -1,8 +1,8 @@
-const path = require('path');
 const httpServer = require('./httpServer');
 const streamingServer = require('./streamingServer');
 const ReconnectingWebSocket = require('./helpers/reconnecting-websocket-node');
 const events = require('websocket-events');
+const loadConfig = require('./helpers/load-config');
 
 const isDebug = false;
 
@@ -16,7 +16,7 @@ module.exports = async () => {
 		console.log('+------------------+');
 
 		console.log('loading config file...');
-		let config = require(path.resolve('.configs/server-config.json'));
+		let config = loadConfig();
 		if (config == null) {
 			console.log('config file is not found. please refer to .configs/README.md');
 			return;

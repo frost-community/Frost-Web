@@ -49,6 +49,10 @@
     "mocha": "3.x",
     "moment": "2.18.x",
     "node-sass": "4.7.x",
+    "oauth2orize": "^1.11.0",
+    "passport": "^0.4.0",
+    "passport-http": "^0.3.0",
+    "passport-oauth2-client-password": "^0.1.2",
     "path-to-regexp": "2.2.x",
     "pug": "2.x",
     "reconnecting-websocket": "3.2.x",
@@ -61,6 +65,7 @@
     "sass-loader": "^7.0.1",
     "style-loader": "^0.21.0",
     "uglifyjs-webpack-plugin": "^1.2.5",
+    "uid2": "0.0.3",
     "webpack": "3.x",
     "websocket": "1.0.x",
     "websocket-events": "1.0.x"

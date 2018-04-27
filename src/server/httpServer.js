@@ -12,6 +12,7 @@ const isSmartPhone = require('./helpers/is-smart-phone');
 const path = require('path');
 const request = require('request-promise');
 const StreamingRest = require('./helpers/streaming-rest');
+const OAuthServer = require('./helpers/oauth-server');
 
 /**
  * クライアントサイドにWebページと各種操作を提供します
@@ -99,6 +100,12 @@ module.exports = async (hostApiConnection, debug, config) => {
 	// static files
 
 	app.use(express.static(path.join(__dirname, '../client.built'), { etag: false }));
+
+	// oauth2
+
+	const oAuthServer = new OAuthServer(null, streamingRest);
+	oAuthServer.build();
+	oAuthServer.defineStrategies();
 
 	// == routings ==
 

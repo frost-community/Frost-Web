@@ -13,6 +13,7 @@ const path = require('path');
 const request = require('request-promise');
 const StreamingRest = require('./helpers/streaming-rest');
 const OAuthServer = require('./helpers/oauth-server');
+const passport = require('passport');
 
 /**
  * クライアントサイドにWebページと各種操作を提供します
@@ -103,9 +104,17 @@ module.exports = async (hostApiConnection, debug, config) => {
 
 	// oauth2
 
-	const oAuthServer = new OAuthServer(null, streamingRest);
+	const oAuthServer = new OAuthServer(null, streamingRest); // TODO: db
 	oAuthServer.build();
 	oAuthServer.defineStrategies();
+
+	// TODO: GET /oauth/authorize
+
+	app.post('/oauth/authorize', oAuthServer._server.decision());
+
+	app.post('/oauth/token',
+		passport.authenticate(['clientBasic', 'clientPassword'], { session: false }),
+		oAuthServer._server.token());
 
 	// == routings ==
 

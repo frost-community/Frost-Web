@@ -13,7 +13,7 @@ const path = require('path');
 const request = require('request-promise');
 const StreamingRest = require('./helpers/streaming-rest');
 const OAuthServer = require('./helpers/oauth-server');
-const passport = require('passport');
+const getType = require('./helpers/get-type');
 
 /**
  * クライアントサイドにWebページと各種操作を提供します
@@ -104,17 +104,14 @@ module.exports = async (hostApiConnection, debug, config) => {
 
 	// oauth2
 
-	const oAuthServer = new OAuthServer(null, streamingRest); // TODO: db
+	const db = null; // TODO: db
+
+	const oAuthServer = new OAuthServer(db, streamingRest);
 	oAuthServer.build();
 	oAuthServer.defineStrategies();
 
-	// TODO: GET /oauth/authorize
-
-	app.post('/oauth/authorize', oAuthServer._server.decision());
-
-	app.post('/oauth/token',
-		passport.authenticate(['clientBasic', 'clientPassword'], { session: false }),
-		oAuthServer._server.token());
+	app.post('/oauth/authorize', oAuthServer.decisionMiddle());
+	app.post('/oauth/token', oAuthServer.tokenMiddle());
 
 	// == routings ==
 
@@ -210,10 +207,6 @@ module.exports = async (hostApiConnection, debug, config) => {
 			}
 		});
 
-	app.post('/auth', (req, res) => {
-
-	});
-
 	// pages
 
 	const pages = [
@@ -223,11 +216,20 @@ module.exports = async (hostApiConnection, debug, config) => {
 		'/userlist',
 		'/posts/:postId',
 		'/dev',
-		'/auth'
+		{ name: '/auth', middle: oAuthServer.authorizeMiddle()}
 	];
 
 	for (const page of pages) {
-		app.get(page, (req, res) => res.renderPage());
+		const type = getType(page);
+		if (type == 'Object') {
+			app.get(page.name, page.middle, (req, res) => res.renderPage());
+		}
+		else if (type == 'String') {
+			app.get(page, (req, res) => res.renderPage());
+		}
+		else {
+			throw new TypeError('invalid page info');
+		}
 	}
 
 	// page not found

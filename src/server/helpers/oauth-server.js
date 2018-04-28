@@ -38,6 +38,47 @@ class OAuthServer {
 		app.secret = secretResult.response.secret;
 	}
 
+	async _fetchToken(clientId, userId, scopes) {
+		const tokenResult = await this._streamingRest.request('get', '/auth/tokens', { query: {
+			applicationId: clientId,
+			userId: userId,
+			scopes: scopes.join(',')
+		}});
+		if (tokenResult.statusCode != 200 && tokenResult.statusCode != 400) {
+			// TODO: error
+		}
+		return tokenResult.response.token;
+	}
+
+	async _generateToken(clientId, userId, scopes) {
+		const generateTokenResult = await this._streamingRest.request('post', '/auth/tokens', { body: {
+			applicationId: clientId,
+			userId: userId,
+			scopes: scopes
+		}});
+		if (generateTokenResult.statusCode != 200) {
+			// TODO: error
+		}
+		return generateTokenResult.response.token;
+	}
+
+	_fetchCode(codeValue) {
+		return this._db.find('oauth2.codes', { value: codeValue });
+	}
+
+	_generateCode(clientId, userId, redirectUri) {
+		return this._db.create('oauth2.codes', {
+			value: uid(16),
+			redirectUri: redirectUri,
+			clientId: clientId,
+			userId: userId
+		});
+	}
+
+	_removeCode(codeValue) {
+		return this._db.remove('oauth2.codes', { value: codeValue });
+	}
+
 	build() {
 		this._server = oauth2orize.createServer();
 
@@ -59,12 +100,7 @@ class OAuthServer {
 		});
 		this._server.grant(oauth2orize.grant.code(async (client, redirectUri, user, ares, callback) => {
 			try {
-				const code = await this._db.create('oauth2.codes', {
-					value: uid(16),
-					redirectUri: redirectUri,
-					clientId: client._id,
-					userId: user._id
-				});
+				const code = await this._generateCode(client.id, user.id, redirectUri);
 				debug('コードの登録に成功');
 				callback(null, code.value);
 			}
@@ -73,38 +109,20 @@ class OAuthServer {
 				callback(err);
 			}
 		}));
-		this._server.exchange(oauth2orize.exchange.code(async (client, code, redirectUri, callback) => {
+		this._server.exchange(oauth2orize.exchange.code(async (client, codeValue, redirectUri, callback) => {
 			try {
-				const authCode = await this._db.find('oauth2.codes', { value: code });
-
-				if (authCode == null || !authCode.clientId.equals(client.id) || redirectUri !== authCode.redirectUri) {
+				const code = await this._fetchCode(codeValue);
+				if (code == null || !code.clientId.equals(client.id) || redirectUri !== code.redirectUri) {
 					debug('コード、クライアント、リダイレクトURLのいずれかが不正');
 					return callback(null, false);
 				}
 
-				await this._db.remove('oauth2.codes', { value: code });
+				await this._removeCode(codeValue);
 				debug('コードを削除');
 
-				const tokenResult = await this._streamingRest.request('get', '/auth/tokens', { query: {
-					applicationId: authCode.clientId,
-					userId: authCode.userId,
-					scopes: authCode.scopes.join(',')
-				}});
-				if (tokenResult.statusCode != 200 && tokenResult.statusCode != 400) {
-					// TODO: error
-				}
-				let token = tokenResult.response.token;
-
+				let token = await this._fetchToken(code.clientId, code.userId, code.scopes);
 				if (token == null) {
-					const generateTokenResult = await this._streamingRest.request('post', '/auth/tokens', { body: {
-						applicationId: authCode.clientId,
-						userId: authCode.userId,
-						scopes: authCode.scopes
-					}});
-					if (generateTokenResult.statusCode != 200) {
-						// TODO: error
-					}
-					token = generateTokenResult.response.token;
+					token = await this._generateToken(code.clientId, code.userId, code.scopes);
 					debug('トークンの登録に成功');
 				}
 				debug('コードとトークンの交換に成功');
@@ -135,6 +153,46 @@ class OAuthServer {
 		};
 		passport.use('clientBasic', new BasicStrategy(verifyClient));
 		passport.use('clientPassword', new ClientPasswordStrategy(verifyClient));
+	}
+
+	authorizeMiddle() {
+		return this._server.authorization(async (clientId, redirectUri, validated) => {
+			try {
+				const client = await this._fetchClient(clientId, true);
+				// TODO: 検証処理
+				debug('認可の検証に成功');
+				validated(null, client, redirectUri);
+			}
+			catch (err) {
+				debug('認可の検証でエラーが発生');
+				validated(err);
+			}
+		}, async (client, user, immediated) => {
+			try {
+				const token = await this._fetchToken(client.id, user.id, scopes); // TODO: scopes
+				if (token != null) {
+					debug('即時に認可');
+					return immediated(null, true);
+				}
+				debug('認可フォームを表示');
+				immediated(null, false);
+			}
+			catch (err) {
+				debug('即時認可の判定でエラーが発生');
+				immediated(err);
+			}
+		});
+	}
+
+	decisionMiddle() {
+		return this._server.decision();
+	}
+
+	tokenMiddle() {
+		return [
+			passport.authenticate(['clientBasic', 'clientPassword'], { session: false }),
+			this._server.token()
+		];
 	}
 }
 module.exports = OAuthServer;

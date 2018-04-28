@@ -165,6 +165,13 @@ const fetchJson = require('./helpers/fetch-json');
 
 	route.start(true);
 
+	// auto error routing
+
+	const errorElement = document.getElementsByName('frost-error').item(0);
+	if (errorElement != null) {
+		changePage('error', {});
+	}
+
 })().catch(err => {
 	console.log('何かがおかしいよ');
 	console.log(err);

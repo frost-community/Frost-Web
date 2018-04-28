@@ -36,6 +36,8 @@ class OAuthServer {
 			}
 		}
 		app.secret = secretResult.response.secret;
+
+		return app;
 	}
 
 	async _fetchToken(clientId, userId, scopes) {
@@ -47,6 +49,7 @@ class OAuthServer {
 		if (tokenResult.statusCode != 200 && tokenResult.statusCode != 400) {
 			// TODO: error
 		}
+
 		return tokenResult.response.token;
 	}
 
@@ -59,6 +62,7 @@ class OAuthServer {
 		if (generateTokenResult.statusCode != 200) {
 			// TODO: error
 		}
+
 		return generateTokenResult.response.token;
 	}
 
@@ -169,7 +173,7 @@ class OAuthServer {
 			}
 		}, async (client, user, immediated) => {
 			try {
-				const token = await this._fetchToken(client.id, user.id, scopes); // TODO: scopes
+				const token = await this._fetchToken(client.id, user.id, client.scopes); // TODO: scopes
 				if (token != null) {
 					debug('即時に認可');
 					return immediated(null, true);

@@ -48,6 +48,7 @@
     "helmet": "3.8.x",
     "mocha": "3.x",
     "moment": "2.18.x",
+    "mongodb": "^2.x",
     "node-sass": "4.7.x",
     "oauth2orize": "^1.11.0",
     "passport": "^0.4.0",

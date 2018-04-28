@@ -3,6 +3,7 @@ const streamingServer = require('./streamingServer');
 const ReconnectingWebSocket = require('./helpers/reconnecting-websocket-node');
 const events = require('websocket-events');
 const loadConfig = require('./helpers/load-config');
+const MongoAdapter = require('./helpers/MongoAdapter');
 
 const isDebug = false;
 
@@ -22,6 +23,13 @@ module.exports = async () => {
 			return;
 		}
 
+		console.log('connecting database ...');
+		const db = await MongoAdapter.connect(
+			config.database.host,
+			config.database.database,
+			config.database.username,
+			config.database.password);
+
 		console.log('connecting to streaming api as host ...');
 		const hostApiConnection = await ReconnectingWebSocket.connect(`ws://${config.apiHost}?access_token=${config.hostAccessToken}`);
 		hostApiConnection.on('error', err => {
@@ -33,7 +41,7 @@ module.exports = async () => {
 		events(hostApiConnection);
 
 		console.log('starting http server ...');
-		const { http, sessionStore } = await httpServer(hostApiConnection, isDebug, config);
+		const { http, sessionStore } = await httpServer(db, hostApiConnection, isDebug, config);
 		streamingServer(http, sessionStore, isDebug, config);
 
 		console.log('init complete');

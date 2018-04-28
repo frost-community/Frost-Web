@@ -18,8 +18,12 @@ const getType = require('./helpers/get-type');
 /**
  * クライアントサイドにWebページと各種操作を提供します
  */
-module.exports = async (hostApiConnection, debug, config) => {
+module.exports = async (db, hostApiConnection, debug, config) => {
 	const streamingRest = new StreamingRest(hostApiConnection);
+
+	const oAuthServer = new OAuthServer(db, streamingRest);
+	oAuthServer.build();
+	oAuthServer.defineStrategies();
 
 	const app = express();
 	const sessionStore = new (connectRedis(expressSession))({});
@@ -104,12 +108,6 @@ module.exports = async (hostApiConnection, debug, config) => {
 
 	// oauth2
 
-	const db = null; // TODO: db
-
-	const oAuthServer = new OAuthServer(db, streamingRest);
-	oAuthServer.build();
-	oAuthServer.defineStrategies();
-
 	app.post('/oauth/authorize', oAuthServer.decisionMiddle());
 	app.post('/oauth/token', oAuthServer.tokenMiddle());
 
@@ -158,54 +156,53 @@ module.exports = async (hostApiConnection, debug, config) => {
 			}
 		});
 
-	app.route('/session/register')
-		.post(async (req, res, next) => {
+	app.post('/session/register', async (req, res, next) => {
+		try {
+			// recaptcha
+			let recaptchaResult;
 			try {
-				// recaptcha
-				let recaptchaResult;
-				try {
-					recaptchaResult = await request('https://www.google.com/recaptcha/api/siteverify', {
-						method: 'POST',
-						json: true,
-						form: {
-							secret: config.reCAPTCHA.secretKey,
-							response: req.body.recaptchaToken
-						}
-					});
-				}
-				catch (err) {
-					throw new HttpServerError(500, `recaptcha verification error: ${err.message}`, true);
-				}
-				if (recaptchaResult.success !== true) {
-					throw new HttpServerError(400, `recaptcha verification error: ${JSON.stringify(recaptchaResult['error-codes'])}`, true);
-				}
-
-				// creation user
-				const creationResult = await streamingRest.request('post', '/users', { body: req.body });
-				if (!creationResult.response.user) {
-					throw new HttpServerError(creationResult.statusCode || 500, `session register error: ${creationResult.response.message}`, true);
-				}
-
-				// creation session
-				await createSession(req, streamingRest, config);
-
-				res.json({
-					message: 'ok',
-					accessToken: req.session.clientSideToken.accessToken,
-					userId: req.session.clientSideToken.userId,
-					scopes: config.accessTokenScopes.clientSide
+				recaptchaResult = await request('https://www.google.com/recaptcha/api/siteverify', {
+					method: 'POST',
+					json: true,
+					form: {
+						secret: config.reCAPTCHA.secretKey,
+						response: req.body.recaptchaToken
+					}
 				});
 			}
 			catch (err) {
-				if (err instanceof HttpServerError) {
-					err.isJson = true;
-					next(err);
-				}
-				else {
-					next(new HttpServerError(500, err.message, true));
-				}
+				throw new HttpServerError(500, `recaptcha verification error: ${err.message}`, true);
 			}
-		});
+			if (recaptchaResult.success !== true) {
+				throw new HttpServerError(400, `recaptcha verification error: ${JSON.stringify(recaptchaResult['error-codes'])}`, true);
+			}
+
+			// creation user
+			const creationResult = await streamingRest.request('post', '/users', { body: req.body });
+			if (!creationResult.response.user) {
+				throw new HttpServerError(creationResult.statusCode || 500, `session register error: ${creationResult.response.message}`, true);
+			}
+
+			// creation session
+			await createSession(req, streamingRest, config);
+
+			res.json({
+				message: 'ok',
+				accessToken: req.session.clientSideToken.accessToken,
+				userId: req.session.clientSideToken.userId,
+				scopes: config.accessTokenScopes.clientSide
+			});
+		}
+		catch (err) {
+			if (err instanceof HttpServerError) {
+				err.isJson = true;
+				next(err);
+			}
+			else {
+				next(new HttpServerError(500, err.message, true));
+			}
+		}
+	});
 
 	// pages
 
@@ -216,7 +213,7 @@ module.exports = async (hostApiConnection, debug, config) => {
 		'/userlist',
 		'/posts/:postId',
 		'/dev',
-		{ name: '/auth', middle: oAuthServer.authorizeMiddle()}
+		{ name: '/oauth/authorize', middle: oAuthServer.authorizeMiddle()}
 	];
 
 	for (const page of pages) {
@@ -243,7 +240,7 @@ module.exports = async (hostApiConnection, debug, config) => {
 
 	// HttpServerError
 	app.use((err, req, res, next) => {
-		if (!(err instanceof HttpServerError)) return next(err);
+		if (err.status == null) return next(err);
 		res.status(err.status);
 		if (err.isJson) {
 			res.json({ error: { message: err.message } });
@@ -255,7 +252,7 @@ module.exports = async (hostApiConnection, debug, config) => {
 
 	// others
 	app.use((err, req, res, next) => {
-		// console.log('[http server] error:', err.message);
+		console.log('[http server] error:', err);
 		res.status(500).renderPage({ error: err.message, code: 500 });
 	});
 

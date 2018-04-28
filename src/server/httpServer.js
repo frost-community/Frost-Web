@@ -14,6 +14,8 @@ const request = require('request-promise');
 const StreamingRest = require('./helpers/streaming-rest');
 const OAuthServer = require('./helpers/oauth-server');
 const getType = require('./helpers/get-type');
+const passport = require('passport');
+const { Strategy : LocalStrategy } = require('passport-local');
 
 /**
  * クライアントサイドにWebページと各種操作を提供します
@@ -21,14 +23,64 @@ const getType = require('./helpers/get-type');
 module.exports = async (db, hostApiConnection, debug, config) => {
 	const streamingRest = new StreamingRest(hostApiConnection);
 
+	// == OAuth2 Server ==
+
 	const oAuthServer = new OAuthServer(db, streamingRest);
 	oAuthServer.build();
 	oAuthServer.defineStrategies();
 
+	// == passport ==
+
+	// 通常のログイン認証向け
+	passport.use('login', new LocalStrategy({ usernameField: 'screenName' }, async (screenName, password, done) => {
+		try {
+			// validate user credential
+			const validResult = await streamingRest.request('get', '/auth/valid_credential', {
+				query: { screenName: screenName, password: password }
+			});
+			if (validResult.statusCode != 200) {
+				throw new Error(validResult.response.message);
+			}
+			if (validResult.response.valid !== true) {
+				return done(null, false);
+			}
+
+			const usersResult = await streamingRest.request('get', '/users', {
+				query: {
+					'screen_names': screenName
+				}
+			});
+			const user = usersResult.response.users[0];
+
+			done(null, user);
+		}
+		catch (err) {
+			done(err);
+		}
+	}));
+
+	// セッションとユーザー情報を関連付けるために必要
+	passport.serializeUser((user, done) => {
+		done(null, user.id);
+	});
+	passport.deserializeUser(async (id, done) => {
+		try {
+			const userResult = await streamingRest.request('get', `/users/${id}`);
+			if (userResult.statusCode != 200) {
+				throw new HttpServerError(userResult.statusCode, userResult.response.message);
+			}
+
+			done(null, userResult.response.user);
+		}
+		catch (err) {
+			done(err);
+		}
+	});
+
+	// == express settings ==
+
 	const app = express();
 	const sessionStore = new (connectRedis(expressSession))({});
-
-	// == app settings ==
 
 	app.set('views', path.join(__dirname, 'views'));
 	app.set('view engine', 'pug');
@@ -62,6 +114,11 @@ module.exports = async (db, hostApiConnection, debug, config) => {
 		saveUninitialized: true,
 		rolling: true
 	}));
+
+	// passport
+
+	app.use(passport.initialize());
+	app.use(passport.session());
 
 	// securities
 
@@ -106,43 +163,84 @@ module.exports = async (db, hostApiConnection, debug, config) => {
 
 	app.use(express.static(path.join(__dirname, '../client.built'), { etag: false }));
 
+	// == routings ==
+
 	// oauth2
 
+	app.get('/oauth/authorize', oAuthServer.authorizeMiddle(), (req, res) => {
+		res.renderPage({ transactionId: req.oauth2.transactionID });
+	});
 	app.post('/oauth/authorize', oAuthServer.decisionMiddle());
 	app.post('/oauth/token', oAuthServer.tokenMiddle());
 
-	// == routings ==
+	// session
 
 	app.route('/session')
-		.put(async (req, res, next) => {
-			try {
-				if (req.session.token == null) {
-					await createSession(req, streamingRest, config);
-				}
+		.put(passport.authenticate('login', { failureMessage: 'failed login', failWithError: true }),
+			async (req, res, next) => {
+				try {
+					if (req.session.token == null) {
+						const getToken = async (scopes) => {
+							let tokenResult = await streamingRest.request('get', '/auth/tokens', {
+								query: {
+									applicationId: config.applicationId,
+									userId: req.user.id,
+									scopes: scopes
+								}
+							});
+							if (tokenResult.statusCode != 200 && tokenResult.statusCode != 404) {
+								throw new HttpServerError(tokenResult.statusCode, `session creation error: ${tokenResult.response.message}`);
+							}
+							if (tokenResult.statusCode == 404) {
+								tokenResult = await streamingRest.request('post', '/auth/tokens', {
+									body: {
+										applicationId: config.applicationId,
+										userId: req.user.id,
+										scopes: scopes
+									}
+								});
+								if (tokenResult.statusCode != 200) {
+									throw new HttpServerError(tokenResult.statusCode, `session creation error: ${tokenResult.response.message}`);
+								}
+							}
+							return tokenResult.response.token;
+						};
 
-				res.json({
-					message: 'ok',
-					accessToken: req.session.clientSideToken.accessToken,
-					userId: req.session.clientSideToken.userId,
-					scopes: config.accessTokenScopes.clientSide
-				});
-			}
-			catch(err) {
-				if (err instanceof HttpServerError) {
-					err.isJson = true;
-					next(err);
+						// get session accessToken
+						const sessionToken = await getToken(config.accessTokenScopes.session);
+
+						// get client-side sccessToken
+						const clientSideToken = await getToken(config.accessTokenScopes.clientSide);
+
+						req.session.token = sessionToken;
+						req.session.clientSideToken = clientSideToken;
+					}
+
+					res.json({
+						message: 'ok',
+						accessToken: req.session.clientSideToken.accessToken,
+						userId: req.session.clientSideToken.userId,
+						scopes: config.accessTokenScopes.clientSide
+					});
 				}
-				else {
-					next(new HttpServerError(500, err.message, true));
+				catch(err) {
+					if (err instanceof HttpServerError) {
+						err.isJson = true;
+						next(err);
+					}
+					else {
+						next(new HttpServerError(500, err.message, true));
+					}
 				}
 			}
-		})
+		)
 		.delete(checkLogin, (req, res) => {
 			try {
 				if (req.session.token != null) {
 					req.session.token = null;
 					req.session.clientSideToken = null;
 				}
+				req.logout();
 				res.json({ message: 'ok' });
 			}
 			catch (err) {
@@ -212,8 +310,7 @@ module.exports = async (db, hostApiConnection, debug, config) => {
 		'/users/:screenName',
 		'/userlist',
 		'/posts/:postId',
-		'/dev',
-		{ name: '/oauth/authorize', middle: oAuthServer.authorizeMiddle()}
+		'/dev'
 	];
 
 	for (const page of pages) {
@@ -242,7 +339,7 @@ module.exports = async (db, hostApiConnection, debug, config) => {
 	app.use((err, req, res, next) => {
 		if (err.status == null) return next(err);
 		res.status(err.status);
-		if (err.isJson) {
+		if (req.json !== false && req.method != 'GET') {
 			res.json({ error: { message: err.message } });
 		}
 		else {

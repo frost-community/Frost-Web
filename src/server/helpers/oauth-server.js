@@ -16,7 +16,7 @@ class OAuthServer {
 		const appResult = await this._streamingRest.request('get', `/applications/${id}`);
 		if (appResult.statusCode != 200) {
 			if (throwError)
-				throw new Error('invalid client id');
+				throw new Error('invalid client_id');
 			else
 				return null;
 		}

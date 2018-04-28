@@ -103,6 +103,9 @@ const fetchJson = require('./helpers/fetch-json');
 	route('posts/*', (postId) =>
 		changePage('post', { postId }));
 
+	route('oauth/authorize..', () =>
+		changePage('appauth'));
+
 	route('*', () =>
 		changePage('error', { message: 'page not found' }));
 

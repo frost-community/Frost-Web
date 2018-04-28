@@ -128,14 +128,14 @@
 <frost-form-appauth>
 	<div class='parent'>
 		<div class='child'>
-			<h6>アプリケーションがあなたのアカウントにアクセスすることを承認しますか？</h6>
+			<h6>アプリケーションID{ clientId } があなたのアカウントにアクセスすることを許可しますか？</h6>
 			<h6>要求されている権限</h6>
 			<ul>
 				<li>ステータスの投稿</li>
 			</ul>
 
 			<div class='controls'>
-				<button class='accept button-primary' onclick={ accept }>承認</button>
+				<button class='accept button-primary' onclick={ acceptConfirm }>許可</button>
 				<button class='reject' onclick={ reject }>拒否</button>
 			</div>
 		</div>
@@ -181,34 +181,35 @@
 	</style>
 
 	<script>
+		const route = require('riot-route').default;
+		const fetchJson = require('../helpers/fetch-json');
 		const riot = require('riot');
 		this.obs = riot.observable();
 
-		this.accept = () => {
+		this.clientId = route.query().client_id;
+
+		this.acceptConfirm = () => {
 			this.refs.modal.show();
 		};
 
 		this.reject = () => {
-
+			this.central.trigger('ev:auth-rejected', { });
+			console.log('auth-rejected');
 		};
 
 		this.obs.on('ev:modal-closed', () => {
 			if (this.refs.modal.ok) {
-				//this.csrfToken
-				//grecaptcha.getResponse()
-
-				/*this.webSocket.sendEvent('rest', {request: {
-					method: 'get', endpoint: '/ice_auth/',
-					headers: {'x-api-version': 1.0},
-				}});*/
-				console.log('hoge');
+				const recaptcha = grecaptcha.getResponse();
+				this.central.trigger('ev:auth-accepted', { recaptcha });
+				console.log('auth-accepted');
 			}
 		});
 
 		this.checkRecaptcha = () => {
 			const res = grecaptcha.getResponse();
-			console.dir(res);
-			this.refs.modal.closeOK();
+			if (res != '') {
+				this.refs.modal.closeOK();
+			}
 		};
 
 		this.on('mount', () => {

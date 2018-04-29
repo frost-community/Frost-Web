@@ -93,39 +93,41 @@ class OAuthServer {
 	build() {
 		this._server = oauth2orize.createServer();
 
-		this._server.serializeClient((client, callback) => {
+		this._server.serializeClient((client, done) => {
 			debug('クライアントをシリアライズ');
-			callback(null, client.id);
+			done(null, client.id);
 		});
-		this._server.deserializeClient(async (id, callback) => {
+		this._server.deserializeClient(async (id, done) => {
 			try {
 				const client = await this._fetchClient(id, true);
 
 				debug('クライアントをデシリアライズ');
-				callback(null, client);
+				done(null, client);
 			}
 			catch (err) {
 				debug('クライアントのデシリアライズに失敗');
-				callback(err);
+				done(err);
 			}
 		});
-		this._server.grant(oauth2orize.grant.code(async (client, redirectUri, user, ares, callback) => {
+		// 認可コードの発行時
+		this._server.grant(oauth2orize.grant.code(async (client, redirectUri, user, ares, done) => {
 			try {
-				const code = await this._generateCode(client.id, user.id, redirectUri, ares.scopes);
+				const code = await this._generateCode(client.id, user.id, redirectUri, ares.scope);
 				debug('コードの登録に成功');
-				callback(null, code.value);
+				done(null, code.value);
 			}
 			catch (err) {
 				debug('コード登録時にエラーが発生');
-				callback(err);
+				done(err);
 			}
 		}));
-		this._server.exchange(oauth2orize.exchange.code(async (client, codeValue, redirectUri, callback) => {
+		// 認可コードとトークンの交換時
+		this._server.exchange(oauth2orize.exchange.code(async (client, codeValue, redirectUri, done) => {
 			try {
 				const code = await this._fetchCode(codeValue);
 				if (code == null || code.clientId !== client.id || redirectUri !== code.redirectUri) {
 					debug('コード、クライアント、リダイレクトURLのいずれかが不正');
-					return callback(null, false);
+					return done(null, false);
 				}
 
 				await this._removeCode(codeValue);
@@ -137,11 +139,11 @@ class OAuthServer {
 					debug('トークンの登録に成功');
 				}
 				debug('コードとトークンの交換に成功');
-				callback(null, token.accessToken, null);
+				done(null, token.accessToken, null);
 			}
 			catch (err) {
 				debug('コードとトークンの交換時にエラーが発生');
-				callback(err);
+				done(err);
 			}
 		}));
 	}
@@ -167,18 +169,29 @@ class OAuthServer {
 	}
 
 	authorizeMiddle() {
-		return this._server.authorization(async (clientId, redirectUri, validated) => {
+		return this._server.authorization(async (clientId, redirectUri, scopes, validated) => {
 			try {
 				const client = await this._fetchClient(clientId, true);
-				// TODO: 検証処理
-				debug('認可の検証に成功');
+
+				// NOTE: scopeが何も指定されないとなぜか空文字列が渡されてくるので空配列に直す
+				if (scopes == null || scopes == '') scopes = [];
+
+				const validScopes = scopes.every(scope => client.scopes.indexOf(scope) != -1);
+				if (!validScopes) {
+					debug('要求スコープが不正なため認可要求を取り下げ');
+					throw new Error('scope invalid');
+				}
+
+				// TODO: redirectUriを検証
+
+				debug('認可要求の検証に成功');
 				validated(null, client, redirectUri);
 			}
 			catch (err) {
-				debug('認可の検証でエラーが発生');
+				debug('認可要求の検証でエラーが発生');
 				validated(err);
 			}
-		}, async (client, user, immediated) => {
+		}, async (client, user, scopes, immediated) => {
 			try {
 				const token = await this._fetchToken(client.id, user.id, client.scopes); // TODO: scopes
 				if (token != null) {

@@ -41,26 +41,30 @@ class OAuthServer {
 	}
 
 	async _fetchToken(clientId, userId, scopes) {
+		scopes = scopes || [];
+
 		const tokenResult = await this._streamingRest.request('get', '/auth/tokens', { query: {
 			applicationId: clientId,
 			userId: userId,
 			scopes: scopes.join(',')
 		}});
-		if (tokenResult.statusCode != 200 && tokenResult.statusCode != 400) {
-			// TODO: error
+		if (tokenResult.statusCode != 200 && tokenResult.statusCode != 404) {
+			throw new Error(tokenResult.response.message);
 		}
 
 		return tokenResult.response.token;
 	}
 
 	async _generateToken(clientId, userId, scopes) {
+		scopes = scopes || [];
+
 		const generateTokenResult = await this._streamingRest.request('post', '/auth/tokens', { body: {
 			applicationId: clientId,
 			userId: userId,
 			scopes: scopes
 		}});
 		if (generateTokenResult.statusCode != 200) {
-			// TODO: error
+			throw new Error(generateTokenResult.response.message);
 		}
 
 		return generateTokenResult.response.token;
@@ -70,12 +74,15 @@ class OAuthServer {
 		return this._db.find('oauth2.codes', { value: codeValue });
 	}
 
-	_generateCode(clientId, userId, redirectUri) {
+	_generateCode(clientId, userId, redirectUri, scopes) {
+		scopes = scopes || [];
+
 		return this._db.create('oauth2.codes', {
 			value: uid(16),
 			redirectUri: redirectUri,
 			clientId: clientId,
-			userId: userId
+			userId: userId,
+			scopes: scopes
 		});
 	}
 
@@ -104,7 +111,7 @@ class OAuthServer {
 		});
 		this._server.grant(oauth2orize.grant.code(async (client, redirectUri, user, ares, callback) => {
 			try {
-				const code = await this._generateCode(client.id, user.id, redirectUri);
+				const code = await this._generateCode(client.id, user.id, redirectUri, ares.scopes);
 				debug('コードの登録に成功');
 				callback(null, code.value);
 			}
@@ -116,7 +123,7 @@ class OAuthServer {
 		this._server.exchange(oauth2orize.exchange.code(async (client, codeValue, redirectUri, callback) => {
 			try {
 				const code = await this._fetchCode(codeValue);
-				if (code == null || !code.clientId.equals(client.id) || redirectUri !== code.redirectUri) {
+				if (code == null || code.clientId !== client.id || redirectUri !== code.redirectUri) {
 					debug('コード、クライアント、リダイレクトURLのいずれかが不正');
 					return callback(null, false);
 				}

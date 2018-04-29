@@ -188,6 +188,10 @@
 
 		this.clientId = route.query().client_id;
 
+		const tidElement = document.getElementsByName('frost-transactionId').item(0);
+		if (tidElement != null)
+			this.tid = tidElement.content;
+
 		this.acceptConfirm = () => {
 			this.refs.modal.show();
 		};
@@ -197,11 +201,24 @@
 			console.log('auth-rejected');
 		};
 
-		this.obs.on('ev:modal-closed', () => {
+		this.obs.on('ev:modal-closed', async () => {
 			if (this.refs.modal.ok) {
 				const recaptcha = grecaptcha.getResponse();
+
+				const res = await fetchJson('post', '/oauth/authorize', {
+					transaction_id: this.tid,
+					_csrf: this.csrf
+				});
+				const json = await res.json();
+
+				if (!res.ok) {
+					this.central.trigger('ev:auth-failed');
+					console.log('auth-failed:', json.message);
+					return;
+				}
+
 				this.central.trigger('ev:auth-accepted', { recaptcha });
-				console.log('auth-accepted');
+				console.log('auth-accepted', json);
 			}
 		});
 

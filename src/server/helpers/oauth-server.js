@@ -112,7 +112,8 @@ class OAuthServer {
 		// 認可コードの発行時
 		this._server.grant(oauth2orize.grant.code(async (client, redirectUri, user, ares, areq, done) => {
 			try {
-				const code = await this._generateCode(client.id, user.id, redirectUri, ares.scope || areq.scope);
+				// NOTE: Resource Ownerからスコープ変更を受け付ける場合は: areq.scope -> ares.scope || areq.scope (この場合scopeの再検証は必要そう)
+				const code = await this._generateCode(client.id, user.id, redirectUri, areq.scope);
 				debug('コードの登録に成功');
 				done(null, code.value);
 			}

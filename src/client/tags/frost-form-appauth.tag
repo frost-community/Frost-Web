@@ -132,10 +132,10 @@
 	</form>
 	<div class='parent'>
 		<div class='child'>
-			<h6>アプリケーションID{ clientId } があなたのアカウントにアクセスすることを許可しますか？</h6>
+			<h6>{ app.name } があなたのアカウントにアクセスすることを許可しますか？</h6>
 			<h6>要求されている権限</h6>
 			<ul>
-				<li>ステータスの投稿</li>
+				<li each={ scope in scopes }>{ scope } : { scopeDetail[scope].description }</li>
 			</ul>
 
 			<div class='controls'>
@@ -189,8 +189,40 @@
 		const fetchJson = require('../helpers/fetch-json');
 		const riot = require('riot');
 		this.obs = riot.observable();
+		this.status = 0; // 0:loading, 1: ok, 2:failed loading app
+		this.app = {};
 
-		this.clientId = route.query().client_id;
+		this.scopeDetail = {
+			'post.read': {
+				description: 'ポストの読み取り'
+			},
+			'post.write': {
+				description: 'ポストの作成と書き換え'
+			},
+			'user.read': {
+				description: 'ユーザーに関するデータの読み取り'
+			},
+			'user.write': {
+				description: 'ユーザーに関するデータの変更'
+			},
+		};
+
+		const q = route.query();
+		this.clientId = q.client_id;
+		const scopeRaw = decodeURI(q.scope);
+		this.scopes = scopeRaw.split(' ');
+
+		(async () => {
+			const appResult = await this.streamingRest.request('get', `/applications/${this.clientId}`);
+			if (appResult.statusCode != 200) {
+				this.status = 2;
+				this.update();
+				return;
+			}
+			this.app = appResult.response.application;
+			this.status = 1;
+			this.update();
+		})();
 
 		const tidElement = document.getElementsByName('frost-transactionId').item(0);
 		if (tidElement != null)

@@ -110,9 +110,9 @@ class OAuthServer {
 			}
 		});
 		// 認可コードの発行時
-		this._server.grant(oauth2orize.grant.code(async (client, redirectUri, user, ares, done) => {
+		this._server.grant(oauth2orize.grant.code(async (client, redirectUri, user, ares, areq, done) => {
 			try {
-				const code = await this._generateCode(client.id, user.id, redirectUri, ares.scope);
+				const code = await this._generateCode(client.id, user.id, redirectUri, ares.scope || areq.scope);
 				debug('コードの登録に成功');
 				done(null, code.value);
 			}
@@ -171,18 +171,21 @@ class OAuthServer {
 	authorizeMiddle() {
 		return this._server.authorization(async (clientId, redirectUri, scopes, validated) => {
 			try {
-				const client = await this._fetchClient(clientId, true);
+				if (!Array.isArray(scopes)) {
+					scopes = [];
+				}
 
-				// NOTE: scopeが何も指定されないとなぜか空文字列が渡されてくるので空配列に直す
-				if (scopes == null || scopes == '') scopes = [];
+				const client = await this._fetchClient(clientId, true);
 
 				const validScopes = scopes.every(scope => client.scopes.indexOf(scope) != -1);
 				if (!validScopes) {
 					debug('要求スコープが不正なため認可要求を取り下げ');
-					throw new Error('scope invalid');
+					throw new Error('invalid scope');
 				}
 
-				// TODO: redirectUriを検証
+				if (client.redirectUri != null && client.redirectUri != redirectUri) {
+					throw new Error('invalid redirect_uri');
+				}
 
 				debug('認可要求の検証に成功');
 				validated(null, client, redirectUri);
@@ -193,7 +196,7 @@ class OAuthServer {
 			}
 		}, async (client, user, scopes, immediated) => {
 			try {
-				const token = await this._fetchToken(client.id, user.id, client.scopes); // TODO: scopes
+				const token = await this._fetchToken(client.id, user.id, scopes);
 				if (token != null) {
 					debug('即時に認可');
 					return immediated(null, true);

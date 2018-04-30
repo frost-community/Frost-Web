@@ -8,7 +8,7 @@
 		@import "../styles/variables";
 
 		:scope {
-
+			justify-content: center;
 		}
 	</style>
 

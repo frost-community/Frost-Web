@@ -1,6 +1,7 @@
 {
-  "$version": 1,
+  "$version": 2,
   "port": 8001,
+  "debug": false,
   "database": {
     "host": "localhost:27017",
     "database": "frost-web",

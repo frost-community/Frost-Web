@@ -20,12 +20,12 @@ const { Strategy : LocalStrategy } = require('passport-local');
 /**
  * クライアントサイドにWebページと各種操作を提供します
  */
-module.exports = async (db, hostApiConnection, isDebug, config) => {
+module.exports = async (db, hostApiConnection, config) => {
 	const log = (...args) => {
 		console.log('[http server]', ...args);
 	};
 	const debugLog = (...args) => {
-		if (isDebug) {
+		if (config.debug) {
 			log(...args);
 		}
 	};
@@ -35,8 +35,7 @@ module.exports = async (db, hostApiConnection, isDebug, config) => {
 	// == OAuth2 Server ==
 
 	const oAuthServer = new OAuthServer(db, streamingRest);
-	oAuthServer.build();
-	oAuthServer.defineStrategies();
+	oAuthServer.initialize();
 
 	// == passport ==
 

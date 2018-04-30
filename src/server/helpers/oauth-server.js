@@ -4,12 +4,21 @@ const { BasicStrategy } = require('passport-http');
 const { Strategy : ClientPasswordStrategy } = require('passport-oauth2-client-password');
 const uid = require('uid2');
 
-const debug = (...args) => { console.log('[OAuth]', ...args); };
-
 class OAuthServer {
-	constructor(db, streamingRest) {
+	constructor(db, streamingRest, isDebug) {
 		this._db = db;
 		this._streamingRest = streamingRest;
+		this._isDebug = isDebug;
+	}
+
+	_log(...args) {
+		console.log('[oauth server]', ...args);
+	}
+
+	_debugLog(...args) {
+		if (this._isDebug) {
+			this._log(...args);
+		}
 	}
 
 	async _fetchClient(id, throwError) {
@@ -31,7 +40,7 @@ class OAuthServer {
 					return null;
 			}
 			else {
-				debug('failed to fetch secret.', secretResult.statusCode, secretResult.response.message);
+				this._debugLog('failed to fetch secret.', secretResult.statusCode, secretResult.response.message);
 				throw new Error('failed to fetch secret');
 			}
 		}
@@ -90,22 +99,32 @@ class OAuthServer {
 		return this._db.remove('oauth2.codes', { value: codeValue });
 	}
 
+	initialize() {
+		this._log('building server ...');
+		this.build();
+
+		this._log('registering strategies ...');
+		this.registerStrategies();
+
+		this._log('initialized');
+	}
+
 	build() {
 		this._server = oauth2orize.createServer();
 
 		this._server.serializeClient((client, done) => {
-			debug('クライアントをシリアライズ');
+			this._debugLog('クライアントをシリアライズ');
 			done(null, client.id);
 		});
 		this._server.deserializeClient(async (id, done) => {
 			try {
 				const client = await this._fetchClient(id, true);
 
-				debug('クライアントをデシリアライズ');
+				this._debugLog('クライアントをデシリアライズ');
 				done(null, client);
 			}
 			catch (err) {
-				debug('クライアントのデシリアライズに失敗');
+				this._debugLog('クライアントのデシリアライズに失敗');
 				done(err);
 			}
 		});
@@ -114,11 +133,11 @@ class OAuthServer {
 			try {
 				// NOTE: Resource Ownerからスコープ変更を受け付ける場合は: areq.scope -> ares.scope || areq.scope (この場合scopeの再検証は必要そう)
 				const code = await this._generateCode(client.id, user.id, redirectUri, areq.scope);
-				debug('コードの登録に成功');
+				this._debugLog('コードの登録に成功');
 				done(null, code.value);
 			}
 			catch (err) {
-				debug('コード登録時にエラーが発生');
+				this._debugLog('コード登録時にエラーが発生');
 				done(err);
 			}
 		}));
@@ -127,41 +146,41 @@ class OAuthServer {
 			try {
 				const code = await this._fetchCode(codeValue);
 				if (code == null || code.clientId !== client.id || redirectUri !== code.redirectUri) {
-					debug('コード、クライアント、リダイレクトURLのいずれかが不正');
+					this._debugLog('コード、クライアント、リダイレクトURLのいずれかが不正');
 					return done(null, false);
 				}
 
 				await this._removeCode(codeValue);
-				debug('コードを削除');
+				this._debugLog('コードを削除');
 
 				let token = await this._fetchToken(code.clientId, code.userId, code.scopes);
 				if (token == null) {
 					token = await this._generateToken(code.clientId, code.userId, code.scopes);
-					debug('トークンの登録に成功');
+					this._debugLog('トークンの登録に成功');
 				}
-				debug('コードとトークンの交換に成功');
+				this._debugLog('コードとトークンの交換に成功');
 				done(null, token.accessToken, null);
 			}
 			catch (err) {
-				debug('コードとトークンの交換時にエラーが発生');
+				this._debugLog('コードとトークンの交換時にエラーが発生');
 				done(err);
 			}
 		}));
 	}
 
-	defineStrategies() {
+	registerStrategies() {
 		const verifyClient = async (clientId, secret, done) => {
 			try {
 				const client = await this._fetchClient(clientId, false);
 				if (client == null || secret !== client.secret) {
-					debug('クライアントの認証に失敗');
+					this._debugLog('クライアントの認証に失敗');
 					return done(null, false);
 				}
-				debug('クライアントの認証に成功');
+				this._debugLog('クライアントの認証に成功');
 				done(null, client);
 			}
 			catch (err) {
-				debug('クライアントの認証時にエラーが発生');
+				this._debugLog('クライアントの認証時にエラーが発生');
 				done(err);
 			}
 		};
@@ -180,7 +199,7 @@ class OAuthServer {
 
 				const validScopes = scopes.every(scope => client.scopes.indexOf(scope) != -1);
 				if (!validScopes) {
-					debug('要求スコープが不正なため認可要求を取り下げ');
+					this._debugLog('要求スコープが不正なため認可要求を取り下げ');
 					throw new Error('invalid scope');
 				}
 
@@ -188,25 +207,25 @@ class OAuthServer {
 					throw new Error('invalid redirect_uri');
 				}
 
-				debug('認可要求の検証に成功');
+				this._debugLog('認可要求の検証に成功');
 				validated(null, client, redirectUri);
 			}
 			catch (err) {
-				debug('認可要求の検証でエラーが発生');
+				this._debugLog('認可要求の検証でエラーが発生');
 				validated(err);
 			}
 		}, async (client, user, scopes, immediated) => {
 			try {
 				const token = await this._fetchToken(client.id, user.id, scopes);
 				if (token != null) {
-					debug('即時に認可');
+					this._debugLog('即時に認可');
 					return immediated(null, true);
 				}
-				debug('認可フォームを表示');
+				this._debugLog('認可フォームを表示');
 				immediated(null, false);
 			}
 			catch (err) {
-				debug('即時認可の判定でエラーが発生');
+				this._debugLog('即時認可の判定でエラーが発生');
 				immediated(err);
 			}
 		});

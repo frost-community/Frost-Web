@@ -5,8 +5,6 @@ const events = require('websocket-events');
 const loadConfig = require('./helpers/load-config');
 const MongoAdapter = require('./helpers/MongoAdapter');
 
-const isDebug = false;
-
 /**
  * Webアプリケーションサーバ
  */
@@ -16,7 +14,7 @@ module.exports = async () => {
 	};
 	try {
 		log('+------------------+');
-		log('| Frost Web Server |');
+		log('| Frost-Web Server |');
 		log('+------------------+');
 
 		log('loading config file...');
@@ -44,10 +42,10 @@ module.exports = async () => {
 		events(hostApiConnection);
 
 		log('starting http server ...');
-		const { http, sessionStore } = await httpServer(db, hostApiConnection, isDebug, config);
+		const { http, sessionStore } = await httpServer(db, hostApiConnection, config);
 
 		log('starting streaming server ...');
-		streamingServer(http, sessionStore, isDebug, config);
+		streamingServer(http, sessionStore, config);
 
 		log('initialized');
 	}

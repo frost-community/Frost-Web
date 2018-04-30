@@ -9,12 +9,12 @@ const StreamingRest = require('./helpers/streaming-rest');
  * ストリーミング接続をサポートします。
  * セッション経由でAPIにアクセスできる機能が含まれます。
  */
-module.exports = (http, sessionStore, isDebug, config) => {
+module.exports = (http, sessionStore, config) => {
 	const log = (...args) => {
 		console.log('[streaming server]', ...args);
 	};
 	const debugLog = (...args) => {
-		if (isDebug) {
+		if (config.debug) {
 			log(...args);
 		}
 	};

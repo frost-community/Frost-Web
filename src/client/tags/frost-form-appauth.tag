@@ -133,10 +133,11 @@
 	<div class='parent'>
 		<div class='child'>
 			<h6>{ app.name } があなたのアカウントにアクセスすることを許可しますか？</h6>
-			<h6>要求されている権限</h6>
+			<h6>要求されているアクセス権:</h6>
 			<ul>
-				<li each={ scope in scopes }>{ scope } : { scopeDetail[scope].description }</li>
+				<li each={ scope in scopes }>{ scope } - { scopeDetail[scope].description }</li>
 			</ul>
+			<p if={ scopes.length == 0 }>要求されているアクセス権はありません</p>
 
 			<div class='controls'>
 				<button class='accept button-primary' onclick={ acceptConfirm }>許可</button>
@@ -193,24 +194,47 @@
 		this.app = {};
 
 		this.scopeDetail = {
-			'post.read': {
-				description: 'ポストの読み取り'
+			'app.read': {
+				description: '連携アプリに関するデータの読み取り'
 			},
-			'post.write': {
-				description: 'ポストの作成と書き換え'
+			'app.write': {
+				description: '連携アプリに関するデータの書き込み'
 			},
 			'user.read': {
 				description: 'ユーザーに関するデータの読み取り'
 			},
 			'user.write': {
-				description: 'ユーザーに関するデータの変更'
+				description: 'ユーザーに関するデータの書き込み'
 			},
+			'user.account.read': {
+				description: 'あなたのアカウントに関する非公開データの読み取り'
+			},
+			'user.account.write': {
+				description: 'あなたのアカウントに関する非公開データの書き込み'
+			},
+			'post.read': {
+				description: 'ポストに関するデータの読み取り'
+			},
+			'post.write': {
+				description: 'ポストに関するデータの書き込み'
+			},
+			'storage.read': {
+				description: 'ストレージに関するデータの読み取り'
+			},
+			'storage.write': {
+				description: 'ストレージに関するデータの書き込み'
+			}
 		};
 
 		const q = route.query();
 		this.clientId = q.client_id;
-		const scopeRaw = decodeURI(q.scope);
-		this.scopes = scopeRaw.split(' ');
+		const scopeRaw = decodeURI(q.scope || '');
+		if (scopeRaw == '') {
+			this.scopes = [];
+		}
+		else {
+			this.scopes = scopeRaw.split(' ');
+		}
 
 		(async () => {
 			const appResult = await this.streamingRest.request('get', `/applications/${this.clientId}`);

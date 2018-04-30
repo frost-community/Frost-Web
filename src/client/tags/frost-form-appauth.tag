@@ -126,6 +126,10 @@
 </frost-modal>
 
 <frost-form-appauth>
+	<form method='post' action='/oauth/authorize' ref='authForm'>
+		<input type='hidden' name='transaction_id' value={ tid }>
+		<input type='hidden' name='_csrf' value={ csrf }>
+	</form>
 	<div class='parent'>
 		<div class='child'>
 			<h6>アプリケーションID{ clientId } があなたのアカウントにアクセスすることを許可しますか？</h6>
@@ -205,20 +209,9 @@
 			if (this.refs.modal.ok) {
 				const recaptcha = grecaptcha.getResponse();
 
-				const res = await fetchJson('post', '/oauth/authorize', {
-					transaction_id: this.tid,
-					_csrf: this.csrf
-				});
-				const json = await res.json();
+				// TODO: recaptcha responseを送信
 
-				if (!res.ok) {
-					this.central.trigger('ev:auth-failed');
-					console.log('auth-failed:', json.message);
-					return;
-				}
-
-				this.central.trigger('ev:auth-accepted', { recaptcha });
-				console.log('auth-accepted', json);
+				this.refs.authForm.submit();
 			}
 		});
 

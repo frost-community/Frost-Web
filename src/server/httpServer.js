@@ -20,7 +20,16 @@ const { Strategy : LocalStrategy } = require('passport-local');
 /**
  * クライアントサイドにWebページと各種操作を提供します
  */
-module.exports = async (db, hostApiConnection, debug, config) => {
+module.exports = async (db, hostApiConnection, isDebug, config) => {
+	const log = (...args) => {
+		console.log('[http server]', ...args);
+	};
+	const debugLog = (...args) => {
+		if (isDebug) {
+			log(...args);
+		}
+	};
+
 	const streamingRest = new StreamingRest(hostApiConnection);
 
 	// == OAuth2 Server ==
@@ -151,6 +160,8 @@ module.exports = async (db, hostApiConnection, debug, config) => {
 
 				res.render('page', pageRenderParams);
 			};
+
+			debugLog('req:', req.method, req.path);
 
 			next();
 		}
@@ -349,7 +360,7 @@ module.exports = async (db, hostApiConnection, debug, config) => {
 
 	// others
 	app.use((err, req, res, next) => {
-		console.log('[http server] error:', err);
+		log(err);
 		res.status(500).renderPage({ error: err.message, code: 500 });
 	});
 
@@ -360,13 +371,13 @@ module.exports = async (db, hostApiConnection, debug, config) => {
 		if (typeof port != 'number') reject(new TypeError('port is not a number'));
 
 		const http = app.listen(port, () => {
-			console.log('[http server]', 'listening on port:', port);
+			log('listening on port:', port);
 			resolve(http);
 		});
 	});
 	const http = await listen(config.port);
 
-	console.log('[http server]', 'initialized');
+	log('initialized');
 
 	return {
 		http: http,

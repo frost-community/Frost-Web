@@ -11,42 +11,47 @@ const isDebug = false;
  * Webアプリケーションサーバ
  */
 module.exports = async () => {
+	const log = (...args) => {
+		console.log(...args);
+	};
 	try {
-		console.log('+------------------+');
-		console.log('| Frost Web Server |');
-		console.log('+------------------+');
+		log('+------------------+');
+		log('| Frost Web Server |');
+		log('+------------------+');
 
-		console.log('loading config file...');
+		log('loading config file...');
 		let config = loadConfig();
 		if (config == null) {
-			console.log('config file is not found. please refer to .configs/README.md');
+			log('config file is not found. please refer to .configs/README.md');
 			return;
 		}
 
-		console.log('connecting database ...');
+		log('connecting database ...');
 		const db = await MongoAdapter.connect(
 			config.database.host,
 			config.database.database,
 			config.database.username,
 			config.database.password);
 
-		console.log('connecting to streaming api as host ...');
+		log('connecting to streaming api as host ...');
 		const hostApiConnection = await ReconnectingWebSocket.connect(`ws://${config.apiHost}?access_token=${config.hostAccessToken}`);
 		hostApiConnection.on('error', err => {
 			if (err.message.indexOf('ECONNRESET') != -1) {
 				return;
 			}
-			console.log('host apiConnection error:', err);
+			log('host apiConnection error:', err);
 		});
 		events(hostApiConnection);
 
-		console.log('starting http server ...');
+		log('starting http server ...');
 		const { http, sessionStore } = await httpServer(db, hostApiConnection, isDebug, config);
+
+		log('starting streaming server ...');
 		streamingServer(http, sessionStore, isDebug, config);
 
-		console.log('init complete');
+		log('initialized');
 	}
 	catch (err) {
-		console.log('Unprocessed Server Error:', err); // † Last Stand †
+		log('unprocessed error:', err); // † Last Stand †
 	}
 };

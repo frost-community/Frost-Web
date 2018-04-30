@@ -9,7 +9,16 @@ const StreamingRest = require('./helpers/streaming-rest');
  * ストリーミング接続をサポートします。
  * セッション経由でAPIにアクセスできる機能が含まれます。
  */
-module.exports = (http, sessionStore, debugDetail, config) => {
+module.exports = (http, sessionStore, isDebug, config) => {
+	const log = (...args) => {
+		console.log('[streaming server]', ...args);
+	};
+	const debugLog = (...args) => {
+		if (isDebug) {
+			log(...args);
+		}
+	};
+
 	const server = new WebSocket.server({ httpServer: http });
 	server.on('request', async (wsRequest) => {
 		let frontConnection;
@@ -24,20 +33,17 @@ module.exports = (http, sessionStore, debugDetail, config) => {
 			// APIに接続
 			let apiConnection;
 			try {
-				if (debugDetail) {
-					console.log('[streaming server]', 'connecting streaming api server...');
-				}
+				debugLog('connecting streaming api server...');
 				apiConnection = await WebSocketUtility.connect(`ws://${config.apiHost}?access_token=${session.token.accessToken}`);
 				events(apiConnection);
 			}
 			catch (err) {
 				if (err.message.indexOf('ECONNREFUSED') != -1) {
-					console.log('error: could not connect to api server');
+					log('error: could not connect to api server');
 					return wsRequest.reject(500, 'could not connect to api server');
 				}
 				else {
-					console.log('failed to connect api:');
-					console.log(err);
+					log('failed to connect api:', err);
 					return wsRequest.reject(500, 'an error occurred while connecting to api server');
 				}
 			}
@@ -46,13 +52,11 @@ module.exports = (http, sessionStore, debugDetail, config) => {
 				if (err.indexOf('ECONNRESET') != -1) {
 					return;
 				}
-				console.log('api error:', err);
+				log('api error:', err);
 			});
 
 			apiConnection.on('close', data => {
-				if (debugDetail) {
-					console.log('[api close]:', data.reasonCode, data.description);
-				}
+				debugLog('api close:', data.reasonCode, data.description);
 
 				if (frontConnection != null && frontConnection.connected) {
 					frontConnection.close();
@@ -70,13 +74,11 @@ module.exports = (http, sessionStore, debugDetail, config) => {
 					return;
 				}
 
-				console.log('front error:', err);
+				log('front error:', err);
 			});
 
 			frontConnection.on('close', data => {
-				if (debugDetail) {
-					console.log('[front close]:', data.reasonCode, data.description);
-				}
+				debugLog('front close:', data.reasonCode, data.description);
 
 				if (apiConnection.connected) {
 					apiConnection.close();
@@ -121,7 +123,7 @@ module.exports = (http, sessionStore, debugDetail, config) => {
 						detail.statusCode = err.statusCode;
 					}
 					frontConnection.error('app-create', err.message, detail);
-					console.log(err);
+					log('app-create error:', err);
 					return;
 				}
 			});
@@ -130,10 +132,9 @@ module.exports = (http, sessionStore, debugDetail, config) => {
 			if (frontConnection != null && frontConnection.connected) {
 				frontConnection.close();
 			}
-			console.log('error on: request event in streaming server');
-			console.log(err);
+			log('error:', err);
 		}
 	});
 
-	console.log('[streaming server]', 'initialized');
+	log('initialized');
 };

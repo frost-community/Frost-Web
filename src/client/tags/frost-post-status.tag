@@ -90,7 +90,6 @@
 				.replace(/'/g, '&#039;')
 				.replace(/"/g, '&quot;')
 				.replace(/((https?|ftp):\/\/[^\s/$.?#].[^\s]*)/ig, '<a href=\'$1\' target=\'_blank\'>$1</a>') // url
-				.replace(/@(\w)/g, '<a href="/users/$1"></a>') // メンション
 				.replace(/\*\*([^\n]+?)\*\*/g, '<strong>$1</strong>') // 太字
 				.replace(/\*([^\n]+?)\*/g, '<i>$1</i>') // 斜体
 			        .replace(/~~([^\n]+?)~~/g, '<span class="stroke">$1</span>') // 取消線

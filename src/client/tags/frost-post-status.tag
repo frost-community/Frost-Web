@@ -58,6 +58,14 @@
 				> .text {
 					> p {
 						margin-bottom: 0;
+						
+						.stroke {
+						        text-decoration: line-through;
+						}
+						
+						.underline {
+						        text-decoration: underline;
+						}
 					}
 				}
 			}
@@ -78,11 +86,19 @@
 			compiledText += text
 				.replace(/&/g, '&amp;')
 				.replace(/</g, '&lt;')
-				.replace(/>/g, '&gt;')
 				.replace(/'/g, '&#039;')
 				.replace(/"/g, '&quot;')
-				.replace(/`/g, '&#x60;')
 				.replace(/((https?|ftp):\/\/[^\s/$.?#].[^\s]*)/ig, '<a href=\'$1\' target=\'_blank\'>$1</a>') // url
+				.replace(/\\\\/g, '"') // ダブルバックスラッシュのエスケープ
+				.replace(/(?:^|[^\\])\*\*([^\n]*?[^\\\n])\*\*/g, '<strong>$1</strong>') // 太字
+				.replace(/(?:^|[^\\])\*([^\n]*?[^\\\n])\*/g, '<i>$1</i>') // 斜体
+			        .replace(/(?:^|[^\\])~~([^\n]*?[^\\\n])~~/g, '<span class="stroke">$1</span>') // 取消線
+				.replace(/(?:^|[^\\])__([^\n]*?[^\\\n])__/g, '<span class="underline">$1</span>') // 下線
+				.replace(/(?:^|[^\\])`([^\n]*?[^\\\n])`/g, '<code>$1</code>') // コード
+				.replace(/(?:^|[^\\])>([^\n]*?[^\\\n])(?:$|\n)/g, '<q>$1</q>') // 引用
+				.replace(/"/g, '\\\\') // ダブルバックスラッシュのアンエスケープ
+				.replace(/>/g, '&gt;')
+				.replace(/`/g, '&#x60;')
 				.replace(/\n/g, '</p><p>'); // 改行
 
 			compiledText += '</p>';

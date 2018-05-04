@@ -86,6 +86,7 @@
 			compiledText += text
 				.replace(/&/g, '&amp;')
 				.replace(/</g, '&lt;')
+				.replace(/>/g, '&gt;')
 				.replace(/'/g, '&#039;')
 				.replace(/"/g, '&quot;')
 				.replace(/((https?|ftp):\/\/[^\s/$.?#].[^\s]*)/ig, '<a href=\'$1\' target=\'_blank\'>$1</a>') // url
@@ -96,7 +97,6 @@
 				.replace(/__([^\n]+?)__/g, '<span class="underline">$1</span>') // 下線
 				.replace(/`([^\n]+?)`/g, '<code>$1</code>') // コード
 				.replace(/>([^\n]+?)(?:$|\n)/g, '<q>$1</q>') // 引用
-				.replace(/>/g, '&gt;')
 				.replace(/`/g, '&#x60;')
 				.replace(/\n/g, '</p><p>'); // 改行
 

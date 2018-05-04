@@ -2,16 +2,16 @@ const bodyParser = require('body-parser');
 const checkLogin = require('./helpers/check-login');
 const compression = require('compression');
 const connectRedis = require('connect-redis');
-const createSessionAsync = require('./helpers/createSessionAsync');
+const createSession = require('./helpers/create-session');
 const csurf = require('csurf');
 const express = require('express');
 const expressSession = require('express-session');
 const helmet = require('helmet');
-const HttpServerError = require('./helpers/HttpServerError');
+const HttpServerError = require('./helpers/http-server-error');
 const isSmartPhone = require('./helpers/is-smart-phone');
 const path = require('path');
-const requestApiAsync = require('./helpers/requestApiAsync');
-const requestAsync = require('request-promise');
+const requestApi = require('./helpers/request-api');
+const request = require('request-promise');
 const requestErrors = require('request-promise/errors');
 
 /**
@@ -106,7 +106,7 @@ module.exports = async (debug, config) => {
 		.put((req, res, next) => {
 			(async () => {
 				if (req.session.accessKey == null) {
-					await createSessionAsync(req, config);
+					await createSession(req, config);
 				}
 				res.json({ message: 'ok' });
 			})().catch((err) => {
@@ -143,7 +143,7 @@ module.exports = async (debug, config) => {
 				console.log('/session/register');
 				let recaptchaResult;
 				try {
-					recaptchaResult = await requestAsync('https://www.google.com/recaptcha/api/siteverify', {
+					recaptchaResult = await request('https://www.google.com/recaptcha/api/siteverify', {
 						method: 'POST',
 						json: true,
 						form: {
@@ -162,7 +162,7 @@ module.exports = async (debug, config) => {
 
 				let creationResult;
 				try {
-					creationResult = await requestApiAsync('post', '/users', req.body, {
+					creationResult = await requestApi('post', '/users', req.body, {
 						'X-Api-Version': 1.0,
 						'X-Application-Key': config.web.applicationKey,
 						'X-Access-Key': config.web.hostAccessKey
@@ -181,7 +181,7 @@ module.exports = async (debug, config) => {
 					throw new HttpServerError(creationResult.statusCode || 500, `session register error: ${creationResult.message}`, true);
 				}
 
-				await createSessionAsync(req, config);
+				await createSession(req, config);
 				res.json({ message: 'ok' });
 			})().catch((err) => {
 				if (err instanceof HttpServerError) {
@@ -238,7 +238,7 @@ module.exports = async (debug, config) => {
 
 	// == listening start ==
 
-	const listenAsync = (port) => new Promise((resolve, reject) => {
+	const listen = (port) => new Promise((resolve, reject) => {
 		if (port == null) reject(new ReferenceError('port is null reference'));
 		if (typeof port != 'number') reject(new TypeError('port is not a number'));
 
@@ -247,7 +247,7 @@ module.exports = async (debug, config) => {
 			resolve(http);
 		});
 	});
-	const http = await listenAsync(config.web.port);
+	const http = await listen(config.web.port);
 
 	console.log('[http server]', 'initialized');
 

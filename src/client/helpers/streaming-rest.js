@@ -6,7 +6,7 @@ class StreamingRest {
 		this.connection = webSocketConnection;
 	}
 
-	requestAsync(method, endpoint, requestContent, apiVersion, timeoutInterval) {
+	request(method, endpoint, requestContent, apiVersion, timeoutInterval) {
 		return new Promise((resolve, reject) => {
 			if (method == null || endpoint == null) {
 				reject(new ReferenceError('missing arguments'));

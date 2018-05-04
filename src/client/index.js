@@ -1,7 +1,7 @@
 const riot = require('riot');
 const route = require('riot-route').default;
 const WebSocketEvents = require('./helpers/web-socket-events');
-const StreamingRest = require('./helpers/StreamingRest');
+const StreamingRest = require('./helpers/streaming-rest');
 
 (async () => {
 
@@ -22,7 +22,7 @@ const StreamingRest = require('./helpers/StreamingRest');
 
 		let webSocket;
 		try {
-			webSocket = await WebSocketEvents.connectAsync(`${secure ? 'wss' : 'ws'}://${location.host}`);
+			webSocket = await WebSocketEvents.connect(`${secure ? 'wss' : 'ws'}://${location.host}`);
 			webSocket.addEventListener('close', (ev) => { console.log('close:', ev); });
 			webSocket.addEventListener('error', (ev) => { console.log('error:', ev); });
 			WebSocketEvents.init(webSocket);
@@ -32,12 +32,11 @@ const StreamingRest = require('./helpers/StreamingRest');
 			alert('WebSocketの接続に失敗しました');
 			console.log(err);
 			return;
-			// noop
 		}
 
 		const streamingRest = new StreamingRest(webSocket);
 		try {
-			const rest = await streamingRest.requestAsync('get', `/users/${mixin.userId}`);
+			const rest = await streamingRest.request('get', `/users/${mixin.userId}`);
 			mixin.user = rest.response.user;
 		}
 		catch (err) {
@@ -61,13 +60,12 @@ const StreamingRest = require('./helpers/StreamingRest');
 
 	// central observer
 
-	const central = riot.observable();
-	mixin.central = central;
+	mixin.central = riot.observable();
 
 	// routings
 
 	const changePage = (pageId, params) => {
-		central.trigger('change-page', pageId, params || {});
+		mixin.central.trigger('change-page', pageId, params || {});
 	};
 
 	route.base('/');
@@ -135,7 +133,7 @@ const StreamingRest = require('./helpers/StreamingRest');
 
 	// recaptcha
 
-	const recaptchaAsync = () => new Promise((resolve) => {
+	const recaptcha = () => new Promise((resolve) => {
 		const t = setInterval(() => {
 			if (mixin.siteKey == null || typeof grecaptcha != 'undefined') {
 				clearInterval(t);
@@ -143,7 +141,7 @@ const StreamingRest = require('./helpers/StreamingRest');
 			}
 		}, 50);
 	});
-	await recaptchaAsync();
+	await recaptcha();
 
 	// mount
 

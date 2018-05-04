@@ -1,3 +1,5 @@
+const path = require('path');
+
 /**
  * 設定ファイルを読み込みます。
  * リポジトリ直下ディレクトリか、その１つ上層のディレクトリからconfig.jsonを読み込むことができます。
@@ -7,11 +9,11 @@
  */
 module.exports = () => {
 	try {
-		return require(`${process.cwd()}/config.json`);
+		return require(path.resolve('config.json'));
 	}
 	catch (err) {
 		try {
-			return require(`${process.cwd()}/../config.json`);
+			return require(path.resolve('../config.json'));
 		}
 		catch (err2) {
 			return null;

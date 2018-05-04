@@ -62,7 +62,7 @@
 	</style>
 
 	<script>
-		const StreamingRest = require('../helpers/StreamingRest');
+		const StreamingRest = require('../helpers/streaming-rest');
 		this.timelinePosts = [];
 		this.loading = false;
 		this.error = false;
@@ -117,7 +117,7 @@
 
 			(async () => {
 				const streamingRest = new StreamingRest(this.webSocket);
-				const rest = await streamingRest.requestAsync('get', endpoint, { query: { limit: 100 } });
+				const rest = await streamingRest.request('get', endpoint, { query: { limit: 100 } });
 				if (rest.response.posts == null) {
 					if (rest.statusCode != 204) {
 						alert(`api error: failed to fetch ${this.opts.dataName} timeline posts. ${rest.response.message}`);

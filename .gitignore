@@ -4,3 +4,4 @@ built
 *.log
 *.old
 /config*.json
+package-lock.json

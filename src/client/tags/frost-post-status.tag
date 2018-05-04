@@ -58,6 +58,14 @@
 				> .text {
 					> p {
 						margin-bottom: 0;
+						
+						.stroke {
+						        text-decoration: line-through;
+						}
+						
+						.underline {
+						        text-decoration: underline;
+						}
 					}
 				}
 			}
@@ -81,8 +89,13 @@
 				.replace(/>/g, '&gt;')
 				.replace(/'/g, '&#039;')
 				.replace(/"/g, '&quot;')
-				.replace(/`/g, '&#x60;')
 				.replace(/((https?|ftp):\/\/[^\s/$.?#].[^\s]*)/ig, '<a href=\'$1\' target=\'_blank\'>$1</a>') // url
+				.replace(/\*\*([^\n]+?)\*\*/g, '<strong>$1</strong>') // 太字
+				.replace(/\*([^\n]+?)\*/g, '<i>$1</i>') // 斜体
+			        .replace(/~~([^\n]+?)~~/g, '<span class="stroke">$1</span>') // 取消線
+				.replace(/__([^\n]+?)__/g, '<span class="underline">$1</span>') // 下線
+				.replace(/`([^\n]+?)`/g, '<code>$1</code>') // コード
+				.replace(/`/g, '&#x60;')
 				.replace(/\n/g, '</p><p>'); // 改行
 
 			compiledText += '</p>';

@@ -8,8 +8,7 @@ html(lang='ja')
 		meta(name='author', content='team FrostDev')
 		meta(name='viewport', content='width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=yes')
 		meta(name='theme-color', content='#b85c3e')
-		each value, key in params
-			meta(name='frost-' + key, content=value)
+		meta(name='frost-params', content=JSON.stringify(params))
 		title Frost
 		link(rel='shortcut icon', type='image/x-icon', href='/images/favicon.ico')
 		link(rel='apple-touch-icon', sizes='152x152', href='/images/apple-touch-icon.png')

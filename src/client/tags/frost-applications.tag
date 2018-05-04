@@ -1,14 +1,17 @@
 <frost-applications>
 	<ul if={ applications.length != 0 }>
-		<li each={ applications }>
-			<p>アプリケーション名: { name }</p>
-			<p>説明: { description }</p>
-			<p>アプリケーションID: { id }</p>
-			<p>権限:</p><!-- Permissions -->
+		<li each={ app in applications }>
+			<p>アプリケーション名: { app.name }</p>
+			<p>説明: { app.description }</p>
+			<h3>OAuth 2.0</h3>
+			<p>Client ID: { app.id }</p>
+			<p onclick={ parent.toggleSecret }>Client Secret: { (app.isShowSecret ? app.secret : 'クリックして表示') }</p>
+			<p>Scopes(利用可能なアクセス権):</p>
 			<ul>
-				<li each={ permission ,i in permissions }>
-					{ permission }
+				<li each={ scope in app.scopes }>
+					{ scope }
 				</li>
+				<p if={ app.scopes.length == 0 }>利用可能なアクセス権はありません。</p>
 			</ul>
 		</li>
 	</ul>
@@ -41,12 +44,20 @@
 		this.error = false;
 
 		const centralAddApplicationHandler = (data) => {
+			data.application.isShowSecret = false;
+			data.application.secret = 'hoge';
+
 			this.applications.push(data.application);
 			this.update();
 		};
 
 		this.on('mount', () => {
 			this.central.on('add-application', centralAddApplicationHandler);
+
+			this.toggleSecret = (ev) => {
+				ev.item.app.isShowSecret = !ev.item.app.isShowSecret;
+				this.update();
+			};
 
 			(async () => {
 				const rest = await this.streamingRest.request('get', '/applications');
@@ -57,7 +68,12 @@
 					}
 					rest.response.applications = [];
 				}
-				this.applications = rest.response.applications;
+				const apps = rest.response.applications.map(app => {
+					app.isShowSecret = false;
+					app.secret = 'hoge';
+					return app;
+				});
+				this.applications = apps;
 				this.loading = false;
 				this.update();
 			})().catch((err) => {

@@ -8,7 +8,7 @@
     "node": ">= 8.0.0"
   },
   "scripts": {
-    "start": "node --use_strict ./",
+    "start": "node ./",
     "build:copy": "cpx \"./src/client/images/**\" ./src/client.built/images",
     "build:bundle": "webpack",
     "build": "npm run build:copy && npm run build:bundle",

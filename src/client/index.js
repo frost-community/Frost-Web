@@ -3,34 +3,43 @@ const route = require('riot-route').default;
 const WebSocketEvents = require('./helpers/web-socket-events');
 const StreamingRest = require('./helpers/streaming-rest');
 const fetchJson = require('./helpers/fetch-json');
+const loadTags = require('./helpers/load-tags');
+
+/** サーバから渡されたmetaタグのパラメータを読み込みます */
+const loadParams = () => {
+	const element = document.getElementsByName('frost-params').item(0);
+	return element != null ? JSON.parse(element.content) : {};
+};
+
+/** reCAPTCHAが利用可能になるまで待機します */
+const waitRecaptcha = (siteKey) => new Promise((resolve) => {
+	const t = setInterval(() => {
+		if (siteKey == null || typeof grecaptcha != 'undefined') {
+			clearInterval(t);
+			resolve();
+		}
+	}, 50);
+});
+
+const fetchUser = async (streamingRest, userId) => {
+	const result = await streamingRest.request('get', `/users/${userId}`);
+	if (result.statusCode != 200) {
+		throw new Error('failed to fetch user');
+	}
+	return result.response.user;
+};
 
 (async () => {
-
-	const mixin = {};
-
-	// config
-
+	const mixin = loadParams();
 	mixin.config = require('../../.configs/client-config.json');
-
-	// csrf
-
-	const csrfElement = document.getElementsByName('frost-csrf').item(0);
-	if (csrfElement != null)
-		mixin.csrf = csrfElement.content;
-
-	// userId
-
-	const userIdElement = document.getElementsByName('frost-userId').item(0);
-	if (userIdElement != null)
-		mixin.userId = userIdElement.content;
-
 	mixin.getLoginStatus = () => mixin.userId != null;
+	mixin.central = riot.observable();
 
-	// WebSocket (ログインされている時のみ)
-
+	// when logged in
 	if (mixin.getLoginStatus()) {
-		const secure = location.protocol == 'https:';
 
+		// WebSocket
+		const secure = location.protocol == 'https:';
 		try {
 			const accessToken = localStorage.getItem('accessToken');
 			const webSocket = await WebSocketEvents.connect(`${secure ? 'wss' : 'ws'}://${mixin.config.apiHost}?access_token=${accessToken}`);
@@ -42,18 +51,18 @@ const fetchJson = require('./helpers/fetch-json');
 		catch (err) {
 			alert('WebSocketの接続に失敗しました');
 			console.log(err);
-			// 念のためログアウト
+			// logout as a precaution
 			await fetchJson('DELETE', '/session', {
 				_csrf: mixin.csrf
 			});
 			return;
 		}
 
+		// Streaming REST
 		mixin.streamingRest = new StreamingRest(mixin.webSocket);
 
 		try {
-			const rest = await mixin.streamingRest.request('get', `/users/${mixin.userId}`);
-			mixin.user = rest.response.user;
+			mixin.user = await fetchUser(mixin.streamingRest, mixin.userId);
 		}
 		catch (err) {
 			alert('ユーザー情報の取得に失敗しました');
@@ -61,16 +70,6 @@ const fetchJson = require('./helpers/fetch-json');
 			return;
 		}
 	}
-
-	// siteKey
-
-	const siteKeyElement = document.getElementsByName('frost-siteKey').item(0);
-	if (siteKeyElement != null)
-		mixin.siteKey = siteKeyElement.content;
-
-	// central observer
-
-	mixin.central = riot.observable();
 
 	// routings
 
@@ -109,69 +108,18 @@ const fetchJson = require('./helpers/fetch-json');
 	route('*', () =>
 		changePage('error', { message: 'page not found' }));
 
-	// loading components
+	loadTags();
 
-	// - general
-	require('./tags/frost-logout-button.tag');
-	require('./tags/frost-post-status.tag');
-	require('./tags/frost-timeline.tag');
-	require('./tags/frost-hint.tag');
-	// - container
-	require('./tags/frost-container.tag');
-	require('./tags/frost-global-nav.tag');
-	require('./tags/frost-page-switcher.tag');
-	require('./tags/frost-footer.tag');
-	// - entrance
-	require('./tags/frost-page-entrance.tag');
-	require('./tags/frost-form-login.tag');
-	require('./tags/frost-form-signup.tag');
-	// - home
-	require('./tags/frost-page-home.tag');
-	require('./tags/frost-home-logo.tag');
-	require('./tags/frost-form-create-status.tag');
-		// - authorize
-		require('./tags/frost-page-appauth.tag');
-		require('./tags/frost-form-appauth.tag');
-	// - user
-	require('./tags/frost-page-user.tag');
-	require('./tags/frost-follow-button.tag');
-	require('./tags/frost-tabs-user-page.tag');
-	// - userlist
-	require('./tags/frost-page-userlist.tag');
-	// - post
-	require('./tags/frost-page-post.tag');
-	// - dev
-	require('./tags/frost-page-dev.tag');
-	require('./tags/frost-applications.tag');
-	require('./tags/frost-form-create-application.tag');
-	// - error
-	require('./tags/frost-page-error.tag');
+	await waitRecaptcha(mixin.siteKey);
 
-	// recaptcha
-
-	const recaptcha = () => new Promise((resolve) => {
-		const t = setInterval(() => {
-			if (mixin.siteKey == null || typeof grecaptcha != 'undefined') {
-				clearInterval(t);
-				resolve();
-			}
-		}, 50);
-	});
-	await recaptcha();
-
-	// mount
-
+	// mount riot tags
 	riot.mixin(mixin);
 	riot.mount('frost-container');
 
-	// start routing
-
 	route.start(true);
 
-	// auto error routing
-
-	const errorElement = document.getElementsByName('frost-error').item(0);
-	if (errorElement != null) {
+	// move to error page by content of error metaData
+	if (mixin.error != null) {
 		changePage('error', {});
 	}
 

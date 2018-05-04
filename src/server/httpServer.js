@@ -136,37 +136,32 @@ module.exports = async (db, hostApiConnection, config) => {
 	// page middleware
 
 	app.use((req, res, next) => {
-		try {
-			req.isSmartPhone = isSmartPhone(req.header('User-Agent'));
+		req.isSmartPhone = isSmartPhone(req.header('User-Agent'));
 
-			res.renderPage = (pageParams, renderParams) => {
-				pageParams = Object.assign(pageParams || {}, {
-					csrf: req.csrfToken(),
-					isSmartPhone: req.isSmartPhone,
-					siteKey: config.reCAPTCHA.siteKey
-				});
+		res.renderPage = (pageParams, renderParams) => {
+			pageParams = Object.assign(pageParams || {}, {
+				csrf: req.csrfToken(),
+				isSmartPhone: req.isSmartPhone,
+				siteKey: config.reCAPTCHA.siteKey
+			});
 
-				// memo: クライアントサイドでは、パラメータ中にuserIdが存在するかどうかでWebSocketへの接続が必要かどうかを判断します。このコードはそのために必要です。
-				if (req.session.token != null) {
-					pageParams.userId = req.session.token.userId;
-				}
+			// memo: クライアントサイドでは、パラメータ中にuserIdが存在するかどうかでWebSocketへの接続が必要かどうかを判断します。このコードはそのために必要です。
+			if (req.session.token != null) {
+				pageParams.userId = req.session.token.userId;
+			}
 
-				let pageRenderParams = {
-					scriptFile: '/main.js',
-					params: pageParams
-				};
-				pageRenderParams = Object.assign(pageRenderParams, renderParams);
-
-				res.render('page', pageRenderParams);
+			let pageRenderParams = {
+				scriptFile: '/main.js',
+				params: pageParams
 			};
+			pageRenderParams = Object.assign(pageRenderParams, renderParams);
 
-			debugLog('req:', req.method, req.path);
+			res.render('page', pageRenderParams);
+		};
 
-			next();
-		}
-		catch (err) {
-			throw new HttpServerError(500, err.message, true);
-		}
+		debugLog('req:', req.method, req.path);
+
+		next();
 	});
 
 	// static files
@@ -177,9 +172,17 @@ module.exports = async (db, hostApiConnection, config) => {
 
 	// oauth2
 
-	app.get('/oauth/authorize', oAuthServer.authorizeMiddle(), (req, res) => {
-		res.renderPage({ transactionId: req.oauth2.transactionID });
-	});
+	app.get('/oauth/authorize',
+		(req, res, next) => {
+			if (!req.user) {
+				throw new HttpServerError(401, 'ログインが必要です。');
+			}
+			next();
+		},
+		oAuthServer.authorizeMiddle(),
+		(req, res) => {
+			res.renderPage({ transactionId: req.oauth2.transactionID });
+		});
 	app.post('/oauth/authorize', oAuthServer.decisionMiddle());
 	app.post('/oauth/token', oAuthServer.tokenMiddle());
 
@@ -234,34 +237,17 @@ module.exports = async (db, hostApiConnection, config) => {
 					});
 				}
 				catch(err) {
-					if (err instanceof HttpServerError) {
-						err.isJson = true;
-						next(err);
-					}
-					else {
-						next(new HttpServerError(500, err.message, true));
-					}
+					next(err);
 				}
 			}
 		)
 		.delete(checkLogin, (req, res) => {
-			try {
-				if (req.session.token != null) {
-					req.session.token = null;
-					req.session.clientSideToken = null;
-				}
-				req.logout();
-				res.json({ message: 'ok' });
+			if (req.session.token != null) {
+				req.session.token = null;
+				req.session.clientSideToken = null;
 			}
-			catch (err) {
-				if (err instanceof HttpServerError) {
-					err.isJson = true;
-					throw err;
-				}
-				else {
-					throw new HttpServerError(500, err.message, true);
-				}
-			}
+			req.logout();
+			res.json({ message: 'ok' });
 		});
 
 	app.post('/session/register', async (req, res, next) => {
@@ -302,13 +288,35 @@ module.exports = async (db, hostApiConnection, config) => {
 			});
 		}
 		catch (err) {
-			if (err instanceof HttpServerError) {
-				err.isJson = true;
-				next(err);
+			next(err);
+		}
+	});
+
+	// internal apis
+
+	app.post('/app/secret', async (req, res, next) => {
+		try {
+			const appId = req.body.id;
+
+			const appResult = await streamingRest.request('get', `/applications/${appId}`);
+			if (appResult.statusCode != 200) {
+				throw new HttpServerError(400, 'invalid applicationId');
 			}
-			else {
-				next(new HttpServerError(500, err.message, true));
+			const app = appResult.response.application;
+
+			if (app.creatorId != req.user.id) {
+				throw new HttpServerError(400, 'you do not have this application');
 			}
+
+			const appSecretResult = await streamingRest.request('get', `/applications/${appId}/secret`);
+			if (appSecretResult.statusCode != 200) {
+				throw new HttpServerError(appSecretResult.statusCode, appSecretResult.response.message);
+			}
+
+			res.json({ secret: appSecretResult.response.secret });
+		}
+		catch (err) {
+			next(err);
 		}
 	});
 

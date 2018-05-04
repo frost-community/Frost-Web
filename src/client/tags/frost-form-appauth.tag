@@ -127,7 +127,7 @@
 
 <frost-form-appauth>
 	<form method='post' action='/oauth/authorize' ref='authForm'>
-		<input type='hidden' name='transaction_id' value={ tid }>
+		<input type='hidden' name='transaction_id' value={ transactionId }>
 		<input type='hidden' name='_csrf' value={ csrf }>
 	</form>
 	<div class='parent'>
@@ -247,10 +247,6 @@
 			this.status = 1;
 			this.update();
 		})();
-
-		const tidElement = document.getElementsByName('frost-transactionId').item(0);
-		if (tidElement != null)
-			this.tid = tidElement.content;
 
 		this.acceptConfirm = () => {
 			this.refs.modal.show();

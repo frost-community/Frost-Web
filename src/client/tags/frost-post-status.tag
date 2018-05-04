@@ -96,7 +96,6 @@
 			        .replace(/~~([^\n]+?)~~/g, '<span class="stroke">$1</span>') // 取消線
 				.replace(/__([^\n]+?)__/g, '<span class="underline">$1</span>') // 下線
 				.replace(/`([^\n]+?)`/g, '<code>$1</code>') // コード
-				.replace(/>([^\n]+?)(?:$|\n)/g, '<q>$1</q>') // 引用
 				.replace(/`/g, '&#x60;')
 				.replace(/\n/g, '</p><p>'); // 改行
 

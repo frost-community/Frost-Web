@@ -92,7 +92,7 @@
 
 		this.on('mount', () => {
 			this.refs.text.innerHTML = this.compileText(this.opts.status.text);
-			this.refs.icon.style.backgroundImage = `url(https://placeimg.com/400/400/people/grayscale?${opts.status.user.screenName})`;
+			this.refs.icon.style.backgroundImage = `url(https://placeimg.com/64/64/people/grayscale?${opts.status.user.screenName})`;
 			
 
 			// 定期的に画面を更新

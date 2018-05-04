@@ -120,7 +120,11 @@ const fetchUser = async (streamingRest, userId) => {
 
 	// move to error page by content of error metaData
 	if (mixin.error != null) {
-		changePage('error', {});
+		changePage('error');
+	}
+	// move to target page by content of page metadata
+	else if (mixin.page != null) {
+		changePage(mixin.page);
 	}
 
 })().catch(err => {

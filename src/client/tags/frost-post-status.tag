@@ -1,5 +1,5 @@
 <frost-post-status>
-	<div class='side'><div class='icon'></div></div>
+	<div class='side'><div class='icon' ref='icon'></div></div>
 	<div class='main'>
 		<div class='info'>
 			<a href={ '/users/' + opts.status.user.screenName }>{ opts.status.user.name } @{ opts.status.user.screenName }</a>
@@ -92,6 +92,8 @@
 
 		this.on('mount', () => {
 			this.refs.text.innerHTML = this.compileText(this.opts.status.text);
+			this.refs.icon.style.backgroundImage = `url(https://placeimg.com/64/64/people/grayscale?${opts.status.user.screenName})`;
+			
 
 			// 定期的に画面を更新
 			setInterval(() => {

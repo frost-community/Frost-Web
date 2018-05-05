@@ -1,5 +1,5 @@
 <frost-post-status>
-	<div class='side'><div class='icon' ref='icon' onresize={ updateIcon }></div></div>
+	<div class='side'><div class='icon' ref='icon'></div></div>
 	<div class='main'>
 		<div class='info'>
 			<a href={ '/users/' + opts.status.user.screenName }>{ opts.status.user.name } @{ opts.status.user.screenName }</a>
@@ -104,18 +104,30 @@
 		}
 		
 		updateIcon() {
-		        this.refs.icon.style.backgroundImage = `url(https://placeimg.com/${thid.refs.icon.offsetWidth * window.devicePixelRatio}/${this.refs.icon.offsetHeight * window.devicePixelRatio}/people/grayscale?${opts.status.user.screenName})`;
+			this.refs.icon.style.backgroundImage = `url(https://placeimg.com/${this.refs.icon.offsetWidth * window.devicePixelRatio}/${this.refs.icon.offsetHeight * window.devicePixelRatio}/people/grayscale?${opts.status.user.screenName})`;
+		}
+
+		onResize() {
+			if (this.width == window.innerWidth) return;
+			this.width = window.innerWidth;
+			this.updateIcon();
 		}
 		
 		this.on('mount', () => {
 			this.refs.text.innerHTML = this.compileText(this.opts.status.text);
 			
 			updateIcon();
+			this.width = window.innerWidth;
+			window.addEventListener('resize', this.onResize);
 
 			// 定期的に画面を更新
 			setInterval(() => {
 				this.update();
 			}, 60 * 1000);
+		});
+
+		this.on('unmount', () => {
+			window.removeEventListener('resize', this.onResize);
 		});
 	</script>
 </frost-post-status>

@@ -1,0 +1,22 @@
+@import "variables";
+@import "page.scss";
+
+body {
+	display: block;
+	padding-top: 15*3px;
+
+	> .page {
+		@include responsive();
+
+		padding: 1.5rem 1rem;
+		justify-content: center;
+
+		@include less-than($tablet) {
+			padding: 1rem;
+		}
+
+		> * {
+			width: 30rem;
+		}
+	}
+}

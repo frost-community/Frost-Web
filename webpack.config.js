@@ -1,20 +1,27 @@
 const path = require('path');
 const webpack = require('webpack');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
+const loadConfig = require('./src/server/helpers/load-config');
 
 const absolutePath = (relative) => path.resolve(__dirname, relative);
+let debug = false;
 
-module.exports = {
+const config = loadConfig();
+if (config != null) {
+	debug = config.debug;
+}
+
+const webpackConfig = {
 	entry: {
-		main: './src/client/index.js'
+		frost: './src/client/mainEntry.js',
+		'frost-oauth': './src/client/appAuthEntry.js'
 	},
 	output: {
 		path: absolutePath('./src/client.built'),
 		filename: '[name].js'
 	},
 	plugins: [
-		new webpack.ProvidePlugin({ riot: 'riot' }),
-		new UglifyJSPlugin()
+		new webpack.ProvidePlugin({ riot: 'riot' })
 	],
 	module: {
 		rules: [
@@ -44,3 +51,10 @@ module.exports = {
 		]
 	}
 };
+
+// デバックモード有効時は、コードの圧縮を無効に
+if (!debug) {
+	webpackConfig.plugins.push(new UglifyJSPlugin());
+}
+
+module.exports = webpackConfig;

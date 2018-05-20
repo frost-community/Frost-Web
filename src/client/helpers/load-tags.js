@@ -17,9 +17,6 @@ module.exports = () => {
 	require('../tags/frost-page-home.tag');
 	require('../tags/frost-home-logo.tag');
 	require('../tags/frost-form-create-status.tag');
-	// - authorize
-	require('../tags/frost-page-appauth.tag');
-	require('../tags/frost-form-appauth.tag');
 	// - user
 	require('../tags/frost-page-user.tag');
 	require('../tags/frost-follow-button.tag');

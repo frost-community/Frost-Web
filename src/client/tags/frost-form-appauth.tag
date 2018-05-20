@@ -186,9 +186,9 @@
 	</style>
 
 	<script>
-		const route = require('riot-route').default;
-		const fetchJson = require('../helpers/fetch-json');
 		const riot = require('riot');
+		const qs = require('qs');
+		const fetchJson = require('../helpers/fetch-json');
 		this.obs = riot.observable();
 		this.status = 0; // 0:loading, 1: ok, 2:failed loading app
 		this.app = {};
@@ -226,7 +226,7 @@
 			}
 		};
 
-		const q = route.query();
+		const q = qs.parse(location.search, { ignoreQueryPrefix: true });
 		this.clientId = q.client_id;
 		const scopeRaw = decodeURI(q.scope || '');
 		if (scopeRaw == '') {
@@ -253,8 +253,7 @@
 		};
 
 		this.reject = () => {
-			this.central.trigger('ev:auth-rejected', { });
-			console.log('auth-rejected');
+			console.log('auth rejected'); // TODO
 		};
 
 		this.obs.on('ev:modal-closed', async () => {

@@ -1,25 +1,10 @@
 const riot = require('riot');
 const route = require('riot-route').default;
-const WebSocketEvents = require('./helpers/web-socket-events');
+const connectApiStream = require('./helpers/connect-api-stream');
 const StreamingRest = require('./helpers/streaming-rest');
-const fetchJson = require('./helpers/fetch-json');
+const loadParams = require('./helpers/load-params');
+const waitRecaptcha = require('./helpers/wait-recaptcha');
 const loadTags = require('./helpers/load-tags');
-
-/** サーバから渡されたmetaタグのパラメータを読み込みます */
-const loadParams = () => {
-	const element = document.getElementsByName('frost-params').item(0);
-	return element != null ? JSON.parse(element.content) : {};
-};
-
-/** reCAPTCHAが利用可能になるまで待機します */
-const waitRecaptcha = (siteKey) => new Promise((resolve) => {
-	const t = setInterval(() => {
-		if (siteKey == null || typeof grecaptcha != 'undefined') {
-			clearInterval(t);
-			resolve();
-		}
-	}, 50);
-});
 
 const fetchUser = async (streamingRest, userId) => {
 	const result = await streamingRest.request('get', `/users/${userId}`);
@@ -30,6 +15,7 @@ const fetchUser = async (streamingRest, userId) => {
 };
 
 (async () => {
+	const cookie = require('cookie');
 	const mixin = loadParams();
 	mixin.config = require('../../.configs/client-config.json');
 	mixin.getLoginStatus = () => mixin.userId != null;
@@ -37,28 +23,13 @@ const fetchUser = async (streamingRest, userId) => {
 
 	// when logged in
 	if (mixin.getLoginStatus()) {
-
-		// WebSocket
-		const secure = location.protocol == 'https:';
-		try {
-			const accessToken = localStorage.getItem('accessToken');
-			const webSocket = await WebSocketEvents.connect(`${secure ? 'wss' : 'ws'}://${mixin.config.apiHost}?access_token=${accessToken}`);
-			webSocket.addEventListener('close', (ev) => { console.log('close:', ev); });
-			webSocket.addEventListener('error', (ev) => { console.log('error:', ev); });
-			WebSocketEvents.init(webSocket);
-			mixin.webSocket = webSocket;
-		}
-		catch (err) {
-			alert('WebSocketの接続に失敗しました');
-			console.log(err);
-			// logout as a precaution
-			await fetchJson('DELETE', '/session', {
-				_csrf: mixin.csrf
-			});
-			return;
+		var cookies = cookie.parse(document.cookie);
+		if (cookies.accessToken != null) {
+			localStorage.setItem('accessToken', cookies.accessToken);
+			document.cookie = 'accessToken=; expires=Thu, 01 Jan 1970 00:00:00 GMT';
 		}
 
-		// Streaming REST
+		mixin.webSocket = await connectApiStream(mixin.config, mixin.csrf);
 		mixin.streamingRest = new StreamingRest(mixin.webSocket);
 
 		try {
@@ -102,9 +73,6 @@ const fetchUser = async (streamingRest, userId) => {
 	route('posts/*', (postId) =>
 		changePage('post', { postId }));
 
-	route('oauth/authorize..', () =>
-		changePage('appauth'));
-
 	route('*', () =>
 		changePage('error', { message: 'page not found' }));
 
@@ -114,15 +82,15 @@ const fetchUser = async (streamingRest, userId) => {
 
 	// mount riot tags
 	riot.mixin(mixin);
-	riot.mount('frost-container');
+	riot.mount('*');
 
 	route.start(true);
 
-	// move to error page by content of error metaData
+	// NOTE: move to error page by content of error metaData only when initialization
 	if (mixin.error != null) {
 		changePage('error');
 	}
-	// move to target page by content of page metadata
+	// NOTE: move to target page by content of page metadata only when initialization
 	else if (mixin.page != null) {
 		changePage(mixin.page);
 	}

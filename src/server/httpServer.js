@@ -2,25 +2,50 @@ const bodyParser = require('body-parser');
 const checkLogin = require('./helpers/check-login');
 const compression = require('compression');
 const connectRedis = require('connect-redis');
-const createSession = require('./helpers/create-session');
+const validateCredential = require('./helpers/validate-credential');
 const csurf = require('csurf');
 const express = require('express');
-const expressSession = require('express-session');
+const flash = require('connect-flash');
+const session = require('express-session');
 const helmet = require('helmet');
 const HttpServerError = require('./helpers/http-server-error');
 const isSmartPhone = require('./helpers/is-smart-phone');
 const path = require('path');
 const request = require('request-promise');
-const StreamingRest = require('./helpers/streaming-rest');
-const OAuthServer = require('./helpers/oauth-server');
 const getType = require('./helpers/get-type');
 const passport = require('passport');
-const { Strategy : LocalStrategy } = require('passport-local');
+const qs = require('qs');
+
+const getToken = async (userId, scopes, streamingRest, config) => {
+	let tokenResult = await streamingRest.request('get', '/auth/tokens', {
+		query: {
+			applicationId: config.applicationId,
+			userId: userId,
+			scopes: scopes
+		}
+	});
+	if (tokenResult.statusCode != 200 && tokenResult.statusCode != 404) {
+		throw new HttpServerError(tokenResult.statusCode, `session creation error: ${tokenResult.response.message}`);
+	}
+	if (tokenResult.statusCode == 404) {
+		tokenResult = await streamingRest.request('post', '/auth/tokens', {
+			body: {
+				applicationId: config.applicationId,
+				userId: userId,
+				scopes: scopes
+			}
+		});
+		if (tokenResult.statusCode != 200) {
+			throw new HttpServerError(tokenResult.statusCode, `session creation error: ${tokenResult.response.message}`);
+		}
+	}
+	return tokenResult.response.token;
+};
 
 /**
- * クライアントサイドにWebページと各種操作を提供します
+ * Webページの配布と各種操作を提供します
  */
-module.exports = async (db, hostApiConnection, config) => {
+module.exports = async (db, streamingRest, oAuthServer, config) => {
 	const log = (...args) => {
 		console.log('[http server]', ...args);
 	};
@@ -30,87 +55,14 @@ module.exports = async (db, hostApiConnection, config) => {
 		}
 	};
 
-	const streamingRest = new StreamingRest(hostApiConnection);
-
-	// == OAuth2 Server ==
-
-	const oAuthServer = new OAuthServer(db, streamingRest);
-	oAuthServer.initialize();
-
-	// == passport ==
-
-	// 通常のログイン認証向け
-	passport.use('login', new LocalStrategy({ usernameField: 'screenName' }, async (screenName, password, done) => {
-		try {
-			// validate user credential
-			const validResult = await streamingRest.request('get', '/auth/valid_credential', {
-				query: { screenName: screenName, password: password }
-			});
-			if (validResult.statusCode != 200) {
-				throw new Error(validResult.response.message);
-			}
-			if (validResult.response.valid !== true) {
-				return done(null, false);
-			}
-
-			const usersResult = await streamingRest.request('get', '/users', {
-				query: {
-					'screen_names': screenName
-				}
-			});
-			const user = usersResult.response.users[0];
-
-			done(null, user);
-		}
-		catch (err) {
-			done(err);
-		}
-	}));
-
-	// セッションとユーザー情報を関連付けるために必要
-	passport.serializeUser((user, done) => {
-		done(null, user.id);
-	});
-	passport.deserializeUser(async (id, done) => {
-		try {
-			const userResult = await streamingRest.request('get', `/users/${id}`);
-			if (userResult.statusCode != 200) {
-				throw new HttpServerError(userResult.statusCode, userResult.response.message);
-			}
-
-			done(null, userResult.response.user);
-		}
-		catch (err) {
-			done(err);
-		}
-	});
-
-	// == express settings ==
-
 	const app = express();
-	const sessionStore = new (connectRedis(expressSession))({});
-
 	app.set('views', path.join(__dirname, 'views'));
 	app.set('view engine', 'pug');
 
-	// == Middlewares ==
+	// == middlewares ==
 
-	// body parser
-
-	app.use(bodyParser.urlencoded({ extended: false }));
-	app.use(bodyParser.json());
-
-	// compression
-
-	app.use(compression({
-		threshold: 0,
-		level: 9,
-		memLevel: 9
-	}));
-
-	// session
-
-	app.use(expressSession({
+	const sessionStore = new (connectRedis(session))();
+	app.use(session({
 		store: sessionStore,
 		name: config.session.name,
 		secret: config.session.SecretToken,
@@ -122,41 +74,33 @@ module.exports = async (db, hostApiConnection, config) => {
 		saveUninitialized: true,
 		rolling: true
 	}));
-
-	// passport
-
+	app.use(bodyParser.urlencoded({ extended: false }));
+	app.use(bodyParser.json());
+	app.use(compression({ threshold: 0, level: 9, memLevel: 9 }));
+	app.use(helmet({ frameguard: { action: 'deny' } }));
+	app.use(flash());
+	app.use(csurf());
 	app.use(passport.initialize());
 	app.use(passport.session());
 
-	// securities
-
-	app.use(helmet({ frameguard: { action: 'deny' } }));
-	app.use(csurf());
-
-	// page middleware
-
+	// custom middleware
 	app.use((req, res, next) => {
 		req.isSmartPhone = isSmartPhone(req.header('User-Agent'));
 
-		res.renderPage = (pageParams, renderParams) => {
-			pageParams = Object.assign(pageParams || {}, {
+		res.renderPage = (params) => {
+			params = Object.assign(params || {}, {
 				csrf: req.csrfToken(),
 				isSmartPhone: req.isSmartPhone,
-				siteKey: config.reCAPTCHA.siteKey
+				siteKey: config.reCAPTCHA.siteKey,
+				errors: req.flash('error')
 			});
 
 			// memo: クライアントサイドでは、パラメータ中にuserIdが存在するかどうかでWebSocketへの接続が必要かどうかを判断します。このコードはそのために必要です。
 			if (req.session.token != null) {
-				pageParams.userId = req.session.token.userId;
+				params.userId = req.session.token.userId;
 			}
 
-			let pageRenderParams = {
-				scriptFile: '/main.js',
-				params: pageParams
-			};
-			pageRenderParams = Object.assign(pageRenderParams, renderParams);
-
-			res.render('page', pageRenderParams);
+			res.render('main', { params });
 		};
 
 		debugLog('req:', req.method, req.path);
@@ -165,7 +109,6 @@ module.exports = async (db, hostApiConnection, config) => {
 	});
 
 	// static files
-
 	app.use(express.static(path.join(__dirname, '../client.built'), { etag: false }));
 
 	// == routings ==
@@ -174,14 +117,35 @@ module.exports = async (db, hostApiConnection, config) => {
 
 	app.get('/oauth/authorize',
 		(req, res, next) => {
-			if (!req.user) {
-				throw new HttpServerError(401, 'ログインが必要です。');
+			// ログイン済みの時は認可のミドルウェアを呼び出し
+			if (req.user != null) {
+				oAuthServer.authorizeMiddle()(req, res, next);
 			}
-			next();
-		},
-		oAuthServer.authorizeMiddle(),
-		(req, res) => {
-			res.renderPage({ transactionId: req.oauth2.transactionID });
+			// 未ログイン時はそのまま次へ
+			else {
+				next();
+			}
+		}, (req, res) => {
+			let params = {
+				needLogin: (req.user == null),
+				csrf: req.csrfToken(),
+				errors: req.flash('error')
+			};
+			// ログイン済みの時は認可フォームを表示
+			if (req.user != null) {
+				Object.assign(params, {
+					siteKey: config.reCAPTCHA.siteKey,
+					userId: req.user.id,
+					transactionId: req.oauth2.transactionID
+				});
+			}
+			// 未ログイン時はログインフォームを表示
+			else {
+				Object.assign(params, {
+					redirectionQuery: req.query
+				});
+			}
+			res.render('appAuth', { params });
 		});
 	app.post('/oauth/authorize', oAuthServer.decisionMiddle());
 	app.post('/oauth/token', oAuthServer.tokenMiddle());
@@ -189,58 +153,42 @@ module.exports = async (db, hostApiConnection, config) => {
 	// session
 
 	app.route('/session')
-		.put(passport.authenticate('login', { failureMessage: 'failed login', failWithError: true }),
-			async (req, res, next) => {
+		.post((req, res, next) => {
+			passport.authenticate('login', async (err, user, info) => {
 				try {
-					if (req.session.token == null) {
-						const getToken = async (scopes) => {
-							let tokenResult = await streamingRest.request('get', '/auth/tokens', {
-								query: {
-									applicationId: config.applicationId,
-									userId: req.user.id,
-									scopes: scopes
-								}
-							});
-							if (tokenResult.statusCode != 200 && tokenResult.statusCode != 404) {
-								throw new HttpServerError(tokenResult.statusCode, `session creation error: ${tokenResult.response.message}`);
-							}
-							if (tokenResult.statusCode == 404) {
-								tokenResult = await streamingRest.request('post', '/auth/tokens', {
-									body: {
-										applicationId: config.applicationId,
-										userId: req.user.id,
-										scopes: scopes
-									}
-								});
-								if (tokenResult.statusCode != 200) {
-									throw new HttpServerError(tokenResult.statusCode, `session creation error: ${tokenResult.response.message}`);
-								}
-							}
-							return tokenResult.response.token;
-						};
+					if (user != null) {
+						if (req.session.token == null) {
+							const sessionToken = await getToken(user.id, config.accessTokenScopes.session, streamingRest, config);
+							const clientSideToken = await getToken(user.id, config.accessTokenScopes.clientSide, streamingRest, config);
 
-						// get session accessToken
-						const sessionToken = await getToken(config.accessTokenScopes.session);
+							req.session.token = sessionToken;
+							req.session.clientSideToken = clientSideToken;
+						}
 
-						// get client-side sccessToken
-						const clientSideToken = await getToken(config.accessTokenScopes.clientSide);
+						// NOTE: クライアントサイドへ渡すために一旦Cookieに付ける
+						res.cookie('accessToken', req.session.clientSideToken.accessToken);
 
-						req.session.token = sessionToken;
-						req.session.clientSideToken = clientSideToken;
+						req.login(user, (err) => {
+						});
 					}
 
-					res.json({
-						message: 'ok',
-						accessToken: req.session.clientSideToken.accessToken,
-						userId: req.session.clientSideToken.userId,
-						scopes: config.accessTokenScopes.clientSide
-					});
+					// control redirect target
+					const redirectWhiteList = {
+						oauth: '/oauth/authorize'
+					};
+					let redirectPath = redirectWhiteList[req.query.redirect_type] || '/';
+					if (req.query.redirect_type != null) {
+						delete req.query.redirect_type;
+					}
+					redirectPath += qs.stringify(req.query, { addQueryPrefix: true });
+
+					res.redirect(redirectPath);
 				}
-				catch(err) {
-					next(err);
+				catch(authErr) {
+					next(authErr);
 				}
-			}
-		)
+			})(req, res, next);
+		})
 		.delete(checkLogin, (req, res) => {
 			if (req.session.token != null) {
 				req.session.token = null;
@@ -265,20 +213,25 @@ module.exports = async (db, hostApiConnection, config) => {
 				});
 			}
 			catch (err) {
-				throw new HttpServerError(500, `recaptcha verification error: ${err.message}`, true);
+				throw new HttpServerError(500, `recaptcha: ${err.message}`, true);
 			}
 			if (recaptchaResult.success !== true) {
-				throw new HttpServerError(400, `recaptcha verification error: ${JSON.stringify(recaptchaResult['error-codes'])}`, true);
+				throw new HttpServerError(400, `invalid recaptcha input. ${JSON.stringify(recaptchaResult['error-codes'])}`, true);
 			}
 
-			// creation user
+			// create user
 			const creationResult = await streamingRest.request('post', '/users', { body: req.body });
 			if (!creationResult.response.user) {
-				throw new HttpServerError(creationResult.statusCode || 500, `session register error: ${creationResult.response.message}`, true);
+				throw new HttpServerError(500, `${creationResult.statusCode} - ${creationResult.response.message}`, true);
 			}
 
-			// creation session
-			await createSession(req, streamingRest, config);
+			const user = await validateCredential(req.body.screenName, req.body.password, streamingRest);
+
+			const sessionToken = await getToken(user.id, config.accessTokenScopes.session, streamingRest, config);
+			const clientSideToken = await getToken(user.id, config.accessTokenScopes.clientSide, streamingRest, config);
+
+			req.session.token = sessionToken;
+			req.session.clientSideToken = clientSideToken;
 
 			res.json({
 				message: 'ok',
@@ -344,16 +297,16 @@ module.exports = async (db, hostApiConnection, config) => {
 		}
 	}
 
-	// page not found
+	// error: page not found
 	app.use(() => { throw new HttpServerError(404, 'page not found'); });
 
-	// csrf token
+	// error: csrf token
 	app.use((err, req, res, next) => {
 		if (err.code !== 'EBADCSRFTOKEN') return next(err);
 		res.status(400).json({ error: { message: err.message } });
 	});
 
-	// HttpServerError
+	// error: http error
 	app.use((err, req, res, next) => {
 		if (err.status == null) return next(err);
 		res.status(err.status);
@@ -365,7 +318,7 @@ module.exports = async (db, hostApiConnection, config) => {
 		}
 	});
 
-	// others
+	// error: internal error
 	app.use((err, req, res, next) => {
 		log(err);
 		res.status(500).renderPage({ error: err.message, code: 500 });

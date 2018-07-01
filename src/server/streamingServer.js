@@ -127,6 +127,8 @@ module.exports = (http, sessionStore, config) => {
 					return;
 				}
 			});
+
+			debugLog('connected');
 		}
 		catch (err) {
 			if (frontConnection != null && frontConnection.connected) {

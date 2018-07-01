@@ -1,5 +1,6 @@
 const riot = require('riot');
 const route = require('riot-route').default;
+const connectBackendStream = require('./helpers/connect-backend-stream');
 const connectApiStream = require('./helpers/connect-api-stream');
 const StreamingRest = require('./helpers/streaming-rest');
 const loadParams = require('./helpers/load-params');
@@ -29,8 +30,12 @@ const fetchUser = async (streamingRest, userId) => {
 			document.cookie = 'accessToken=; expires=Thu, 01 Jan 1970 00:00:00 GMT';
 		}
 
-		mixin.webSocket = await connectApiStream(mixin.config, mixin.csrf);
-		mixin.streamingRest = new StreamingRest(mixin.webSocket);
+		// backend stream
+		mixin.backendStream = await connectBackendStream();
+
+		// api stream
+		mixin.apiStream = await connectApiStream(mixin.config, mixin.csrf);
+		mixin.streamingRest = new StreamingRest(mixin.apiStream);
 
 		try {
 			mixin.user = await fetchUser(mixin.streamingRest, mixin.userId);

@@ -134,7 +134,7 @@
 					text: match[1]
 				};
 			});
-			p.rule('inline-code', text => {
+			p.rule('inlineCode', text => {
 				const match = text.match(/^`([^\n]+?)`/);
 				if (!match) return null;
 
@@ -153,46 +153,48 @@
 			});
 			const tokens = p.parse();
 
-			let compiledText = '<p>';
-			for(const token of tokens) {
-				if (token.type == 'plain') {
-					compiledText += token.text;
-				}
-				else if (token.type == 'break') {
-					compiledText += '</p><p>';
-				}
-				else if (token.type == 'url') {
-					compiledText += `<a href="${token.target}" target="_blank">${token.target}</a>`;
-				}
-				else if (token.type == 'bold') {
-					compiledText += `<b>${token.text}</b>`;
-				}
-				else if (token.type == 'italic') {
-					compiledText += `<i>${token.text}</i>`;
-				}
-				else if (token.type == 'stroke') {
-					compiledText += `<span class="stroke">${token.text}</span>`;
-				}
-				else if (token.type == 'underline') {
-					compiledText += `<span class="underline">${token.text}</span>`;
-				}
-				else if (token.type == 'inline-code') {
-					compiledText += `<code>${token.code}</code>`;
-				}
-			}
-			compiledText += '</p>';
+			let html = tokens.reduce((accumulator, token) => {
+				const htmlTable = {
+					plain: token.text,
+					break: '</p><p>',
+					url: `<a href="${token.target}" target="_blank">${token.target}</a>`,
+					bold: `<b>${token.text}</b>`,
+					italic: `<i>${token.text}</i>`,
+					stroke: `<span class="stroke">${token.text}</span>`,
+					underline: `<span class="underline">${token.text}</span>`,
+					inlineCode: `<code>${token.code}</code>`
+				};
+				return accumulator + htmlTable[token.type];
+			}, '<p>')
+			html += '</p>';
 
-			return compiledText;
+			return html;
+		}
+
+		updateIcon() {
+			this.refs.icon.style.backgroundImage = `url(https://placeimg.com/${this.refs.icon.offsetWidth * window.devicePixelRatio}/${this.refs.icon.offsetHeight * window.devicePixelRatio}/people/grayscale?${opts.status.user.screenName})`;
+		}
+
+		onResize() {
+			if (this.width == window.innerWidth) return;
+			this.width = window.innerWidth;
+			this.updateIcon();
 		}
 
 		this.on('mount', () => {
 			this.refs.text.innerHTML = this.compileText(this.opts.status.text);
-			this.refs.icon.style.backgroundImage = `url(https://placeimg.com/${this.refs.icon.offsetWidth * window.devicePixelRatio}/${this.refs.icon.offsetHeight * window.devicePixelRatio}/people/grayscale?${opts.status.user.screenName})`;
+			updateIcon();
+			this.width = window.innerWidth;
+			window.addEventListener('resize', this.onResize);
 
 			// 定期的に画面を更新
 			setInterval(() => {
 				this.update();
 			}, 60 * 1000);
+		});
+
+		this.on('unmount', () => {
+			window.removeEventListener('resize', this.onResize);
 		});
 	</script>
 </frost-post-status>

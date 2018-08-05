@@ -48,7 +48,7 @@
     "express-session": "1.15.x",
     "helmet": "3.8.x",
     "mocha": "3.x",
-    "moment": "2.18.x",
+    "moment": "^2.22.2",
     "mongodb": "^2.x",
     "node-sass": "4.7.x",
     "oauth2orize": "^1.11.0",

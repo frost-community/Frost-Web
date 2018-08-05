@@ -183,7 +183,7 @@
 
 		this.on('mount', () => {
 			this.refs.text.innerHTML = this.compileText(this.opts.status.text);
-			updateIcon();
+			this.updateIcon();
 			this.width = window.innerWidth;
 			window.addEventListener('resize', this.onResize);
 

@@ -80,10 +80,12 @@ module.exports = async (db, streamingRest, oAuthServer, config) => {
 	app.use(helmet({ frameguard: { action: 'deny' } }));
 	app.use(flash());
 	app.use((req, res, next) => {
-		if (req.path != '/oauth/token') {
+		if (req.path == '/oauth/token') {
+			next();
+		}
+		else {
 			csurf()(req, res, next);
 		}
-		next();
 	});
 	app.use(passport.initialize());
 	app.use(passport.session());
@@ -297,8 +299,13 @@ module.exports = async (db, streamingRest, oAuthServer, config) => {
 
 	// error: internal error
 	app.use((err, req, res, next) => {
-		log(err);
-		res.status(500).renderPage({ error: err.message, code: 500 });
+		if (!res.headersSent) {
+			log(err);
+			res.status(500).renderPage({ error: err.message, code: 500 });
+		}
+		else {
+			log(`already respond: ${err.message}`);
+		}
 	});
 
 	// == listening start ==

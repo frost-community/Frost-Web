@@ -49,7 +49,7 @@ module.exports = (http, sessionStore, hostStreamingRest, config) => {
 			}
 
 			sessionApiConnection.on('error', err => {
-				if (err.indexOf('ECONNRESET') != -1) {
+				if (err.message.indexOf('ECONNRESET') != -1) {
 					return;
 				}
 				log('api error:', err);

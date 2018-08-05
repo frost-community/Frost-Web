@@ -250,34 +250,6 @@ module.exports = async (db, streamingRest, oAuthServer, config) => {
 		}
 	});
 
-	// internal apis
-
-	app.post('/app/secret', async (req, res, next) => {
-		try {
-			const appId = req.body.id;
-
-			const appResult = await streamingRest.request('get', `/applications/${appId}`);
-			if (appResult.statusCode != 200) {
-				throw new HttpServerError(400, 'invalid applicationId');
-			}
-			const app = appResult.response.application;
-
-			if (app.creatorId != req.user.id) {
-				throw new HttpServerError(400, 'you do not have this application');
-			}
-
-			const appSecretResult = await streamingRest.request('get', `/applications/${appId}/secret`);
-			if (appSecretResult.statusCode != 200) {
-				throw new HttpServerError(appSecretResult.statusCode, appSecretResult.response.message);
-			}
-
-			res.json({ secret: appSecretResult.response.secret });
-		}
-		catch (err) {
-			next(err);
-		}
-	});
-
 	// pages
 
 	const pages = [

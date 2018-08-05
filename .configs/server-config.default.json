@@ -17,7 +17,7 @@
   "hostAccessToken": "paste_your_host_access_token",
   "accessTokenScopes": {
     "clientSide": ["user.read", "user.write", "post.read", "post.write", "storage.read", "storage.write"],
-    "session": ["app.create"]
+    "session": ["app.read", "app.create"]
   },
   "reCAPTCHA": {
     "siteKey": "paste_your_reCAPTCHA_site_key",

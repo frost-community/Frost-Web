@@ -9,7 +9,7 @@ const StreamingRest = require('./helpers/streaming-rest');
  * ストリーミング接続をサポートします。
  * セッション経由でAPIにアクセスできる機能が含まれます。
  */
-module.exports = (http, sessionStore, config) => {
+module.exports = (http, sessionStore, hostStreamingRest, config) => {
 	const log = (...args) => {
 		console.log('[streaming server]', ...args);
 	};
@@ -31,11 +31,11 @@ module.exports = (http, sessionStore, config) => {
 			}
 
 			// APIに接続
-			let apiConnection;
+			let sessionApiConnection;
 			try {
 				debugLog('connecting streaming api server...');
-				apiConnection = await WebSocketUtility.connect(`ws://${config.apiHost}?access_token=${session.token.accessToken}`);
-				events(apiConnection);
+				sessionApiConnection = await WebSocketUtility.connect(`ws://${config.apiHost}?access_token=${session.token.accessToken}`);
+				events(sessionApiConnection);
 			}
 			catch (err) {
 				if (err.message.indexOf('ECONNREFUSED') != -1) {
@@ -48,14 +48,14 @@ module.exports = (http, sessionStore, config) => {
 				}
 			}
 
-			apiConnection.on('error', err => {
+			sessionApiConnection.on('error', err => {
 				if (err.indexOf('ECONNRESET') != -1) {
 					return;
 				}
 				log('api error:', err);
 			});
 
-			apiConnection.on('close', data => {
+			sessionApiConnection.on('close', data => {
 				debugLog('api close:', data.reasonCode, data.description);
 
 				if (frontConnection != null && frontConnection.connected) {
@@ -63,7 +63,7 @@ module.exports = (http, sessionStore, config) => {
 				}
 			});
 
-			const streamingRest = new StreamingRest(apiConnection);
+			const sessionStreamingRest = new StreamingRest(sessionApiConnection);
 
 			// リクエストを受理
 			frontConnection = wsRequest.accept();
@@ -80,8 +80,8 @@ module.exports = (http, sessionStore, config) => {
 			frontConnection.on('close', data => {
 				debugLog('front close:', data.reasonCode, data.description);
 
-				if (apiConnection.connected) {
-					apiConnection.close();
+				if (sessionApiConnection.connected) {
+					sessionApiConnection.close();
 				}
 			});
 
@@ -95,7 +95,7 @@ module.exports = (http, sessionStore, config) => {
 
 			frontConnection.on('app-create', async (data) => {
 				try {
-					console.log('app-create');
+					log('app-create');
 					// recaptcha
 					const verifyResult = await request('https://www.google.com/recaptcha/api/siteverify', {
 						method: 'POST',
@@ -108,7 +108,7 @@ module.exports = (http, sessionStore, config) => {
 					}
 
 					// request POST /applications
-					const result = await streamingRest.request('post', '/applications', { body: data.body });
+					const result = await sessionStreamingRest.request('post', '/applications', { body: data.body });
 					if (result.statusCode != 200) {
 						frontConnection.error('app-create', result.response.message, { statusCode: result.statusCode });
 						return;
@@ -124,6 +124,60 @@ module.exports = (http, sessionStore, config) => {
 					}
 					frontConnection.error('app-create', err.message, detail);
 					log('app-create error:', err);
+					return;
+				}
+			});
+
+			frontConnection.on('app-secret-get', async (data) => {
+				try {
+					log('app-secret-get');
+
+					// request GET /applications/:id
+					const appResult = await sessionStreamingRest.request('get', `/applications/${data.appId}`);
+					if (appResult.statusCode != 200) {
+						frontConnection.error('app-secret-get', appResult.response.message, { statusCode: appResult.statusCode });
+						return;
+					}
+
+					// own app?
+					if (session.token.userId != appResult.response.application.creatorId) {
+						frontConnection.error('app-secret-get', 'you do not have this application');
+						return;
+					}
+
+					let secret;
+					// request GET /applications/:id/secret
+					const result = await hostStreamingRest.request('get', `/applications/${data.appId}/secret`);
+					if (result.statusCode != 200 && result.statusCode != 404) {
+						frontConnection.error('app-secret-get', result.response.message, { statusCode: result.statusCode });
+						return;
+					}
+
+					if (result.statusCode == 200) {
+						secret = result.response.secret;
+					}
+					else {
+						// generate secret
+						const result2 = await hostStreamingRest.request('post', `/applications/${data.appId}/secret`);
+						if (result2.statusCode != 200) {
+							log('generate secret error(api response):', result2.statusCode, result2.response.message);
+							frontConnection.error('app-secret-get', result.response.message, { statusCode: result.statusCode });
+							return;
+						}
+
+						secret = result2.response.secret;
+					}
+
+					// response
+					frontConnection.send('app-secret-get', { success: true, secret: secret });
+				}
+				catch (err) {
+					const detail = {};
+					if (err.statusCode) {
+						detail.statusCode = err.statusCode;
+					}
+					frontConnection.error('app-secret-get', err.message, detail);
+					log('app-secret-get error:', err);
 					return;
 				}
 			});

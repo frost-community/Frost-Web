@@ -45,7 +45,7 @@
 
 		const centralAddApplicationHandler = (data) => {
 			data.application.isShowSecret = false;
-			data.application.secret = 'hoge';
+			data.application.secret = 'not fetched';
 
 			this.applications.push(data.application);
 			this.update();
@@ -54,9 +54,29 @@
 		this.on('mount', () => {
 			this.central.on('add-application', centralAddApplicationHandler);
 
-			this.toggleSecret = (ev) => {
-				ev.item.app.isShowSecret = !ev.item.app.isShowSecret;
-				this.update();
+			this.toggleSecret = async (ev) => {
+				const app = ev.item.app;
+
+				if (ev.item.app.isShowSecret == false && app.secret == null) {
+					const handler = (result) => {
+						console.log('app-secret-get result:', result);
+						if (result.secret != null) {
+							app.secret = result.secret;
+							ev.item.app.isShowSecret = true;
+							this.update();
+						}
+						else {
+							alert(`error: failed to get app-secret. ${result.message}`);
+						}
+						this.backendStream.off('app-secret-get', handler);
+					};
+					this.backendStream.on('app-secret-get', handler);
+					this.backendStream.sendEvent('app-secret-get', { appId: app.id });
+				}
+				else {
+					ev.item.app.isShowSecret = !ev.item.app.isShowSecret;
+					this.update();
+				}
 			};
 
 			(async () => {
@@ -70,7 +90,6 @@
 				}
 				const apps = rest.response.applications.map(app => {
 					app.isShowSecret = false;
-					app.secret = 'hoge';
 					return app;
 				});
 				this.applications = apps;

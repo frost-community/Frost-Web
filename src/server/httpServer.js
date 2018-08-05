@@ -79,7 +79,12 @@ module.exports = async (db, streamingRest, oAuthServer, config) => {
 	app.use(compression({ threshold: 0, level: 9, memLevel: 9 }));
 	app.use(helmet({ frameguard: { action: 'deny' } }));
 	app.use(flash());
-	app.use(csurf());
+	app.use((req, res, next) => {
+		if (req.path != '/oauth/token') {
+			csurf()(req, res, next);
+		}
+		next();
+	});
 	app.use(passport.initialize());
 	app.use(passport.session());
 
@@ -95,7 +100,7 @@ module.exports = async (db, streamingRest, oAuthServer, config) => {
 				errors: req.flash('error')
 			});
 
-			// memo: クライアントサイドでは、パラメータ中にuserIdが存在するかどうかでWebSocketへの接続が必要かどうかを判断します。このコードはそのために必要です。
+			// NOTE: クライアントサイドでは、パラメータ中にuserIdが存在するかどうかでWebSocketへの接続が必要かどうかを判断します。このコードはそのために必要です。
 			if (req.session.token != null) {
 				params.userId = req.session.token.userId;
 			}

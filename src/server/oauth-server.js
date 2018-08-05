@@ -33,7 +33,7 @@ class OAuthServer {
 
 		const secretResult = await this._streamingRest.request('get', `/applications/${id}/secret`);
 		if (secretResult.statusCode != 200) {
-			if (secretResult.statusCode == 400) {
+			if (secretResult.statusCode == 404) {
 				if (throwError)
 					throw new Error(secretResult.response.message);
 				else

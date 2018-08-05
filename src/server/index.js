@@ -49,10 +49,10 @@ module.exports = async () => {
 			log('host apiConnection error:', err);
 		});
 		events(hostApiConnection);
-		const streamingRest = new StreamingRest(hostApiConnection);
+		const hostStreamingRest = new StreamingRest(hostApiConnection);
 
 		log('starting OAuth server ...');
-		const oAuthServer = new OAuthServer(db, streamingRest);
+		const oAuthServer = new OAuthServer(db, hostStreamingRest);
 		oAuthServer.initialize();
 
 		log('starting http server ...');
@@ -62,7 +62,7 @@ module.exports = async () => {
 			async (req, screenName, password, done) => {
 				try {
 					// validate user credential
-					const user = await validateCredential(screenName, password, streamingRest);
+					const user = await validateCredential(screenName, password, hostStreamingRest);
 
 					done(null, user);
 				}
@@ -78,7 +78,7 @@ module.exports = async () => {
 		});
 		passport.deserializeUser(async (id, done) => {
 			try {
-				const userResult = await streamingRest.request('get', `/users/${id}`);
+				const userResult = await hostStreamingRest.request('get', `/users/${id}`);
 				if (userResult.statusCode != 200) {
 					throw new HttpServerError(userResult.statusCode, userResult.response.message);
 				}
@@ -89,10 +89,10 @@ module.exports = async () => {
 				done(err);
 			}
 		});
-		const { http, sessionStore } = await httpServer(db, streamingRest, oAuthServer, config);
+		const { http, sessionStore } = await httpServer(db, hostStreamingRest, oAuthServer, config);
 
 		log('starting streaming server ...');
-		streamingServer(http, sessionStore, config);
+		streamingServer(http, sessionStore, hostStreamingRest, config);
 
 		log('initialized');
 	}

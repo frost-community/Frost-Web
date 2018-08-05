@@ -5,28 +5,37 @@
 		<input ref='name' class='name-box' type='text' id='application-name' name='name' placeholder='example: Frost Client' style='width: 100%' maxlength='32' required />
 		<label for='application-description'>説明</label><!-- Description -->
 		<textarea ref='description' class='description-box' id='application-description' name='description' rows='3' style='width: 100%' maxlength='256' />
-		<fieldset class='permissions'>
-			<label>権限</label><!-- Permissions -->
-			<label for='permissions-userRead'>
-				<input type='checkbox' id='permissions-userRead' name='permissions' value='userRead'>userRead - ユーザーに関する読み取り</input><!-- userRead - Reading about users -->
+		<fieldset class='scopes'>
+			<label>権限(Scopes)</label><!-- Permissions(Scopes) -->
+			<label for='scopes-user-read'>
+				<input type='checkbox' id='scopes-user-read' name='scopes' value='user.read'>user.read - ユーザーに関する読み取り</input><!-- user.read - Reading about users -->
 			</label>
-			<label for='permissions-userWrite'>
-				<input type='checkbox' id='permissions-userWrite' name='permissions' value='userWrite'>userWrite - ユーザーに関する書き換え</input><!-- userWrite - Writing about users -->
+			<label for='scopes-user-write'>
+				<input type='checkbox' id='scopes-user-write' name='scopes' value='user.write'>user.write - ユーザーに関する書き換え</input><!-- user.write - Writing about users -->
 			</label>
-			<label for='permissions-postRead'>
-				<input type='checkbox' id='permissions-postRead' name='permissions' value='postRead'>postRead - ポストに関する読み取り</input><!-- postRead - Reading about posts -->
+			<label for='scopes-post.read'>
+				<input type='checkbox' id='scopes-post.read' name='scopes' value='post.read'>post.read - ポストに関する読み取り</input><!-- post.read - Reading about posts -->
 			</label>
-			<label for='permissions-postWrite'>
-				<input type='checkbox' id='permissions-postWrite' name='permissions' value='postWrite'>postWrite - ポストに関する書き換え</input><!-- postWrite - Writing about posts -->
+			<label for='scopes-post-write'>
+				<input type='checkbox' id='scopes-post-write' name='scopes' value='post.write'>post.write - ポストに関する書き換え</input><!-- post.write - Writing about posts -->
 			</label>
-			<label for='permissions-accountRead'>
-				<input type='checkbox' id='permissions-accountRead' name='permissions' value='accountRead'>accountRead - アカウントに関する読み取り</input><!-- accountRead - Reading about your account -->
+			<label for='scopes-user-account-read'>
+				<input type='checkbox' id='scopes-user-account-read' name='scopes' value='user.account.read'>user.account.read - アカウントに関する読み取り</input><!-- user.account.read - Reading about your account -->
 			</label>
-			<label for='permissions-accountWrite'>
-				<input type='checkbox' id='permissions-accountWrite' name='permissions' value='accountWrite'>accountWrite - アカウントに関する書き換え</input><!-- accountWrite - Writing about your account -->
+			<label for='scopes-user-account-write'>
+				<input type='checkbox' id='scopes-user-account-write' name='scopes' value='user.account.write'>user.account.write - アカウントに関する書き換え</input><!-- user.account.write - Writing about your account -->
 			</label>
-			<label for='permissions-application'>
-				<input type='checkbox' id='permissions-application' name='permissions' value='application'>application - 所持する連携アプリケーションに関する操作</input><!-- application - Accessing about your applications -->
+			<label for='scopes-app-read'>
+				<input type='checkbox' id='scopes-app-read' name='scopes' value='app.read'>app.read - 所持する連携アプリケーションに関する読み取り</input><!-- app.read - Reading about your applications -->
+			</label>
+			<label for='scopes-app-write'>
+				<input type='checkbox' id='scopes-app-write' name='scopes' value='app.write'>app.write - 所持する連携アプリケーションに関する書き換え</input><!-- app.write - Writing about your applications -->
+			</label>
+			<label for='scopes-storage-read'>
+				<input type='checkbox' id='scopes-storage-read' name='scopes' value='storage.read'>storage.read - Frostストレージに関する読み取り</input><!-- storage.read - Reading about Frost Storage -->
+			</label>
+			<label for='scopes-storage-write'>
+				<input type='checkbox' id='scopes-storage-write' name='scopes' value='storage.write'>storage.write - Frostストレージに関する書き換え</input><!-- storage.write - Writing about Frost Storage -->
 			</label>
 		</fieldset>
 		<div id='recaptcha-create-application'></div>
@@ -34,7 +43,6 @@
 	</form>
 
 	<script>
-		const StreamingRest = require('../helpers/streaming-rest');
 		this.isShowModal = false;
 		let widgetId;
 
@@ -46,34 +54,31 @@
 			this.submit = (ev) => {
 				ev.preventDefault();
 
-				const permissions = [];
-				for (let permission of document.querySelectorAll('frost-form-create-application .permissions *')) {
-					if (permission.checked) {
-						permissions.push(permission.value);
+				const scopes = [];
+				for (let scope of document.querySelectorAll('frost-form-create-application .scopes *')) {
+					if (scope.checked) {
+						scopes.push(scope.value);
 					}
 				}
 
-				(async () => {
-					const streamingRest = new StreamingRest(this.webSocket);
-					const rest = await streamingRest.request('post', '/applications', {
-						body: {
-							name: this.refs.name.value,
-							description: this.refs.description.value,
-							permissions: permissions,
-							recaptchaToken: grecaptcha.getResponse()
-						}
-					});
-					if (rest.response.application != null) {
-						this.central.trigger('add-application', {application: rest.response.application});
+				this.backendStream.on('app-create', (result) => {
+					console.log('app-create result:', result);
+					if (result.app != null) {
+						this.central.trigger('add-application', { application: result.app });
 						alert('created application.');
 					}
 					else {
-						alert(`api error: failed to create application. ${rest.response.message}`);
+						alert(`error: failed to create application. ${result.message}`);
 					}
 					grecaptcha.reset(widgetId);
-				})().catch(err => {
-					alert(`error: failed to create application. ${err.message}`);
-					grecaptcha.reset(widgetId);
+				});
+				this.backendStream.sendEvent('app-create', {
+					recaptchaToken: grecaptcha.getResponse(),
+					body: {
+						name: this.refs.name.value,
+						description: this.refs.description.value,
+						scopes: scopes
+					}
 				});
 			};
 

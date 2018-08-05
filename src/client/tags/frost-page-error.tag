@@ -19,35 +19,23 @@
 			if (pageId == 'error') {
 				this.central.off('ev:changed-page', changedPageEventHandler);
 
-				const metaError = document.getElementsByName('frost-error').item(0);
-				const metaCode = document.getElementsByName('frost-code').item(0);
-				if (metaError != null) {
-					this.message = metaError.content;
-					const code = metaCode.content;
-					metaError.remove();
-					metaCode.remove();
-					window.document.title = `Frost - Error ${code}`;
+				if (params.message != null) {
+					this.message = params.message;
+				}
+				else if (this.error != null) {
+					this.message = this.error;
 				}
 				else {
-					this.message = params.message || 'no message';
-					window.document.title = `Frost - Error`;
+					this.message = 'no message';
 				}
-			}
-			this.update();
-		};
 
-		const changeErrorHandler = (error) => {
-			this.message = error.message || 'no message';
+				window.document.title = `Frost - Error ${this.code || ''}`;
+			}
 			this.update();
 		};
 
 		this.on('mount', () => {
 			this.central.on('ev:changed-page', changedPageEventHandler);
-			this.central.on('change-error', changeErrorHandler);
-		});
-
-		this.on('unmount', () => {
-			this.central.off('change-error', changeErrorHandler);
 		});
 	</script>
 </frost-page-error>

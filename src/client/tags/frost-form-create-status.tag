@@ -39,7 +39,6 @@
 	</style>
 
 	<script>
-		const StreamingRest = require('../helpers/streaming-rest');
 		this.textMax = 256;
 		this.text = '';
 		this.lock = false;
@@ -82,8 +81,7 @@
 
 			this.createStatus = () => {
 				(async () => {
-					const streamingRest = new StreamingRest(this.webSocket);
-					const rest = await streamingRest.request('post', '/posts/post_status', { body: { text: this.text } });
+					const rest = await this.streamingRest.request('post', '/posts/post_status', { body: { text: this.text } });
 					this.clear();
 					return 'success';
 				})().catch((err) => {

@@ -31,7 +31,7 @@ class StreamingRest {
 						}
 
 						// disposings
-						this.connection.off('rest', restHandler);
+						this.connection.removeListener('rest', restHandler);
 						clearTimeout(timeout);
 					}
 				}
@@ -39,7 +39,7 @@ class StreamingRest {
 					reject(new Error(rest.message));
 
 					// disposings
-					this.connection.off('rest', restHandler);
+					this.connection.removeListener('rest', restHandler);
 					clearTimeout(timeout);
 				}
 			};

@@ -1,0 +1,26 @@
+{
+  "$version": 2,
+  "port": 8001,
+  "debug": false,
+  "database": {
+    "host": "localhost:27017",
+    "database": "frost-web",
+    "username": "frost-web",
+    "password": "frost-web"
+  },
+  "apiHost": "localhost:8000",
+  "session": {
+    "name": "sid",
+    "SecretToken": "paste_your_session_secret_token"
+  },
+  "applicationId": "paste_your_application_id",
+  "hostAccessToken": "paste_your_host_access_token",
+  "accessTokenScopes": {
+    "clientSide": ["user.read", "user.write", "post.read", "post.write", "storage.read", "storage.write"],
+    "session": ["app.read", "app.create"]
+  },
+  "reCAPTCHA": {
+    "siteKey": "paste_your_reCAPTCHA_site_key",
+    "secretKey": "paste_your_reCAPTCHA_secret_key"
+  }
+}

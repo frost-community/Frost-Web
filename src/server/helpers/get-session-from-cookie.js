@@ -1,16 +1,21 @@
 const cookie = require('cookie');
 const cookieParser = require('cookie-parser');
-const prominence = require('prominence');
 
-/**
- * Cookieからセッション情報を取得します。
- */
+/** Cookieからセッション情報を取得します。*/
 module.exports = async (cookieString, sessionCookieName, cookieSecret, store) => {
-	if (cookieString == null)
+	if (cookieString == null) {
 		return null;
+	}
 
-	let cookies = cookieParser.signedCookies(cookie.parse(cookieString), cookieSecret);
-	const session = await prominence(store).get(cookies[sessionCookieName]);
+	const getSession = (store, sid) => new Promise((resolve, reject) => {
+		store.get(sid, (err, result) => {
+			if (err) return reject(err);
+			resolve(result);
+		});
+	});
+
+	const cookies = cookieParser.signedCookies(cookie.parse(cookieString), cookieSecret);
+	const session = await getSession(store, cookies[sessionCookieName]);
 
 	return session;
 };

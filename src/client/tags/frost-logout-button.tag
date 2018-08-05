@@ -10,6 +10,7 @@
 			})
 			.then(async (res) => {
 				if (res.ok) {
+					localStorage.removeItem('accessToken');
 					location.reload();
 					return;
 				}

@@ -1,45 +1,102 @@
-const fs = require('fs');
-const path = require('path');
-const { promisify } = require('util');
 const httpServer = require('./httpServer');
-const i = require('./helpers/input-async');
-const loadConfig = require('./helpers/load-config');
-const request = require('request-promise');
 const streamingServer = require('./streamingServer');
+const ReconnectingWebSocket = require('./helpers/reconnecting-websocket-node');
+const events = require('websocket-events');
+const StreamingRest = require('./helpers/streaming-rest');
+const loadConfig = require('./helpers/load-config');
+const MongoAdapter = require('./helpers/MongoAdapter');
+const OAuthServer = require('./oauth-server');
+const passport = require('passport');
+const { Strategy : LocalStrategy } = require('passport-local');
+const HttpServerError = require('./helpers/http-server-error');
+const validateCredential = require('./helpers/validate-credential');
 
-const urlConfigFile = 'https://raw.githubusercontent.com/Frost-Dev/Frost/master/config.json';
-
-const q = async str => (await i(str)).toLowerCase().indexOf('y') === 0;
-const writeFile = promisify(fs.writeFile);
+process.on('unhandledRejection', err => console.log(err)); // † Last Stand † (Promise)
+Error.stackTraceLimit = 20;
 
 /**
  * Webアプリケーションサーバ
  */
 module.exports = async () => {
+	const log = (...args) => {
+		console.log(...args);
+	};
 	try {
-		console.log('+------------------+');
-		console.log('| Frost Web Server |');
-		console.log('+------------------+');
+		log('+------------------+');
+		log('| Frost-Web Server |');
+		log('+------------------+');
 
-		console.log('loading config...');
+		log('loading config file...');
 		let config = loadConfig();
 		if (config == null) {
-			if (await q('config file is not found. generate now? (y/n) > ')) {
-				const parent = await q('generate config.json in the parent directory of repository? (y/n) > ');
-				const configPath = path.resolve(parent ? '../config.json' : 'config.json');
-				const configJson = await request(urlConfigFile);
-				await writeFile(configPath, configJson);
-				console.log('generated. please edit config.json and restart frost-web.');
-			}
+			log('config file is not found. please refer to .configs/README.md');
 			return;
 		}
 
-		const { http, sessionStore } = await httpServer(false, config);
-		streamingServer(http, sessionStore, false, config);
+		log('connecting database ...');
+		const db = await MongoAdapter.connect(
+			config.database.host,
+			config.database.database,
+			config.database.username,
+			config.database.password);
 
-		console.log('init complete');
+		log('connecting to streaming api as host ...');
+		const hostApiConnection = await ReconnectingWebSocket.connect(`ws://${config.apiHost}?access_token=${config.hostAccessToken}`);
+		hostApiConnection.on('error', err => {
+			if (err.message.indexOf('ECONNRESET') != -1) {
+				return;
+			}
+			log('host apiConnection error:', err);
+		});
+		events(hostApiConnection);
+		const hostStreamingRest = new StreamingRest(hostApiConnection);
+
+		log('starting OAuth server ...');
+		const oAuthServer = new OAuthServer(db, hostStreamingRest);
+		oAuthServer.initialize();
+
+		log('starting http server ...');
+		// NOTE: 通常のログイン認証向け
+		passport.use('login', new LocalStrategy(
+			{ usernameField: 'screenName', passReqToCallback: true },
+			async (req, screenName, password, done) => {
+				try {
+					// validate user credential
+					const user = await validateCredential(screenName, password, hostStreamingRest);
+
+					done(null, user);
+				}
+				catch (err) {
+					req.flash('error', err.message);
+					done(err);
+				}
+			}
+		));
+		// NOTE: セッションとユーザー情報を関連付けるために必要
+		passport.serializeUser((user, done) => {
+			done(null, user.id);
+		});
+		passport.deserializeUser(async (id, done) => {
+			try {
+				const userResult = await hostStreamingRest.request('get', `/users/${id}`);
+				if (userResult.statusCode != 200) {
+					throw new HttpServerError(userResult.statusCode, userResult.response.message);
+				}
+
+				done(null, userResult.response.user);
+			}
+			catch (err) {
+				done(err);
+			}
+		});
+		const { http, sessionStore } = await httpServer(db, hostStreamingRest, oAuthServer, config);
+
+		log('starting streaming server ...');
+		streamingServer(http, sessionStore, hostStreamingRest, config);
+
+		log('initialized');
 	}
 	catch (err) {
-		console.log('Unprocessed Server Error:', err); // † Last Stand †
+		log('unprocessed error:', err); // † Last Stand †
 	}
 };

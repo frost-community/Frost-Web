@@ -62,7 +62,6 @@
 	</style>
 
 	<script>
-		const StreamingRest = require('../helpers/streaming-rest');
 		this.timelinePosts = [];
 		this.loading = false;
 		this.error = false;
@@ -94,7 +93,7 @@
 
 		this.reconnectHandler = () => {
 			console.log('reconnecting timeline...');
-			this.webSocket.sendEvent('timeline-connect', { type: this.opts.dataName });
+			this.apiStream.sendEvent('timeline-connect', { type: this.opts.dataName });
 		};
 
 		this.timelineConnectHandler = (data) => {
@@ -116,8 +115,7 @@
 			this.update();
 
 			(async () => {
-				const streamingRest = new StreamingRest(this.webSocket);
-				const rest = await streamingRest.request('get', endpoint, { query: { limit: 100 } });
+				const rest = await this.streamingRest.request('get', endpoint, { query: { limit: 100 } });
 				if (rest.response.posts == null) {
 					if (rest.statusCode != 204) {
 						alert(`api error: failed to fetch ${this.opts.dataName} timeline posts. ${rest.response.message}`);
@@ -127,7 +125,7 @@
 				this.timelinePosts = rest.response.posts;
 
 				if (streaming) {
-					this.webSocket.sendEvent('timeline-connect', { type: this.opts.dataName });
+					this.apiStream.sendEvent('timeline-connect', { type: this.opts.dataName });
 				}
 
 				this.error = false;
@@ -145,18 +143,18 @@
 			this.reload(); // タイムラインの読み込み
 
 			if (streaming) {
-				this.webSocket.addEventListener('open', this.reconnectHandler); // memo: onではなくaddEventListenerを使っているのはプリミティブ(非ユーザー定義)なイベントだから
-				this.webSocket.one('timeline-connect', this.timelineConnectHandler);
-				this.webSocket.one('timeline-disconnect', this.timelineDisconnectHandler);
-				this.webSocket.on(`stream:${this.opts.dataName}-timeline-status`, this.receiveStatusHandler);
+				this.apiStream.addEventListener('open', this.reconnectHandler); // memo: onではなくaddEventListenerを使っているのはプリミティブ(非ユーザー定義)なイベントだから
+				this.apiStream.one('timeline-connect', this.timelineConnectHandler);
+				this.apiStream.one('timeline-disconnect', this.timelineDisconnectHandler);
+				this.apiStream.on(`stream:${this.opts.dataName}-timeline-status`, this.receiveStatusHandler);
 			}
 		});
 
 		this.on('unmount', () => {
 			if (streaming) {
-				this.webSocket.sendEvent('timeline-disconnect', { type: this.opts.dataName });
-				this.webSocket.removeEventListener('open', this.reconnectHandler);
-				this.webSocket.off(`stream:${this.opts.dataName}-timeline-status`, this.receiveStatusHandler);
+				this.apiStream.sendEvent('timeline-disconnect', { type: this.opts.dataName });
+				this.apiStream.removeEventListener('open', this.reconnectHandler);
+				this.apiStream.off(`stream:${this.opts.dataName}-timeline-status`, this.receiveStatusHandler);
 			}
 		});
 	</script>

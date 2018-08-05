@@ -2,13 +2,9 @@
 	<button if={ showing } onclick={ follow }>{ following ? 'フォローしています' : 'フォロー' }</button>
 
 	<script>
-		const StreamingRest = require('../helpers/streaming-rest');
-
-		this.on('mount', () => {
-			(async () => {
-				const streamingRest = new StreamingRest(this.webSocket);
-
-				const rest = await streamingRest.request('get', `/users/${this.user.id}/followings/${this.opts.dataTargetId}`);
+		this.on('mount', async () => {
+			try {
+				const rest = await this.streamingRest.request('get', `/users/${this.user.id}/followings/${this.opts.dataTargetId}`);
 				if (rest.statusCode == 200) {
 					this.following = rest.response.following;
 					this.showing = true;
@@ -21,17 +17,16 @@
 					alert(`api error: ${rest.response.message}`);
 				}
 
-				this.follow = () => {
-					(async () => {
-						await streamingRest.request(this.following ? 'delete' : 'put', `/users/${this.user.id}/followings/${this.opts.dataTargetId}`);
-						this.following = !this.following;
-						this.update();
-					})();
+				this.follow = async () => {
+					await this.streamingRest.request(this.following ? 'delete' : 'put', `/users/${this.user.id}/followings/${this.opts.dataTargetId}`);
+					this.following = !this.following;
+					this.update();
 				};
 				this.update();
-			})().catch((err) => {
+			}
+			catch(err) {
 				console.error(err);
-			});
+			}
 		});
 
 	</script>

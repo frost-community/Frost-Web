@@ -243,6 +243,9 @@ module.exports = async (db, streamingRest, oAuthServer, config) => {
 			// NOTE: クライアントサイドへ渡すために一旦Cookieに付ける
 			res.cookie('accessToken', req.session.clientSideToken.accessToken);
 
+			req.login(user, (err) => {
+			});
+
 			res.json({
 				message: 'ok',
 				accessToken: req.session.clientSideToken.accessToken,

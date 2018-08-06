@@ -16,7 +16,7 @@
   "applicationId": "paste_your_application_id",
   "hostAccessToken": "paste_your_host_access_token",
   "accessTokenScopes": {
-    "clientSide": ["user.read", "user.write", "post.read", "post.write", "storage.read", "storage.write"],
+    "clientSide": ["user.read", "user.write", "post.read", "post.write", "storage.read", "storage.write", "app.read"],
     "session": ["app.read", "app.create"]
   },
   "reCAPTCHA": {
